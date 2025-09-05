@@ -11,12 +11,6 @@ pluginManagement {
         gradlePluginPortal()
     }
 }
-dependencyResolutionManagement {
-    repositories {
-        google()
-        mavenCentral()
-    }
-}
 
 rootProject.name = "Tomo"
 include(":app")
