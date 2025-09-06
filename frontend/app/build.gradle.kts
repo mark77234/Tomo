@@ -56,7 +56,8 @@ dependencies {
     implementation(libs.androidx.material3)
 
     // ✅ Firebase BoM
-    implementation(platform("com.google.firebase:firebase-bom:34.2.0"))
+    implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
+
 
     // Firebase Authentication (버전 명시 X → BoM이 관리)
     implementation("com.google.firebase:firebase-auth")
