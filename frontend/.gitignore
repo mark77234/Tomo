@@ -10,9 +10,7 @@
 .DS_Store
 /build
 /captures
-.externalNativeBuild
 .cxx
-local.properties
 
 # Created by https://www.toptal.com/developers/gitignore/api/androidstudio
 # Edit at https://www.toptal.com/developers/gitignore?templates=androidstudio
@@ -37,7 +35,6 @@ gen/
 out/
 
 # Gradle files
-.gradle
 .gradle/
 build/
 
@@ -82,7 +79,6 @@ gen-external-apklibs
 obj/
 
 # IntelliJ IDEA
-*.iml
 *.iws
 /out/
 
