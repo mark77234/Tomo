@@ -2,8 +2,10 @@
 
 http://localhost:8080
 
-- 스프링 부트 환경에서 실행 가정
+- 스프링 부트, 인텔리제이에서 실행
 - 응답으로는 로그인한 구글 계정 이메일, 통신 방식(http, https) 가 출력됩니다
+- <img width="356" height="126" alt="image" src="https://github.com/user-attachments/assets/511a9669-ebaf-496a-a1d9-bfd12c2c9846" />
+
 - 따로 명령어로 실행하지 않고 인텔리제이의 실행 버튼 누르기 
 -  <img width="362" height="55" alt="image" src="https://github.com/user-attachments/assets/6b349e7b-b059-4b56-bc48-b6d420c70a35" />  여기 삼각형 버튼 누르고
 
