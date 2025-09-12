@@ -4,9 +4,11 @@ import com.example.tomo.Moim.Moim;
 import jakarta.persistence.*;
 import lombok.Getter;
 import com.example.tomo.Users.User;
+import lombok.Setter;
 
 @Entity
 @Getter
+@Setter
 public class Moim_people {
 
     @Id
