@@ -10,6 +10,7 @@ public class Promise {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="promise_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
