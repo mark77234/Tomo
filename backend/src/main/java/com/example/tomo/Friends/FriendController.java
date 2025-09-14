@@ -17,8 +17,7 @@ public class FriendController {
     }
 
     @GetMapping("/friends")
-    public List<Long> getMyFriends(@RequestParam Long user_id){
+    public List<Long> getMyFriends(@RequestParam("id") Long user_id){
         return friendService.getFriends(user_id);
-
     }
 }
