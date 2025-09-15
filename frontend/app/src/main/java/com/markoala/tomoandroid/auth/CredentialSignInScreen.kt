@@ -19,6 +19,8 @@ import androidx.credentials.CustomCredential
 import androidx.credentials.exceptions.GetCredentialException
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.launch
 import kotlin.text.contains
 
@@ -38,6 +40,8 @@ fun CredentialSignInScreen(onSignedIn: () -> Unit) {
     // CredentialManager 인스턴스
     val credentialManager = remember { CredentialManager.create(context) }
     val coroutineScope = rememberCoroutineScope()
+    val firebaseAuth = remember { FirebaseAuth.getInstance() }
+    val firestore = remember { FirebaseFirestore.getInstance() }
 
     Column(
         modifier = Modifier
@@ -84,6 +88,17 @@ fun CredentialSignInScreen(onSignedIn: () -> Unit) {
                             // 기존 Firebase 인증 함수 사용
                             AuthManager.firebaseAuthWithGoogle(idToken) { success, err ->
                                 if (success) {
+                                    // Firestore에 사용자 정보 저장
+                                    val user = firebaseAuth.currentUser
+                                    user?.let {
+                                        val userData = hashMapOf(
+                                            "uid" to it.uid,
+                                            "name" to (it.displayName ?: ""),
+                                            "email" to (it.email ?: ""),
+                                        )
+                                        firestore.collection("users").document(it.uid)
+                                            .set(userData)
+                                    }
                                     onSignedIn()
                                 } else {
                                     Toast.makeText(activity, "로그인에 실패하였습니다. $err", Toast.LENGTH_LONG).show()

@@ -9,17 +9,20 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="69dae627-04f4-4a92-890a-3bd9243d2e84" name="Changes" comment="feat: google-service.json 파일 제외">
+    <list default="true" id="69dae627-04f4-4a92-890a-3bd9243d2e84" name="Changes" comment="feat: update dependencies and clean up project files">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle.kts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/markoala/tomoandroid/auth/CredentialSignInScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/markoala/tomoandroid/auth/CredentialSignInScreen.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/markoala/tomoandroid/auth/SignInScreen.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/markoala/tomoandroid/ui/feature1/.gitkeep" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/markoala/tomoandroid/ui/feature2/.gitkeep" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/markoala/tomoandroid/ui/profile/ProfileScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/markoala/tomoandroid/ui/profile/ProfileScreen.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="ChangesViewManager" show_ignored="true" />
   <component name="ClangdSettings">
     <option name="formatViaClangd" value="false" />
   </component>
@@ -284,7 +287,23 @@
       <option name="project" value="LOCAL" />
       <updated>1757173959460</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="feat: 깃이그노어 수정">
+      <option name="closed" value="true" />
+      <created>1757944899654</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1757944899654</updated>
+    </task>
+    <task id="LOCAL-00013" summary="feat: update dependencies and clean up project files">
+      <option name="closed" value="true" />
+      <created>1757945186667</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1757945186667</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -310,7 +329,9 @@
     <MESSAGE value="feat: 구글 소셜로그인 회원가입, 로그인, 로그아웃 구현" />
     <MESSAGE value="feat: update Firebase BoM and Google Play services auth versions" />
     <MESSAGE value="feat: downgrade Firebase BoM version to 33.7.0" />
-    <option name="LAST_COMMIT_MESSAGE" value="feat: downgrade Firebase BoM version to 33.7.0" />
+    <MESSAGE value="feat: 깃이그노어 수정" />
+    <MESSAGE value="feat: update dependencies and clean up project files" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat: update dependencies and clean up project files" />
   </component>
   <component name="play_dynamic_filters_status">
     <option name="appIdToCheckInfo">
