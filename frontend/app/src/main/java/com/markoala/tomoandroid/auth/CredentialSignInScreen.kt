@@ -47,10 +47,10 @@ fun CredentialSignInScreen(onSignedIn: () -> Unit) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Button(onClick = {
-            // 클릭 시 코루틴에서 CredentialManager 호출
+
             coroutineScope.launch {
-                // 1. Google 계정 존재 여부 사전 체크
-                val accountManager = AccountManager.get(context)
+
+
                 try {
                     // 1) Google ID option 구성 (서버용 web client id 사용)
                     val googleIdOption = GetGoogleIdOption.Builder()
