@@ -158,7 +158,7 @@ fabric.properties
 # End of https://www.toptal.com/developers/gitignore/api/androidstudio,kotlin
 
 # IntelliJ IDEA / Android Studio
-frontent/.idea/workspace.xml
+frontend/.idea/workspace.xml
 workspace.xml
 
 # IntelliJ project files
@@ -176,5 +176,3 @@ workspace.xml
 .idea/**/uiDesigner.xml
 .idea/**/gradle.xml
 .idea/**/libraries
-
-
