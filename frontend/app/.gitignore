@@ -104,6 +104,8 @@ obj/
 .idea/tasks.xml
 .idea/.name
 .idea/compiler.xml
+.idea/gradle.xml
+.idea/workspace.xml
 .idea/copyright/profiles_settings.xml
 .idea/encodings.xml
 .idea/misc.xml
@@ -118,7 +120,6 @@ obj/
 .idea/dynamic.xml
 .idea/uiDesigner.xml
 .idea/assetWizardSettings.xml
-.idea/gradle.xml
 .idea/jarRepositories.xml
 .idea/navEditor.xml
 
@@ -157,12 +158,6 @@ fabric.properties
 
 # End of https://www.toptal.com/developers/gitignore/api/androidstudio,kotlin
 
-# IntelliJ IDEA / Android Studio
-frontend/.idea/workspace.xml
-workspace.xml
-
-# IntelliJ project files
-.idea/**/workspace.xml
 .idea/**/tasks.xml
 .idea/**/dictionaries
 .idea/**/shelf
