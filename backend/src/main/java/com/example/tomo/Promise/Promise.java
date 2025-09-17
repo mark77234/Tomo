@@ -4,7 +4,10 @@ import com.example.tomo.Moim.Moim;
 import jakarta.persistence.*;
 import lombok.Getter;
 
+import java.sql.Time;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Entity
 @Getter
@@ -21,6 +24,22 @@ public class Promise {
 
     private String place;
 
-    private LocalDateTime time;
+    private LocalTime promiseTime;
+    private LocalDate promiseDate;
+    private String promiseName;
+
+    public Promise() {}
+
+    public Promise(String promiseName, String place,
+                   LocalTime promiseTime, LocalDate promiseDate) {
+        this.place = place;
+        this.promiseName = promiseName;
+        this.promiseDate = promiseDate;
+        this.promiseTime = promiseTime;
+    }
+
+    public void setMoimBasedPromise(Moim moim){
+        this.moim = moim;
+    }
 
 }

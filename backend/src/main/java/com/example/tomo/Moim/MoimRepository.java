@@ -11,4 +11,5 @@ public interface MoimRepository extends JpaRepository<Moim, Long> {
     Boolean existsByMoimName(String moimName);
 
 
+
 }
