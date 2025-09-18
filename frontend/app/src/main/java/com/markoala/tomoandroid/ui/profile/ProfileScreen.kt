@@ -11,10 +11,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 @Composable
 fun ProfileScreen(onSignOut: () -> Unit) {
@@ -23,6 +23,7 @@ fun ProfileScreen(onSignOut: () -> Unit) {
     val user = firebaseAuth.currentUser
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
+    var userId by remember { mutableStateOf("") }
 
     LaunchedEffect(user) {
         user?.let {
@@ -30,6 +31,7 @@ fun ProfileScreen(onSignOut: () -> Unit) {
                 .addOnSuccessListener { doc ->
                     name = doc.getString("name") ?: ""
                     email = doc.getString("email") ?: ""
+                    userId = doc.getString("uid") ?: ""
                 }
         }
     }
@@ -43,6 +45,7 @@ fun ProfileScreen(onSignOut: () -> Unit) {
         if (name.isNotEmpty() || email.isNotEmpty()) {
             Text(text = "이름: $name")
             Text(text = "이메일: $email")
+            Text(text = "아이디: $userId")
         }
         Button(onClick = { onSignOut() }) {
             Text(text = "로그아웃")

@@ -5,24 +5,28 @@ import android.accounts.AccountManager
 import android.app.Activity
 import android.widget.Toast
 import androidx.activity.ComponentActivity
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.credentials.CredentialManager
-import androidx.credentials.GetCredentialRequest
 import androidx.credentials.CustomCredential
+import androidx.credentials.GetCredentialRequest
 import androidx.credentials.exceptions.GetCredentialException
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.launch
-import kotlin.text.contains
 
 @Composable
 fun CredentialSignInScreen(onSignedIn: () -> Unit) {
@@ -47,7 +51,6 @@ fun CredentialSignInScreen(onSignedIn: () -> Unit) {
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
-        verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Button(onClick = {
@@ -81,7 +84,8 @@ fun CredentialSignInScreen(onSignedIn: () -> Unit) {
                         credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL
                     ) {
                         // GoogleIdTokenCredential로 변환
-                        val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
+                        val googleIdTokenCredential =
+                            GoogleIdTokenCredential.createFrom(credential.data)
                         val idToken = googleIdTokenCredential.idToken
 
                         if (idToken.isNotEmpty()) {
@@ -101,13 +105,17 @@ fun CredentialSignInScreen(onSignedIn: () -> Unit) {
                                     }
                                     onSignedIn()
                                 } else {
-                                    Toast.makeText(activity, "로그인에 실패하였습니다. $err", Toast.LENGTH_LONG).show()
+                                    Toast.makeText(
+                                        activity,
+                                        "로그인에 실패하였습니다. $err",
+                                        Toast.LENGTH_LONG
+                                    ).show()
                                 }
                             }
                         }
                     }
-                }  catch (e: Exception) {
-                    if( e is GetCredentialException && e.errorMessage?.contains("No credentials available") == true){
+                } catch (e: Exception) {
+                    if (e is GetCredentialException && e.errorMessage?.contains("No credentials available") == true) {
                         val accountManager = AccountManager.get(activity)
                         accountManager.addAccount(
                             "com.google", // Google 계정 타입
