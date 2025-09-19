@@ -1,7 +1,7 @@
 package com.markoala.tomoandroid.data.model
 
 data class UserData(
-    val UUID: String,
+    val uuid: String,
     val email: String,
     val username: String
 )

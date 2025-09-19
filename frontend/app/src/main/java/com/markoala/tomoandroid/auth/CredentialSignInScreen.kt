@@ -113,7 +113,7 @@ fun CredentialSignInScreen(onSignedIn: () -> Unit) {
                                         user?.let {
                                             val userData =
                                                 UserData(
-                                                    UUID = it.uid,
+                                                    uuid = it.uid,
                                                     email = it.email ?: "",
                                                     username = it.displayName ?: ""
                                                 )

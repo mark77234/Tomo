@@ -31,7 +31,10 @@ interface ApiService {
 }
 
 val retrofit = Retrofit.Builder()
-    .baseUrl("https://dad075f4-0834-4273-afcc-1b1b584b0ce8.mock.pstmn.io/") // 서버 URL 입력
+    .baseUrl("https://dad075f4-0834-4273-afcc-1b1b584b0ce8.mock.pstmn.io") // 서버 URL 입력
     .addConverterFactory(GsonConverterFactory.create()) // JSON 컨버터 추가
     .build()
 val apiService = retrofit.create(ApiService::class.java)
+
+// https://37f66abe31bd.ngrok-free.app/ <- ngrok 주소
+// https://dad075f4-0834-4273-afcc-1b1b584b0ce8.mock.pstmn.io <- postman mock server
