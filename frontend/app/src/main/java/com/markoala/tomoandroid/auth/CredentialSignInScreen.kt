@@ -126,6 +126,7 @@ fun CredentialSignInScreen(onSignedIn: () -> Unit) {
                             }
                         }
                     } catch (e: Exception) {
+                        android.util.Log.e("CredentialSignIn", "로그인 중 예외 발생", e)
                         if (e is GetCredentialException && e.errorMessage?.contains("No credentials available") == true) {
                             val accountManager = AccountManager.get(activity)
                             accountManager.addAccount(
