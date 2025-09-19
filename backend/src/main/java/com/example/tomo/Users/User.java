@@ -16,11 +16,11 @@ import java.util.List;
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name ="user_id")
     private Long id;
 
     private String username;
+    private String email;
     private String phone;
 
     public User(){}
@@ -41,6 +41,11 @@ public class User {
         moimPeople.setUser(this);
     }
 
+    public User(Long id, String email, String username) {
+        this.id = id;
+        this.username = username;
+        this.email = email;
+    }
 
 
 
