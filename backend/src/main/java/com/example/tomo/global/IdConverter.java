@@ -8,8 +8,8 @@ public class IdConverter {
 
     // 문자열 → Long
     public static long stringToLong(String str) {
-        if (str == null) {
-            str = ""; // null이면 빈 문자열 처리
+        if (str == null || str.trim().isEmpty()) {
+            throw new IllegalArgumentException("Input string must not be null or blank");
         }
 
         try {
@@ -21,9 +21,12 @@ public class IdConverter {
             for (int i = 0; i < 8; i++) {
                 result = (result << 8) | (hash[i] & 0xff);
             }
-            return result;
+
+            // 음수 방지 (항상 양수 반환)
+            return result & Long.MAX_VALUE;
+
         } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("SHA-256 algorithm not found", e);
         }
     }
 }

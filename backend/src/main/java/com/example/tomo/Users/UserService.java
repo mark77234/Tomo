@@ -7,6 +7,8 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 
 public class UserService {
@@ -19,6 +21,7 @@ public class UserService {
         this.userRepository = userRepository;
         this.friendRepository = friendRepository;
     }
+
 
     // 친구 추가하기
     // DTO  변환하기
@@ -53,21 +56,26 @@ public class UserService {
 
 
 
+    public boolean validateUser(RequestUserSignDto dto) {
+        // 중복 사용자 가입 로직이 제대로 동작하지 않음
+        if(userRepository.findById(IdConverter.stringToLong(dto.getUuid())).isPresent()){
+            return true;
 
-
-
-
-    public String signUser(RequestUserSignDto dto){
-
-        Long id = IdConverter.stringToLong(dto.getUUID());
-
-        if(userRepository.findById(id).isPresent()){
-            throw new RuntimeException("이미 가입된 사용자입니다");
         }
+        return false;
+    }
+
+
+    public ResponseSignSuccessDto signUser(RequestUserSignDto dto){
+
+        System.out.println("dto.getUuid() = " + dto.getUuid());
+        Long id = IdConverter.stringToLong(dto.getUuid());
 
         User user = new User(id,dto.getEmail(),dto.getUsername());
         userRepository.save(user);
-        return "가입 완료";
+
+        return new ResponseSignSuccessDto(true, "success");
+
 
     }
 

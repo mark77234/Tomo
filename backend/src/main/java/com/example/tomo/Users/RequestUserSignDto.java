@@ -11,7 +11,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class RequestUserSignDto {
 
-    private String UUID;
+    private String uuid;
     private String email;
     private String username;
 
