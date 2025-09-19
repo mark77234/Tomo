@@ -34,9 +34,14 @@ import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.gson.Gson
+import com.markoala.tomoandroid.data.model.UserData
 import com.markoala.tomoandroid.ui.theme.CustomColor
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.launch
 
+
+@OptIn(DelicateCoroutinesApi::class)
 @Composable
 fun CredentialSignInScreen(onSignedIn: () -> Unit) {
     val context = LocalContext.current
@@ -106,13 +111,106 @@ fun CredentialSignInScreen(onSignedIn: () -> Unit) {
                                         // Firestore에 사용자 정보 저장
                                         val user = firebaseAuth.currentUser
                                         user?.let {
-                                            val userData = hashMapOf(
+                                            val userData =
+                                                UserData(
+                                                    UUID = it.uid,
+                                                    email = it.email ?: "",
+                                                    username = it.displayName ?: ""
+                                                )
+                                            val gson = Gson()
+                                            val userDataJson = gson.toJson(userData)
+                                            android.util.Log.d(
+                                                "CredentialSignIn",
+                                                "요청 JSON: $userDataJson"
+                                            )
+                                            // HTTP POST 요청
+                                            kotlinx.coroutines.GlobalScope.launch {
+                                                try {
+                                                    val response =
+                                                        com.markoala.tomoandroid.data.api.apiService.postExample(
+                                                            userData
+                                                        ).execute() // 요청
+                                                    val responseBody = response.body()
+                                                    val errorBody = response.errorBody()?.string()
+                                                    android.util.Log.d(
+                                                        "CredentialSignIn",
+                                                        "서버 원본 응답: ${responseBody?.message}"
+                                                    )
+                                                    if (errorBody != null) {
+                                                        android.util.Log.e(
+                                                            "CredentialSignIn",
+                                                            "서버 에러 응답: $errorBody"
+                                                        )
+                                                    }
+                                                    if (response.isSuccessful) {
+                                                        try {
+                                                            android.util.Log.d(
+                                                                "CredentialSignIn",
+                                                                "POST 성공(JSON): ${responseBody?.message}"
+                                                            )
+                                                            activity.runOnUiThread {
+                                                                Toast.makeText(
+                                                                    activity,
+                                                                    "서버에 사용자 정보 전송 성공 (상태코드: ${response.code()})",
+                                                                    Toast.LENGTH_SHORT
+                                                                ).show()
+                                                            }
+                                                        } catch (e: Exception) {
+                                                            android.util.Log.e(
+                                                                "CredentialSignIn",
+                                                                "JSON 파싱 오류",
+                                                                e
+                                                            )
+                                                            android.util.Log.e(
+                                                                "CredentialSignIn",
+                                                                "서버 원본 응답(파싱 오류): ${responseBody?.message}"
+                                                            )
+                                                        }
+                                                    } else {
+                                                        val errorMsg = errorBody ?: "알 수 없는 오류"
+                                                        android.util.Log.e(
+                                                            "CredentialSignIn",
+                                                            "POST 실패: $errorMsg, 상태코드: ${response.code()}"
+                                                        )
+                                                        android.util.Log.e(
+                                                            "CredentialSignIn",
+                                                            "요청 JSON(실패): $userDataJson"
+                                                        )
+                                                        activity.runOnUiThread {
+                                                            Toast.makeText(
+                                                                activity,
+                                                                "서버에 사용자 정보 전송 실패 (상태코드: ${response.code()})\n에러: $errorMsg",
+                                                                Toast.LENGTH_SHORT
+                                                            ).show()
+                                                        }
+                                                    }
+                                                } catch (e: Exception) {
+                                                    android.util.Log.e(
+                                                        "CredentialSignIn",
+                                                        "POST 예외",
+                                                        e
+                                                    )
+                                                    android.util.Log.e(
+                                                        "CredentialSignIn",
+                                                        "요청 JSON(예외): $userDataJson"
+                                                    )
+                                                    activity.runOnUiThread {
+                                                        Toast.makeText(
+                                                            activity,
+                                                            "서버 통신 오류",
+                                                            Toast.LENGTH_SHORT
+                                                        ).show()
+                                                    }
+                                                }
+                                            }
+                                            // Firestore에 사용자 정보 저장
+                                            val userMap = hashMapOf(
                                                 "uid" to it.uid,
                                                 "name" to (it.displayName ?: ""),
                                                 "email" to (it.email ?: ""),
                                             )
                                             firestore.collection("users").document(it.uid)
-                                                .set(userData)
+                                                .set(userMap)
                                         }
                                         onSignedIn()
                                     } else {
