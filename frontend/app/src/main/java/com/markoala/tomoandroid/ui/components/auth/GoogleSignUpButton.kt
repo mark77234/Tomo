@@ -1,4 +1,4 @@
-// 파일: CredentialSignInScreen.kt
+// 파일: CredentialSignInScreen.kt  (또는 GoogleSignInButton.kt로 이름 변경 가능)
 package com.markoala.tomoandroid.ui.components.auth
 
 import android.accounts.AccountManager
@@ -29,43 +29,29 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.credentials.CredentialManager
-import androidx.credentials.CustomCredential
-import androidx.credentials.GetCredentialRequest
-import androidx.credentials.exceptions.GetCredentialException
-import com.google.android.libraries.identity.googleid.GetGoogleIdOption
-import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.gson.Gson
 import com.markoala.tomoandroid.R
-import com.markoala.tomoandroid.auth.AuthManager
-import com.markoala.tomoandroid.data.api.apiService
 import com.markoala.tomoandroid.data.model.UserData
+import com.markoala.tomoandroid.data.repository.AuthRepository
+import com.markoala.tomoandroid.data.repository.UserRepository
 import com.markoala.tomoandroid.ui.theme.CustomColor
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
+import com.markoala.tomoandroid.utils.auth.GoogleCredentialHelper
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-
-@OptIn(DelicateCoroutinesApi::class)
 @Composable
 fun GoogleSignUpButton(onSignedIn: () -> Unit) {
     val context = LocalContext.current
-    // Compose에서 Activity 필요(credentialManager.getCredential에 activity 기반 context 권장)
     val activity = context as? ComponentActivity ?: (context as? Activity)
     if (activity == null) {
-        // 안전 장치: ComponentActivity가 아니면 아무 동작 못함
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Text("Activity 컨텍스트를 찾을 수 없습니다.")
         }
         return
     }
 
-    // CredentialManager 인스턴스
-    val credentialManager = remember { CredentialManager.create(context) }
-    val coroutineScope = rememberCoroutineScope()
-    val firebaseAuth = remember { FirebaseAuth.getInstance() }
-    val firestore = remember { FirebaseFirestore.getInstance() }
+    val credentialManager = remember { CredentialManager.create(context) } // Google 계정 토큰 획득
+    val coroutineScope = rememberCoroutineScope() // 버튼 클릭 시 비동기 처리용
 
     Column {
         Button(
@@ -76,185 +62,82 @@ fun GoogleSignUpButton(onSignedIn: () -> Unit) {
                     shape = RoundedCornerShape(8.dp)
                 ),
             onClick = {
-
                 coroutineScope.launch {
-
-
                     try {
-                        // 1) Google ID option 구성 (서버용 web client id 사용)
-                        val googleIdOption = GetGoogleIdOption.Builder()
-                            .setServerClientId(context.getString(R.string.default_web_client_id))
-                            // 이미 허용된 계정만 표시하려면 true (원하면 false)
-                            .setFilterByAuthorizedAccounts(false)
-                            .setAutoSelectEnabled(false) // 자동 선택 방지
-                            .build()
-
-                        // 2) 요청 빌드
-                        val request = GetCredentialRequest.Builder()
-                            .addCredentialOption(googleIdOption)
-                            .build()
-
-                        // 3) Credential Manager 호출 (activity 기반 context 사용 권장)
-                        val result = credentialManager.getCredential(
-                            context = activity,
-                            request = request
-                        )
-
-                        // 4) 반환된 credential 처리
-                        val credential = result.credential
-                        if (credential is CustomCredential &&
-                            credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL
-                        ) {
-                            // GoogleIdTokenCredential로 변환
-                            val googleIdTokenCredential =
-                                GoogleIdTokenCredential.createFrom(credential.data)
-                            val idToken = googleIdTokenCredential.idToken
-
-                            if (idToken.isNotEmpty()) {
-                                // 기존 Firebase 인증 함수 사용
-                                AuthManager.firebaseAuthWithGoogle(idToken) { success, err ->
-                                    if (success) {
-                                        // Firestore에 사용자 정보 저장
-                                        val user = firebaseAuth.currentUser
-                                        user?.let {
-                                            val userData =
-                                                UserData(
-                                                    uuid = it.uid,
-                                                    email = it.email ?: "",
-                                                    username = it.displayName ?: ""
-                                                )
-                                            val gson = Gson()
-                                            val userDataJson = gson.toJson(userData)
-                                            Log.d(
-                                                "CredentialSignIn",
-                                                "요청 JSON: $userDataJson"
-                                            )
-                                            // HTTP POST 요청
-                                            GlobalScope.launch {
-                                                try {
-                                                    val response =
-                                                        apiService.signIn(
-                                                            userData
-                                                        ).execute() // 요청
-                                                    val responseBody = response.body()
-                                                    val errorBody = response.errorBody()?.string()
-                                                    Log.d(
-                                                        "CredentialSignIn",
-                                                        "서버 원본 응답: ${responseBody?.message}"
-                                                    )
-                                                    if (errorBody != null) {
-                                                        Log.e(
-                                                            "CredentialSignIn",
-                                                            "서버 에러 응답: $errorBody"
-                                                        )
-                                                    }
-                                                    if (response.isSuccessful) {
-                                                        try {
-                                                            Log.d(
-                                                                "CredentialSignIn",
-                                                                "POST 성공(JSON): ${responseBody?.message}"
-                                                            )
-                                                            activity.runOnUiThread {
-                                                                Toast.makeText(
-                                                                    activity,
-                                                                    "서버에 사용자 정보 전송 성공 (상태코드: ${response.code()})",
-                                                                    Toast.LENGTH_SHORT
-                                                                ).show()
-                                                            }
-                                                        } catch (e: Exception) {
-                                                            Log.e(
-                                                                "CredentialSignIn",
-                                                                "JSON 파싱 오류",
-                                                                e
-                                                            )
-                                                            Log.e(
-                                                                "CredentialSignIn",
-                                                                "서버 원본 응답(파싱 오류): ${responseBody?.message}"
-                                                            )
-                                                        }
-                                                    } else {
-                                                        val errorMsg = errorBody ?: "알 수 없는 오류"
-                                                        Log.e(
-                                                            "CredentialSignIn",
-                                                            "POST 실패: $errorMsg, 상태코드: ${response.code()}"
-                                                        )
-                                                        Log.e(
-                                                            "CredentialSignIn",
-                                                            "요청 JSON(실패): $userDataJson"
-                                                        )
-                                                        activity.runOnUiThread {
-                                                            Toast.makeText(
-                                                                activity,
-                                                                "서버에 사용자 정보 전송 실패 (상태코드: ${response.code()})\n에러: $errorMsg",
-                                                                Toast.LENGTH_SHORT
-                                                            ).show()
-                                                        }
-                                                    }
-                                                } catch (e: Exception) {
-                                                    Log.e(
-                                                        "CredentialSignIn",
-                                                        "POST 예외",
-                                                        e
-                                                    )
-                                                    Log.e(
-                                                        "CredentialSignIn",
-                                                        "요청 JSON(예외): $userDataJson"
-                                                    )
-                                                    activity.runOnUiThread {
-                                                        Toast.makeText(
-                                                            activity,
-                                                            "서버 통신 오류",
-                                                            Toast.LENGTH_SHORT
-                                                        ).show()
-                                                    }
-                                                }
-                                            }
-                                            // Firestore에 사용자 정보 저장
-                                            val userMap = hashMapOf(
-                                                "uid" to it.uid,
-                                                "name" to (it.displayName ?: ""),
-                                                "email" to (it.email ?: ""),
-                                            )
-                                            firestore.collection("users").document(it.uid)
-                                                .set(userMap)
-                                        }
-                                        onSignedIn()
-                                    } else {
-                                        Toast.makeText(
-                                            activity,
-                                            "로그인에 실패하였습니다. $err",
-                                            Toast.LENGTH_LONG
-                                        ).show()
-                                    }
-                                }
-                            }
-                        }
-                    } catch (e: Exception) {
-                        Log.e("CredentialSignIn", "로그인 중 예외 발생", e)
-                        if (e is GetCredentialException && e.errorMessage?.contains("No credentials available") == true) {
-                            val accountManager = AccountManager.get(activity)
-                            accountManager.addAccount(
-                                "com.google", // Google 계정 타입
-                                null, // 인증 토큰 타입
-                                null, // 필수 권한
-                                null, // 추가 옵션
-                                activity, // Activity
-                                { future ->
-                                    // 계정 추가 후 콜백 (필요시 처리)
-                                    // 계정 추가가 완료되면 onSignedIn() 호출
-                                    onSignedIn()
-                                },
-                                null // Handler
+                        // 1) Credential에서 ID 토큰 가져오기
+                        val idToken = try {
+                            GoogleCredentialHelper.fetchGoogleIdToken(
+                                activity = activity,
+                                context = context,
+                                credentialManager = credentialManager
                             )
+                        } catch (e: Exception) {
+                            // No credentials -> 계정 추가 유도
+                            if (e.message?.contains("No credentials available") == true) {
+                                val accountManager = AccountManager.get(activity)
+                                accountManager.addAccount(
+                                    "com.google",
+                                    null,
+                                    null,
+                                    null,
+                                    activity,
+                                    { future ->
+                                        activity.runOnUiThread {
+                                            Toast.makeText(
+                                                activity,
+                                                "계정 추가 화면이 열렸습니다.",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        }
+                                    },
+                                    null
+                                )
+                            }
+                            throw e
                         }
+
+                        // 2) Firebase 인증 & UserData 획득
+                        val userData: UserData = AuthRepository.firebaseSignIn(idToken)
+
+                        // 3) 서버로 전송 (optional) — 오류 있어도 흐름 유지 가능
+                        try {
+                            val resp = AuthRepository.signUp(userData)
+                            if (resp.isSuccessful) {
+                                withContext(kotlinx.coroutines.Dispatchers.Main) {
+                                    Toast.makeText(
+                                        activity,
+                                        "회원가입 성공 (${resp.code()})",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            } else {
+                                val err = resp.errorBody()?.string()
+                                Log.e("GoogleSignInButton", "서버 응답 실패: ${resp.code()} / $err")
+                            }
+                        } catch (e: Exception) {
+                            Log.e("GoogleSignInButton", "서버 전송 예외 ${e.message}", e)
+                        }
+
+                        // 4) Firestore 저장 ->  로그인 할때마다 저장하므로 수정 필요
+                        try {
+                            UserRepository.saveUserToFirestore(userData)
+                        } catch (e: Exception) {
+                            Log.e("GoogleSignInButton", "Firestore 저장 실패 ${e.message}", e)
+                        }
+
+                        // 성공 콜백
+                        onSignedIn()
+
+                    } catch (e: CancellationException) {
+                        // 취소 무시
+                        Log.w("GoogleSignInButton", "작업 취소됨 ${e.message}")
+                    } catch (e: Exception) {
+                        Log.e("GoogleSignInButton", "로그인 실패: ${e.message}")
 
                     }
                 }
             },
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color.White
-            )
-
+            colors = ButtonDefaults.buttonColors(containerColor = Color.White)
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(

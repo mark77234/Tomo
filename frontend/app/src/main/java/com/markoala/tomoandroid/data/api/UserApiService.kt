@@ -11,7 +11,7 @@ import retrofit2.http.POST
 interface UserApiService {
     // POST 예시
     @POST("sign")
-    fun signIn(@Body body: UserData): Call<PostExampleResponse>
+    fun signup(@Body body: UserData): Call<PostExampleResponse>
 
 }
 
