@@ -127,7 +127,7 @@ fun CredentialSignInScreen(onSignedIn: () -> Unit) {
                                             kotlinx.coroutines.GlobalScope.launch {
                                                 try {
                                                     val response =
-                                                        com.markoala.tomoandroid.data.api.apiService.postExample(
+                                                        com.markoala.tomoandroid.data.api.apiService.signIn(
                                                             userData
                                                         ).execute() // 요청
                                                     val responseBody = response.body()
