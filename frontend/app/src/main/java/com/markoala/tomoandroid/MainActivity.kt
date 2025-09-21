@@ -5,7 +5,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.*
-import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.rememberNavController
 import com.markoala.tomoandroid.auth.AuthManager
 import com.markoala.tomoandroid.navigation.AppNavHost
@@ -29,8 +28,8 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MainScreen() {
     var signedIn by remember { mutableStateOf(false) }
-    val context = LocalContext.current
-    val scope = rememberCoroutineScope()
+//    val context = LocalContext.current
+//    val scope = rememberCoroutineScope()
     val navController = rememberNavController()
 
     // 로그인/로그아웃 시 signedIn 상태 변경
