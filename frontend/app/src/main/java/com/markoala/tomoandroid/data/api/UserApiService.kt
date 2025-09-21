@@ -1,6 +1,6 @@
 package com.markoala.tomoandroid.data.api
 
-import com.markoala.tomoandroid.data.model.PostExampleResponse
+import com.markoala.tomoandroid.data.model.PostResponse
 import com.markoala.tomoandroid.data.model.UserData
 import retrofit2.Call
 import retrofit2.Retrofit
@@ -11,7 +11,7 @@ import retrofit2.http.POST
 interface UserApiService {
     // POST 예시
     @POST("sign")
-    fun signup(@Body body: UserData): Call<PostExampleResponse>
+    fun signup(@Body body: UserData): Call<PostResponse>
 
 }
 

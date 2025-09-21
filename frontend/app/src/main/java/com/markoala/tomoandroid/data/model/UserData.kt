@@ -6,8 +6,7 @@ data class UserData(
     val username: String
 )
 
-data class PostExampleResponse(
+data class PostResponse(
     val success: Boolean,
     val message: String
-    // 서버 응답에 맞게 필요한 필드 추가
 )
