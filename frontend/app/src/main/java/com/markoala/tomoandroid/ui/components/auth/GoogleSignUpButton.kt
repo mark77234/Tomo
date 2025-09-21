@@ -1,4 +1,3 @@
-// 파일: CredentialSignInScreen.kt  (또는 GoogleSignInButton.kt로 이름 변경 가능)
 package com.markoala.tomoandroid.ui.components.auth
 
 import android.accounts.AccountManager
