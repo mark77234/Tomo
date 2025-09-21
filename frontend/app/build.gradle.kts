@@ -55,10 +55,8 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
 
-    // ✅ Firebase BoM (버전 카탈로그 사용)
-    implementation(platform(libs.firebase.bom))
 
-    // Firebase Authentication (버전 명시 X → BoM이 관리)
+    implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.auth)
     implementation(libs.play.services.auth)
 
