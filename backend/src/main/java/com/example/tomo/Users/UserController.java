@@ -19,7 +19,6 @@ public class UserController {
 
     @PostMapping("/friends")
     public String addFriendsUsingPhoneNumber(@RequestBody addFriendRequestDto dto) {
-
         return userService.addFriends(dto);
     }
 

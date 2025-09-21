@@ -5,7 +5,6 @@ import com.example.tomo.Users.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -13,8 +12,8 @@ import java.util.stream.Collectors;
 public class FriendService {
 
 
-    private FriendRepository friendRepository;
-    private UserRepository userRepository;
+    private final FriendRepository friendRepository;
+    private final UserRepository userRepository;
 
     @Autowired
     public FriendService(FriendRepository friendRepository, UserRepository userRepository) {
