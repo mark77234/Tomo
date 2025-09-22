@@ -34,7 +34,7 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<Moim_people> moimPeopleList= new ArrayList<>();
 
-    public User(String id, String email, String username) {
+    public User(String id, String username, String email) {
         this.firebaseId = id;
         this.username = username;
         this.email = email;
