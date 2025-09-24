@@ -16,4 +16,5 @@ public interface MoimRepository extends JpaRepository<Moim, Long> {
 
 
 
+
 }
