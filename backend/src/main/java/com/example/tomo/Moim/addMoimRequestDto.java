@@ -11,5 +11,5 @@ public class addMoimRequestDto {
 
     private String moimName;
     private String description;
-    private List<Long> userIds;
+    private List<String> userNames;
 }
