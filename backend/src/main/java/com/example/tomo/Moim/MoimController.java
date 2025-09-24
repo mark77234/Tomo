@@ -1,13 +1,13 @@
 package com.example.tomo.Moim;
 
 import com.example.tomo.Users.ResponseUniformDto;
+import com.example.tomo.global.ApiResponse;
 import com.example.tomo.global.DuplicatedException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
 public class MoimController {
@@ -41,17 +41,22 @@ public class MoimController {
     }
 
     // 모임 상세 조회하기
-    @GetMapping("/moims/{id}")
-    public getMoimResponseDTO moimGet(@PathVariable Long id) {
+    @GetMapping("/moims")
+    public ResponseEntity<ApiResponse<getMoimResponseDTO>> moimGet(@RequestParam String moimName) {
 
-        return moimService.getMoim(id);
+        try{
+            return ResponseEntity.ok(ApiResponse.success(moimService.getMoim(moimName),"성공"));
+        }catch(EntityNotFoundException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).
+                    body(ApiResponse.failure("존재하지 않는 모임입니다."));
+        }
     }
 
-    // 사용자 ID에 해당하는 모임 정보 불러오기
+    /*// 사용자 ID에 해당하는 모임 정보 불러오기
     @GetMapping("moims")
     public List<getMoimResponseDTO> getAllMoims(@RequestParam Long user_id) {
         return moimService.getMoimList(user_id);
-    }
+    }*/
 
 
 

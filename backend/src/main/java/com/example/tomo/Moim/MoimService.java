@@ -55,9 +55,9 @@ public class MoimService {
 
     // 모임 단일 조회
     @Transactional
-    public getMoimResponseDTO getMoim(Long moim_id){
-         Moim moim= moimRepository.findById(moim_id).orElseThrow(
-                 () -> new IllegalArgumentException("moim not found")
+    public getMoimResponseDTO getMoim(String moimName) {
+         Moim moim= moimRepository.findByMoimName(moimName).orElseThrow(
+                 () -> new EntityNotFoundException("존재하지 않는 모임입니다")
          );
 
         return new getMoimResponseDTO(moim.getMoimName(), moim.getDescription(), moim.getMoimPeopleList().size());
@@ -65,12 +65,15 @@ public class MoimService {
     // 모임 상세 조회
 
     @Transactional
-    public List<getMoimResponseDTO> getMoimList(Long user_id){
-        List<Moim_people> moims = moimPeopleRepository.findByUserId(user_id);
+    public List<getMoimResponseDTO> getMoimList(){
+        // 액세스 토큰이 들어오면 처리할 파트
+        Long userId = 1L;
 
+        List<Moim_people> moims = moimPeopleRepository.findByUserId(userId);
         List<getMoimResponseDTO> moimResponseDTOList = new ArrayList<>();
+
         for(Moim_people moim_people : moims){
-            moimResponseDTOList.add(this.getMoim(moim_people.getMoim().getId()));
+            moimResponseDTOList.add(this.getMoim(moim_people.getMoim().getMoimName()));
         }
 
         return moimResponseDTOList;
