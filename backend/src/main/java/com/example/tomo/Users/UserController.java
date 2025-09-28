@@ -2,6 +2,7 @@ package com.example.tomo.Users;
 
 import jakarta.persistence.EntityExistsException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,7 +21,11 @@ public class UserController {
 
     @PostMapping("/friends")
     public ResponseEntity<ResponseUniformDto> addFriendsUsingPhoneNumber(@RequestBody addFriendRequestDto dto) {
-        return ResponseEntity.ok().body(userService.addFriends(dto));
+       try{
+           return ResponseEntity.ok().body(userService.addFriends(dto));
+       }catch (EntityExistsException e){
+           return ResponseEntity.status(HttpStatus.CONFLICT).body(new ResponseUniformDto(false, e.getMessage()));
+       }
     }
 
     @PostMapping("/signup")
@@ -30,7 +35,11 @@ public class UserController {
         } catch (EntityExistsException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(new ResponseUniformDto(false, e.getMessage()));
+        } catch (DataIntegrityViolationException e){
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
+                    .body(new ResponseUniformDto(false,"같은 이메일로 가입 내역이 존재합니다"));
         }
+
     }
 
     // 로그인도 만들어야 함

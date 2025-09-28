@@ -25,6 +25,9 @@ public class PromiseService {
     // 같은 날짜 같은 시간에 약속 존재 시에도 오류 발생
     public ResponseUniformDto addPromise(addPromiseRequestDTO dto){
 
+        Moim moim = moimRepository.findByMoimName(dto.getMoimName())
+                .orElseThrow(() -> new EntityNotFoundException("모임 생성 후 약속을 만들어 주세요"));
+
          if(promiseRepository.existsByPromiseName(dto.getPromiseName()) &&
                  promiseRepository.existsByPromiseDateAndPromiseTime(dto.getPromiseDate(),dto.getPromiseTime())) {
              throw new DuplicatedException("이미 존재하는 약속입니다");
@@ -32,9 +35,6 @@ public class PromiseService {
 
          Promise promise = new Promise(dto.getPromiseName(),dto.getPlace(),
                 dto.getPromiseTime(),dto.getPromiseDate());
-
-         Moim moim = moimRepository.findByMoimName(dto.getMoimName())
-                 .orElseThrow(() -> new EntityNotFoundException("모임 생성 후 약속을 만들어 주세요"));
 
          promise.setMoimBasedPromise(moim);
 

@@ -49,7 +49,7 @@ public class PromiseController {
         try{
             return ResponseEntity.ok(ApiResponse.success(promiseService.getAllPromise(moimName), "성공"));
         }catch(EntityNotFoundException e){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponse.failure("모임에 약속이 존재하지 않습니다"));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponse.failure("해당 모임이 존재하지 않습니다"));
         }
 
     }

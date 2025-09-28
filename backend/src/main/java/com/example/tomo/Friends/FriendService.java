@@ -28,11 +28,14 @@ public class FriendService {
         // 액세스 토큰으로는 요청 인증만 하고, 다른 사용자 인증 프로세스가 요구됨 아이디를 받아야 겠지?
         Long userId =1L;
         // 근데 병찬이가 보내주면 String으로 올텐데
-        List<Long> idList= friendRepository.getFriends(userId);
 
+        User existUser = userRepository.findById(userId)
+                .orElseThrow(()->new IllegalArgumentException("친구 상세 정보 출력 중 사용자 인증이 되지 않았습니다. 로그인 부탁"));
+
+        List<Long> idList= friendRepository.getFriends(existUser.getId());
 
         return idList.stream()
-                .map(id -> userRepository.findById(id))
+                .map(userRepository::findById)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .map(user -> new ResponseGetFriendsDto(user.getUsername()))

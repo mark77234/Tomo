@@ -1,5 +1,7 @@
 package com.example.tomo.Friends;
 
+import com.example.tomo.global.ApiResponse;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,13 +17,23 @@ public class FriendController {
     }
 
     @GetMapping("/friends")
-    public ResponseEntity<List<ResponseGetFriendsDto>> getMyFriends(){
-        return ResponseEntity.ok(friendService.getFriends());
+    public ResponseEntity<ApiResponse<List<ResponseGetFriendsDto>>> getMyFriends(){
+        try{
+            return ResponseEntity.ok(ApiResponse.success(friendService.getFriends(),"성공"));
+        }catch (IllegalArgumentException e){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(ApiResponse.failure("로그인된 사용자가 아닙니다"));
+        }
     }
 
     @GetMapping("/friends/detail")
-    public ResponseEntity<List<ResponseFriendDetailDto>> getFriendDetails(){
-        return ResponseEntity.ok().body(friendService.getDetailFriends());
+    public ResponseEntity<ApiResponse<List<ResponseFriendDetailDto>>> getFriendDetails(){
+       try{
+           return ResponseEntity.ok().body(ApiResponse.success(friendService.getDetailFriends(),"성공"));
+       }catch(IllegalArgumentException e) {
+           return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                   .body(ApiResponse.failure("로그인된 사용자가 아닙니다"));
+       }
     }
 
 }
