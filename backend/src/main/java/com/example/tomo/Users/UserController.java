@@ -20,7 +20,11 @@ public class UserController {
 
     @PostMapping("/friends")
     public ResponseEntity<ResponseUniformDto> addFriendsUsingPhoneNumber(@RequestBody addFriendRequestDto dto) {
-        return ResponseEntity.ok().body(userService.addFriends(dto));
+       try{
+           return ResponseEntity.ok().body(userService.addFriends(dto));
+       }catch (EntityExistsException e){
+           return ResponseEntity.status(HttpStatus.CONFLICT).body(new ResponseUniformDto(false, e.getMessage()));
+       }
     }
 
     @PostMapping("/signup")
