@@ -1,6 +1,7 @@
 package com.markoala.tomoandroid.data.repository
 
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.markoala.tomoandroid.auth.AuthManager
 import com.markoala.tomoandroid.data.api.apiService
 import com.markoala.tomoandroid.data.model.PostResponse
@@ -33,6 +34,23 @@ object AuthRepository {
                 } else {
                     cont.resumeWithException(Exception(err ?: "Firebase 인증 실패"))
                 }
+            }
+        } catch (e: Exception) {
+            cont.resumeWithException(e)
+        }
+    }
+
+    /**
+     * Firestore에 해당 uuid의 사용자 문서가 존재하는지 확인
+     */
+    suspend fun checkUserExists(uuid: String): Boolean = suspendCancellableCoroutine { cont ->
+        try {
+            val firestore = FirebaseFirestore.getInstance()
+            val task = firestore.collection("users").document(uuid).get()
+            task.addOnSuccessListener { snapshot ->
+                cont.resume(snapshot.exists())
+            }.addOnFailureListener { ex ->
+                cont.resumeWithException(ex)
             }
         } catch (e: Exception) {
             cont.resumeWithException(e)
