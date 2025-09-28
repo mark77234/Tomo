@@ -1,4 +1,4 @@
-package com.markoala.tomoandroid.ui.profile
+package com.markoala.tomoandroid.ui.home
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -32,7 +32,7 @@ import com.markoala.tomoandroid.ui.theme.CustomColor
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileScreen(onSignOut: () -> Unit) {
+fun HomeScreen(onSignOut: () -> Unit) {
     val firebaseAuth = remember { FirebaseAuth.getInstance() }
     val firestore = remember { FirebaseFirestore.getInstance() }
     val user = firebaseAuth.currentUser

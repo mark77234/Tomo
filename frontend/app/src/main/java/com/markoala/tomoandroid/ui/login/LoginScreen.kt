@@ -86,7 +86,7 @@ fun LoginScreen(navController: NavController) {
 
                 GoogleSignUpButton(
                     onSignedIn = {
-                        navController.navigate("profile") {
+                        navController.navigate("home") {
                             popUpTo("login") { inclusive = true }
                         }
                     },
