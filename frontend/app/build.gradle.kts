@@ -55,13 +55,12 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
 
-    // ✅ Firebase BoM
-    implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
-
+    // ✅ Firebase BoM (버전 카탈로그 사용)
+    implementation(platform(libs.firebase.bom))
 
     // Firebase Authentication (버전 명시 X → BoM이 관리)
-    implementation("com.google.firebase:firebase-auth")
-    implementation("com.google.android.gms:play-services-auth:21.4.0")
+    implementation(libs.firebase.auth)
+    implementation(libs.play.services.auth)
 
     // Android Credential Manager
     implementation(libs.androidx.credentials)
@@ -69,6 +68,8 @@ dependencies {
 
     // Google Identity Services
     implementation(libs.googleid)
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.navigation.compose)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -76,4 +77,8 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+
+    implementation("com.google.firebase:firebase-firestore-ktx")
+
 }

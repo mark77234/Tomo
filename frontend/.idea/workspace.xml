@@ -9,16 +9,24 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="69dae627-04f4-4a92-890a-3bd9243d2e84" name="Changes" comment="feat: downgrade Firebase BoM version to 33.7.0" />
+    <list default="true" id="69dae627-04f4-4a92-890a-3bd9243d2e84" name="Changes" comment="feat: update dependencies and clean up project files">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/markoala/tomoandroid/auth/CredentialSignInScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/markoala/tomoandroid/auth/CredentialSignInScreen.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/markoala/tomoandroid/ui/feature1/.gitkeep" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/markoala/tomoandroid/ui/feature2/.gitkeep" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/markoala/tomoandroid/ui/profile/ProfileScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/markoala/tomoandroid/ui/profile/ProfileScreen.kt" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="ChangesViewManager" show_ignored="true" />
   <component name="ClangdSettings">
     <option name="formatViaClangd" value="false" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[DeviceId(pluginId=LocalEmulator, isTemplate=false, identifier=path=/Users/ibyeongchan/.android/avd/AndroidStudyDevice.avd)]" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[DeviceId(pluginId=LocalEmulator, isTemplate=false, identifier=path=/Users/ibyeongchan/.android/avd/Tomo.avd)]" />
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
       <ProjectState />
@@ -41,6 +49,35 @@
     &quot;assignee&quot;: &quot;mark77234&quot;
   }
 }</component>
+  <component name="GitToolBoxStore">
+    <option name="recentBranches">
+      <RecentBranches>
+        <option name="branchesForRepo">
+          <list>
+            <RecentBranchesForRepo>
+              <option name="branches">
+                <list>
+                  <RecentBranch>
+                    <option name="branchName" value="android/feat/10" />
+                    <option name="lastUsedInstant" value="1757831860" />
+                  </RecentBranch>
+                  <RecentBranch>
+                    <option name="branchName" value="dev" />
+                    <option name="lastUsedInstant" value="1757830765" />
+                  </RecentBranch>
+                  <RecentBranch>
+                    <option name="branchName" value="android/feat/5" />
+                    <option name="lastUsedInstant" value="1757830764" />
+                  </RecentBranch>
+                </list>
+              </option>
+              <option name="repositoryRootUrl" value="file://$PROJECT_DIR$/.." />
+            </RecentBranchesForRepo>
+          </list>
+        </option>
+      </RecentBranches>
+    </option>
+  </component>
   <component name="GithubPullRequestsUISettings">{
   &quot;selectedUrlAndAccountId&quot;: {
     &quot;url&quot;: &quot;https://github.com/mark77234/Tomo.git&quot;,
@@ -69,7 +106,7 @@
     &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
     &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
     &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;dev&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;android/feat/10&quot;,
     &quot;last_opened_file_path&quot;: &quot;/Users/ibyeongchan/Desktop/AndroidApps/Tomo/frontend&quot;,
     &quot;settings.editor.selected.configurable&quot;: &quot;AndroidSdkUpdater&quot;,
     &quot;show.migrate.to.gradle.popup&quot;: &quot;false&quot;
@@ -250,7 +287,23 @@
       <option name="project" value="LOCAL" />
       <updated>1757173959460</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="feat: 깃이그노어 수정">
+      <option name="closed" value="true" />
+      <created>1757944899654</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1757944899654</updated>
+    </task>
+    <task id="LOCAL-00013" summary="feat: update dependencies and clean up project files">
+      <option name="closed" value="true" />
+      <created>1757945186667</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1757945186667</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -276,7 +329,9 @@
     <MESSAGE value="feat: 구글 소셜로그인 회원가입, 로그인, 로그아웃 구현" />
     <MESSAGE value="feat: update Firebase BoM and Google Play services auth versions" />
     <MESSAGE value="feat: downgrade Firebase BoM version to 33.7.0" />
-    <option name="LAST_COMMIT_MESSAGE" value="feat: downgrade Firebase BoM version to 33.7.0" />
+    <MESSAGE value="feat: 깃이그노어 수정" />
+    <MESSAGE value="feat: update dependencies and clean up project files" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat: update dependencies and clean up project files" />
   </component>
   <component name="play_dynamic_filters_status">
     <option name="appIdToCheckInfo">
@@ -293,12 +348,12 @@
         </entry>
         <entry key="com.markoala.tomoandroid">
           <value>
-            <CheckInfo lastCheckTimestamp="1757157648634" />
+            <CheckInfo lastCheckTimestamp="1757940612344" />
           </value>
         </entry>
         <entry key="com.markoala.tomoandroid.test">
           <value>
-            <CheckInfo lastCheckTimestamp="1757157648594" />
+            <CheckInfo lastCheckTimestamp="1757940612350" />
           </value>
         </entry>
       </map>
