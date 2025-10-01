@@ -9,11 +9,11 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="69dae627-04f4-4a92-890a-3bd9243d2e84" name="Changes" comment="feat: 공통 헤더 추가">
+    <list default="true" id="69dae627-04f4-4a92-890a-3bd9243d2e84" name="Changes" comment="refactor: bottomnavigationbar 페이지 분리">
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/markoala/tomoandroid/ui/components/home/MeetingCard.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/markoala/tomoandroid/ui/components/CustomText.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/markoala/tomoandroid/ui/components/CustomText.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/markoala/tomoandroid/ui/main/HomeScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/markoala/tomoandroid/ui/main/HomeScreen.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/markoala/tomoandroid/ui/main/MainScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/markoala/tomoandroid/ui/main/MainScreen.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/markoala/tomoandroid/ui/theme/CustomColor.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/markoala/tomoandroid/ui/theme/CustomColor.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -51,6 +51,7 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Kotlin Class" />
+        <option value="Kotlin File" />
       </list>
     </option>
   </component>
@@ -217,6 +218,12 @@
         <option name="Android.Gradle.BeforeRunTask" enabled="true" />
       </method>
     </configuration>
+    <configuration default="true" type="AppleRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" IS_LOCATION_SIMULATION_SUPPORTED="false" IS_LOCATION_SIMULATION_ALLOWED="true" APPLICATION_LANGUAGE="IDELaunchSchemeLanguageUseSystemLanguage" APPLICATION_REGION="" DEVELOPMENT_TEAM="${TEAM_ID}" MAKE_ACTIVE="TRUE" SHOULD_DEBUG_EXTENSIONS="false">
+      <embedded_app_extension_list />
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -354,7 +361,23 @@
       <option name="project" value="LOCAL" />
       <updated>1759324196137</updated>
     </task>
-    <option name="localTasksCounter" value="17" />
+    <task id="LOCAL-00017" summary="feat: 배경 색상 및 바텀 네비 커스텀">
+      <option name="closed" value="true" />
+      <created>1759324914043</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1759324914043</updated>
+    </task>
+    <task id="LOCAL-00018" summary="refactor: bottomnavigationbar 페이지 분리">
+      <option name="closed" value="true" />
+      <created>1759325017660</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1759325017660</updated>
+    </task>
+    <option name="localTasksCounter" value="19" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -385,7 +408,9 @@
     <MESSAGE value="feat: 환경설정 완료" />
     <MESSAGE value="feat: 아이콘 에셋 추가" />
     <MESSAGE value="feat: 공통 헤더 추가" />
-    <option name="LAST_COMMIT_MESSAGE" value="feat: 공통 헤더 추가" />
+    <MESSAGE value="feat: 배경 색상 및 바텀 네비 커스텀" />
+    <MESSAGE value="refactor: bottomnavigationbar 페이지 분리" />
+    <option name="LAST_COMMIT_MESSAGE" value="refactor: bottomnavigationbar 페이지 분리" />
   </component>
   <component name="play_dynamic_filters_status">
     <option name="appIdToCheckInfo">
