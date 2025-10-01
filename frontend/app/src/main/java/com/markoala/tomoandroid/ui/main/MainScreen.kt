@@ -1,11 +1,18 @@
 package com.markoala.tomoandroid.ui.main
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -17,8 +24,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.markoala.tomoandroid.ui.components.CustomText
+import com.markoala.tomoandroid.ui.components.CustomTextType
+import com.markoala.tomoandroid.ui.theme.CustomColor
 
 // 탭 타입 정의
 enum class BottomTab(val label: String) {
@@ -80,6 +93,32 @@ fun MainScreen(onSignOut: () -> Unit) {
         }
     }
     Scaffold(
+        topBar = {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .statusBarsPadding(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                Spacer(modifier = Modifier.height(10.dp))
+                CustomText(
+                    text = "토모",
+                    type = CustomTextType.headlineSmall
+                )
+                CustomText(
+                    text = "친구와의 우정을 기록하세요",
+                    type = CustomTextType.bodyMedium,
+                    color = CustomColor.gray300
+                )
+                HorizontalDivider(
+                    modifier = Modifier.fillMaxWidth(),
+                    color = CustomColor.gray100,
+                    thickness = 1.dp
+                )
+            }
+
+        },
         bottomBar = {
             BottomNavigationBar(selectedTab = selectedTab, onTabSelected = { selectedTab = it })
         }

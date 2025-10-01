@@ -9,13 +9,10 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="69dae627-04f4-4a92-890a-3bd9243d2e84" name="Changes" comment="feat: update dependencies and clean up project files">
+    <list default="true" id="69dae627-04f4-4a92-890a-3bd9243d2e84" name="Changes" comment="feat: 아이콘 에셋 추가">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle.kts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/markoala/tomoandroid/auth/CredentialSignInScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/markoala/tomoandroid/auth/CredentialSignInScreen.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/markoala/tomoandroid/ui/feature1/.gitkeep" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/markoala/tomoandroid/ui/feature2/.gitkeep" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/markoala/tomoandroid/ui/profile/ProfileScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/markoala/tomoandroid/ui/profile/ProfileScreen.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/markoala/tomoandroid/ui/main/HomeScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/markoala/tomoandroid/ui/main/HomeScreen.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/markoala/tomoandroid/ui/main/MainScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/markoala/tomoandroid/ui/main/MainScreen.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -26,11 +23,28 @@
   <component name="ClangdSettings">
     <option name="formatViaClangd" value="false" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[DeviceId(pluginId=LocalEmulator, isTemplate=false, identifier=path=/Users/ibyeongchan/.android/avd/Tomo.avd)]" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[DeviceId(pluginId=PhysicalDevice, isTemplate=false, identifier=serial=RF9Y8000J5V)]" />
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
       <ProjectState />
     </projectState>
+  </component>
+  <component name="ExternalProjectsManager">
+    <system id="GRADLE">
+      <state>
+        <projects_view>
+          <tree_state>
+            <expand>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="TomoAndroid" type="f1a62948:ProjectNode" />
+              </path>
+            </expand>
+            <select />
+          </tree_state>
+        </projects_view>
+      </state>
+    </system>
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -38,6 +52,9 @@
         <option value="Kotlin Class" />
       </list>
     </option>
+  </component>
+  <component name="FormatOnSaveOptions">
+    <option name="myRunOnSave" value="true" />
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
@@ -84,6 +101,9 @@
     &quot;accountId&quot;: &quot;254998a0-bd91-4a9d-9224-4a6859b6adcf&quot;
   }
 }</component>
+  <component name="OptimizeOnSaveOptions">
+    <option name="myRunOnSave" value="true" />
+  </component>
   <component name="ProblemsViewState">
     <option name="selectedTabId" value="CurrentFile" />
   </component>
@@ -95,25 +115,31 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Android App.app.executor&quot;: &quot;Run&quot;,
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.readMode.enableVisualFormatting&quot;: &quot;true&quot;,
-    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
-    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
-    &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;android/feat/10&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/ibyeongchan/Desktop/AndroidApps/Tomo/frontend&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;AndroidSdkUpdater&quot;,
-    &quot;show.migrate.to.gradle.popup&quot;: &quot;false&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Android App.app.executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.readMode.enableVisualFormatting": "true",
+    "cf.first.check.clang-format": "false",
+    "cidr.known.project.marker": "true",
+    "code.cleanup.on.save": "true",
+    "dart.analysis.tool.window.visible": "false",
+    "git-widget-placeholder": "feat/31",
+    "last_opened_file_path": "/Users/ibyeongchan/Desktop/AndroidApps/Tomo/frontend",
+    "project.structure.last.edited": "Modules",
+    "project.structure.proportion": "0.17",
+    "project.structure.side.proportion": "0.2",
+    "rearrange.code.on.save": "true",
+    "settings.editor.selected.configurable": "live.edit.configurable",
+    "show.migrate.to.gradle.popup": "false"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/app" />
       <recent name="$PROJECT_DIR$" />
     </key>
   </component>
@@ -303,7 +329,23 @@
       <option name="project" value="LOCAL" />
       <updated>1757945186667</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="feat: 환경설정 완료">
+      <option name="closed" value="true" />
+      <created>1759323365542</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1759323365542</updated>
+    </task>
+    <task id="LOCAL-00015" summary="feat: 아이콘 에셋 추가">
+      <option name="closed" value="true" />
+      <created>1759323493041</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1759323493041</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -331,7 +373,9 @@
     <MESSAGE value="feat: downgrade Firebase BoM version to 33.7.0" />
     <MESSAGE value="feat: 깃이그노어 수정" />
     <MESSAGE value="feat: update dependencies and clean up project files" />
-    <option name="LAST_COMMIT_MESSAGE" value="feat: update dependencies and clean up project files" />
+    <MESSAGE value="feat: 환경설정 완료" />
+    <MESSAGE value="feat: 아이콘 에셋 추가" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat: 아이콘 에셋 추가" />
   </component>
   <component name="play_dynamic_filters_status">
     <option name="appIdToCheckInfo">
@@ -348,12 +392,12 @@
         </entry>
         <entry key="com.markoala.tomoandroid">
           <value>
-            <CheckInfo lastCheckTimestamp="1757940612344" />
+            <CheckInfo lastCheckTimestamp="1759321939377" />
           </value>
         </entry>
         <entry key="com.markoala.tomoandroid.test">
           <value>
-            <CheckInfo lastCheckTimestamp="1757940612350" />
+            <CheckInfo lastCheckTimestamp="1759321939377" />
           </value>
         </entry>
       </map>
