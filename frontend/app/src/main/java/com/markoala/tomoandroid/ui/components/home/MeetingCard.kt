@@ -15,14 +15,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.markoala.tomoandroid.data.model.MeetingSummary
+import com.markoala.tomoandroid.data.model.Meeting
 import com.markoala.tomoandroid.ui.components.CustomText
 import com.markoala.tomoandroid.ui.components.CustomTextType
 import com.markoala.tomoandroid.ui.theme.CustomColor
 
 
 @Composable
-fun MeetingCard(meeting: MeetingSummary) {
+fun MeetingCard(meeting: Meeting) {
     Card(
         colors = CardDefaults.cardColors(containerColor = CustomColor.white),
         modifier = Modifier

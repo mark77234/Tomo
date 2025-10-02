@@ -1,6 +1,5 @@
 package com.markoala.tomoandroid.ui.main
 
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -22,16 +21,13 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.PathEffect
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.markoala.tomoandroid.data.model.FriendProfile
 import com.markoala.tomoandroid.ui.components.CustomText
 import com.markoala.tomoandroid.ui.components.CustomTextType
+import com.markoala.tomoandroid.ui.components.DashedBorderBox
 import com.markoala.tomoandroid.ui.components.friends.FriendCard
 import com.markoala.tomoandroid.ui.theme.CustomColor
 import java.time.LocalDate
@@ -101,16 +97,18 @@ fun FriendsScreen(paddingValues: PaddingValues) {
         }
         Spacer(modifier = Modifier.height(16.dp))
 
-        Box(
+        DashedBorderBox(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(80.dp)
-                .padding(bottom = 16.dp)
+                .padding(bottom = 16.dp),
+            shape = RoundedCornerShape(8.dp),
+            borderColor = CustomColor.gray50,
+            borderWidth = 1.dp
         ) {
             Surface(
-                modifier = Modifier
-                    .fillMaxSize(),
-                shape = RoundedCornerShape(16.dp),
+                modifier = Modifier.fillMaxSize(),
+                shape = RoundedCornerShape(8.dp),
                 color = CustomColor.gray30
             ) {
                 Box(
@@ -124,37 +122,6 @@ fun FriendsScreen(paddingValues: PaddingValues) {
                         color = CustomColor.black
                     )
                 }
-            }
-
-            Canvas(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .clip(RoundedCornerShape(16.dp))
-            ) {
-                val cornerRadius = 16.dp.toPx()
-                val strokeWidth = 1.dp.toPx()
-
-                val path = Path().apply {
-                    addRoundRect(
-                        androidx.compose.ui.geometry.RoundRect(
-                            left = strokeWidth / 2,
-                            top = strokeWidth / 2,
-                            right = size.width - strokeWidth / 2,
-                            bottom = size.height - strokeWidth / 2,
-                            radiusX = cornerRadius,
-                            radiusY = cornerRadius
-                        )
-                    )
-                }
-
-                drawPath(
-                    path = path,
-                    color = CustomColor.gray100,
-                    style = Stroke(
-                        width = strokeWidth,
-                        pathEffect = PathEffect.dashPathEffect(floatArrayOf(5f, 5f), 0f)
-                    )
-                )
             }
         }
 

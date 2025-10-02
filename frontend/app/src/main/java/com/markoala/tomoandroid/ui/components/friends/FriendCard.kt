@@ -1,7 +1,6 @@
 package com.markoala.tomoandroid.ui.components.friends
 
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -20,6 +19,7 @@ import androidx.compose.ui.unit.sp
 import com.markoala.tomoandroid.data.model.FriendProfile
 import com.markoala.tomoandroid.ui.components.CustomText
 import com.markoala.tomoandroid.ui.components.CustomTextType
+import com.markoala.tomoandroid.ui.components.DashedCircleBorder
 import com.markoala.tomoandroid.ui.theme.CustomColor
 import com.markoala.tomoandroid.utils.calculateDate
 
@@ -42,8 +42,11 @@ fun FriendCard(friend: FriendProfile) {
             verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(4.dp)
         ) {
             Row {
-                Box(
-                    modifier = Modifier.padding(end = 10.dp)
+                DashedCircleBorder(
+                    modifier = Modifier.padding(end = 10.dp),
+                    size = 48.dp,
+                    borderColor = CustomColor.gray100,
+                    borderWidth = 2.dp
                 ) {
                     Icon(
                         painter = androidx.compose.ui.res.painterResource(id = com.markoala.tomoandroid.R.drawable.ic_profile),
@@ -51,11 +54,6 @@ fun FriendCard(friend: FriendProfile) {
                         tint = CustomColor.gray200,
                         modifier = Modifier
                             .size(48.dp)
-                            .border(
-                                1.dp,
-                                CustomColor.gray100,
-                                androidx.compose.foundation.shape.CircleShape
-                            )
                             .padding(12.dp)
                     )
                 }

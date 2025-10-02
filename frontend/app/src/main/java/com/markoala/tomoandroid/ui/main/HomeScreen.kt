@@ -25,7 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.markoala.tomoandroid.data.model.MeetingSummary
+import com.markoala.tomoandroid.data.model.Meeting
 import com.markoala.tomoandroid.ui.components.CustomText
 import com.markoala.tomoandroid.ui.components.CustomTextType
 import com.markoala.tomoandroid.ui.components.home.MeetingCard
@@ -33,9 +33,9 @@ import com.markoala.tomoandroid.ui.components.home.MeetingCard
 import com.markoala.tomoandroid.ui.theme.CustomColor
 
 private val sampleMeetings = listOf(
-    MeetingSummary("주말 브런치", "강남역 11번 출구", "토요일 11:00", 3),
-    MeetingSummary("영화 모임", "잠실 롯데시네마", "금요일 19:30", 5),
-    MeetingSummary("스터디", "온라인 Google Meet", "수요일 20:00", 4)
+    Meeting("주말 브런치", "강남역 11번 출구", "토요일 11:00", 3),
+    Meeting("영화 모임", "잠실 롯데시네마", "금요일 19:30", 5),
+    Meeting("스터디", "온라인 Google Meet", "수요일 20:00", 4)
 )
 
 @Composable
