@@ -51,60 +51,71 @@ fun MeetingCard(meeting: MeetingSummary) {
                 color = CustomColor.black,
                 fontSize = 16.sp
             )
-            Spacer(modifier = Modifier.height(4.dp))
-            Row(
-                horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(4.dp)
+            Spacer(modifier = Modifier.height(2.dp))
+            Column(
+                modifier = Modifier.padding(horizontal = 4.dp),
+                verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(4.dp)
             ) {
-                Icon(
-                    painter = androidx.compose.ui.res.painterResource(id = com.markoala.tomoandroid.R.drawable.ic_location),
-                    contentDescription = null,
-                    tint = CustomColor.gray200,
-                    modifier = Modifier
-                        .padding(top = 2.dp)
-                        .size(12.dp)
-                )
-                CustomText(
-                    text = meeting.location ?: "",
-                    type = CustomTextType.bodyMedium,
-                    color = CustomColor.gray200,
-                    fontSize = 12.sp
-                )
-            }
-            Row(
-                horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(4.dp)
-            ) {
-                Icon(
-                    painter = androidx.compose.ui.res.painterResource(id = com.markoala.tomoandroid.R.drawable.ic_time),
-                    contentDescription = null,
-                    tint = CustomColor.gray200,
-                    modifier = Modifier
-                        .padding(top = 2.dp)
-                        .size(12.dp)
-                )
-                CustomText(
-                    text = meeting.time ?: "",
-                    type = CustomTextType.bodyMedium,
-                    color = CustomColor.gray200,
-                    fontSize = 12.sp
-                )
-            }
-            Row(
-                horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(4.dp)
-            ) {
-                Icon(
-                    painter = androidx.compose.ui.res.painterResource(id = com.markoala.tomoandroid.R.drawable.ic_people),
-                    contentDescription = null,
-                    tint = CustomColor.gray200,
-                    modifier = Modifier
-                        .padding(top = 2.dp)
-                        .size(12.dp)
-                )
-                CustomText(
-                    text = meeting.peopleCounts.toString() + "명 참여",
-                    type = CustomTextType.bodyMedium,
-                    color = CustomColor.gray200,
-                    fontSize = 12.sp
-                )
+                Row(
+                    horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(
+                        4.dp
+                    )
+                ) {
+                    Icon(
+                        painter = androidx.compose.ui.res.painterResource(id = com.markoala.tomoandroid.R.drawable.ic_location),
+                        contentDescription = null,
+                        tint = CustomColor.gray200,
+                        modifier = Modifier
+                            .padding(top = 2.dp)
+                            .size(12.dp)
+                    )
+                    CustomText(
+                        text = meeting.location ?: "",
+                        type = CustomTextType.bodyMedium,
+                        color = CustomColor.gray200,
+                        fontSize = 12.sp
+                    )
+                }
+                Row(
+                    horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(
+                        4.dp
+                    )
+                ) {
+                    Icon(
+                        painter = androidx.compose.ui.res.painterResource(id = com.markoala.tomoandroid.R.drawable.ic_time),
+                        contentDescription = null,
+                        tint = CustomColor.gray200,
+                        modifier = Modifier
+                            .padding(top = 2.dp)
+                            .size(12.dp)
+                    )
+                    CustomText(
+                        text = meeting.time ?: "",
+                        type = CustomTextType.bodyMedium,
+                        color = CustomColor.gray200,
+                        fontSize = 12.sp
+                    )
+                }
+                Row(
+                    horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(
+                        4.dp
+                    )
+                ) {
+                    Icon(
+                        painter = androidx.compose.ui.res.painterResource(id = com.markoala.tomoandroid.R.drawable.ic_people),
+                        contentDescription = null,
+                        tint = CustomColor.gray200,
+                        modifier = Modifier
+                            .padding(top = 2.dp)
+                            .size(12.dp)
+                    )
+                    CustomText(
+                        text = meeting.peopleCounts.toString() + "명 참여",
+                        type = CustomTextType.bodyMedium,
+                        color = CustomColor.gray200,
+                        fontSize = 12.sp
+                    )
+                }
             }
         }
     }
