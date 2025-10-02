@@ -104,7 +104,7 @@ fun FriendsScreen(paddingValues: PaddingValues) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(100.dp)
+                .height(80.dp)
                 .padding(bottom = 16.dp)
         ) {
             Surface(
