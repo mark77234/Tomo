@@ -3,6 +3,7 @@ package com.markoala.tomoandroid.ui.theme
 import androidx.compose.ui.graphics.Color
 
 object CustomColor {
+    val gray30 = Color(0xFFF9FAFB)
     val gray50 = Color(0xFFE5E7EB)
     val gray100 = Color(0xFFD1D5DB)
     val gray200 = Color(0xFF9CA3AF)
