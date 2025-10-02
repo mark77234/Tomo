@@ -22,10 +22,23 @@ object AuthManager {
         val credential = GoogleAuthProvider.getCredential(idToken, null)
         auth.signInWithCredential(credential)
             .addOnCompleteListener { task ->
-                if (task.isSuccessful) onResult(true, null)
-                else onResult(false, task.exception?.localizedMessage)
+                if (task.isSuccessful) {
+                    val user = auth.currentUser
+                    user?.getIdToken(true)?.addOnCompleteListener { tokenTask ->
+                        if (tokenTask.isSuccessful) {
+                            val firebaseToken = tokenTask.result?.token
+                            Log.d(TAG, "Firebase ID Token: $firebaseToken")
+                        } else {
+                            Log.e(TAG, "토큰 가져오기 실패", tokenTask.exception)
+                        }
+                    }
+                    onResult(true, null)
+                } else {
+                    onResult(false, task.exception?.localizedMessage)
+                }
             }
     }
+
 
     suspend fun signOutSuspend(context: Context): Pair<Boolean, String?> {
         return try {
