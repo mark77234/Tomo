@@ -1,6 +1,7 @@
 package com.markoala.tomoandroid.ui.components.friends
 
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -48,37 +49,59 @@ fun FriendCard(friend: FriendProfile) {
                 .padding(16.dp),
             verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(4.dp)
         ) {
-            CustomText(
-                text = friend.name,
-                type = CustomTextType.titleMedium,
-                color = CustomColor.black,
-                fontSize = 16.sp
-            )
-            Spacer(modifier = Modifier.height(2.dp))
+            Row {
+                Box(
+                    modifier = Modifier.padding(end = 10.dp)
+                ) {
+                    Icon(
+                        painter = androidx.compose.ui.res.painterResource(id = com.markoala.tomoandroid.R.drawable.ic_profile),
+                        contentDescription = null,
+                        tint = CustomColor.gray200,
+                        modifier = Modifier
+                            .size(48.dp)
+                            .border(
+                                1.dp,
+                                CustomColor.gray100,
+                                androidx.compose.foundation.shape.CircleShape
+                            )
+                            .padding(12.dp)
+                    )
+                }
+                Column {
+                    CustomText(
+                        text = friend.name,
+                        type = CustomTextType.titleMedium,
+                        color = CustomColor.black,
+                        fontSize = 16.sp
+                    )
+                    Spacer(modifier = Modifier.height(10.dp))
+                    Row(
+                        horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(
+                            4.dp
+                        )
+                    ) {
+                        Icon(
+                            painter = androidx.compose.ui.res.painterResource(id = com.markoala.tomoandroid.R.drawable.ic_email),
+                            contentDescription = null,
+                            tint = CustomColor.gray200,
+                            modifier = Modifier
+                                .padding(top = 2.dp)
+                                .size(12.dp)
+                        )
+                        CustomText(
+                            text = friend.email,
+                            type = CustomTextType.bodyMedium,
+                            color = CustomColor.gray200,
+                            fontSize = 12.sp
+                        )
+                    }
+                }
+            }
             Column(
                 modifier = Modifier.padding(horizontal = 4.dp),
                 verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(4.dp)
             ) {
-                Row(
-                    horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(
-                        4.dp
-                    )
-                ) {
-                    Icon(
-                        painter = androidx.compose.ui.res.painterResource(id = com.markoala.tomoandroid.R.drawable.ic_email),
-                        contentDescription = null,
-                        tint = CustomColor.gray200,
-                        modifier = Modifier
-                            .padding(top = 2.dp)
-                            .size(12.dp)
-                    )
-                    CustomText(
-                        text = friend.email,
-                        type = CustomTextType.bodyMedium,
-                        color = CustomColor.gray200,
-                        fontSize = 12.sp
-                    )
-                }
+
                 HorizontalDivider(
                     modifier = Modifier
                         .fillMaxWidth()
