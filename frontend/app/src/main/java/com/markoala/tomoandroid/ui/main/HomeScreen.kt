@@ -1,6 +1,7 @@
 package com.markoala.tomoandroid.ui.main
 
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -16,9 +17,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -57,18 +57,19 @@ fun HomeScreen(paddingValues: PaddingValues) {
                 type = CustomTextType.headlineLarge,
                 fontSize = 20.sp
             )
-            Button(
-                onClick = { /* TODO: 모임 생성 액션 */ },
-                colors = ButtonDefaults.buttonColors(containerColor = Color.White),
+            Surface(
                 modifier = Modifier
                     .border(
                         width = 1.dp,
                         color = CustomColor.gray100,
                         shape = RoundedCornerShape(32.dp)
-                    ),
-                contentPadding = PaddingValues(horizontal = 16.dp)
+                    )
+                    .clickable { /* TODO: 모임 생성 액션 */ },
+                shape = RoundedCornerShape(32.dp),
+                color = Color.White
             ) {
                 Row(
+                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
                     verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
                 ) {
                     Icon(
