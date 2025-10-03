@@ -46,7 +46,10 @@ private val sampleFriends = listOf(
 
 
 @Composable
-fun FriendsScreen(paddingValues: PaddingValues) {
+fun FriendsScreen(
+    paddingValues: PaddingValues,
+    onAddFriendsClick: () -> Unit = {}
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -72,7 +75,7 @@ fun FriendsScreen(paddingValues: PaddingValues) {
                         color = CustomColor.gray100,
                         shape = RoundedCornerShape(32.dp)
                     )
-                    .clickable { /* TODO: 모임 생성 액션 */ },
+                    .clickable { onAddFriendsClick() },
                 shape = RoundedCornerShape(32.dp),
                 color = Color.White
             ) {
