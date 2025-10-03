@@ -25,6 +25,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.markoala.tomoandroid.ui.components.BottomNavigationBar
 import com.markoala.tomoandroid.ui.components.CustomText
 import com.markoala.tomoandroid.ui.components.CustomTextType
+import com.markoala.tomoandroid.ui.main.friends.FriendsScreen
 import com.markoala.tomoandroid.ui.theme.CustomColor
 
 // 탭 타입 정의

@@ -1,4 +1,4 @@
-package com.markoala.tomoandroid.ui.main
+package com.markoala.tomoandroid.ui.main.friends
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -20,10 +20,13 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.markoala.tomoandroid.R
 import com.markoala.tomoandroid.data.model.FriendProfile
 import com.markoala.tomoandroid.ui.components.CustomText
 import com.markoala.tomoandroid.ui.components.CustomTextType
@@ -55,7 +58,7 @@ fun FriendsScreen(paddingValues: PaddingValues) {
                 .padding(vertical = 16.dp)
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically
         ) {
             CustomText(
                 text = "친구 목록",
@@ -75,11 +78,11 @@ fun FriendsScreen(paddingValues: PaddingValues) {
             ) {
                 Row(
                     modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp),
-                    verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
-                        painter = androidx.compose.ui.res.painterResource(
-                            id = com.markoala.tomoandroid.R.drawable.ic_addfriend
+                        painter = painterResource(
+                            id = R.drawable.ic_addfriend
                         ),
                         contentDescription = "친구 추가",
                         tint = CustomColor.black,
@@ -113,7 +116,7 @@ fun FriendsScreen(paddingValues: PaddingValues) {
             ) {
                 Box(
                     modifier = Modifier.fillMaxSize(),
-                    contentAlignment = androidx.compose.ui.Alignment.Center
+                    contentAlignment = Alignment.Center
                 ) {
                     CustomText(
                         text = "우정을 자랑하고 추억을 기록하세요!",
