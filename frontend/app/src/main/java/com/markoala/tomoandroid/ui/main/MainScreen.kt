@@ -25,6 +25,8 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.markoala.tomoandroid.ui.components.BottomNavigationBar
 import com.markoala.tomoandroid.ui.components.CustomText
 import com.markoala.tomoandroid.ui.components.CustomTextType
+import com.markoala.tomoandroid.ui.main.friends.AddFriendsScreen
+import com.markoala.tomoandroid.ui.main.friends.FriendsScreen
 import com.markoala.tomoandroid.ui.theme.CustomColor
 
 // 탭 타입 정의
@@ -45,6 +47,7 @@ fun MainScreen(onSignOut: () -> Unit) {
     var email by remember { mutableStateOf("") }
     var userId by remember { mutableStateOf("") }
     var selectedTab by remember { mutableStateOf(BottomTab.Home) }
+    var routingAddFriends by remember { mutableStateOf(false) }
 
     LaunchedEffect(user) {
         user?.let {
@@ -58,34 +61,37 @@ fun MainScreen(onSignOut: () -> Unit) {
     }
     Scaffold(
         topBar = {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .statusBarsPadding()
-                    .background(CustomColor.white),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                Spacer(modifier = Modifier.height(10.dp))
-                CustomText(
-                    text = "토모",
-                    type = CustomTextType.headlineSmall
-                )
-                CustomText(
-                    text = "친구와의 우정을 기록하세요",
-                    type = CustomTextType.bodyMedium,
-                    color = CustomColor.gray300
-                )
-                HorizontalDivider(
-                    modifier = Modifier.fillMaxWidth(),
-                    color = CustomColor.gray100,
-                    thickness = 1.dp
-                )
+            if (!routingAddFriends) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .statusBarsPadding()
+                        .background(CustomColor.white),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    Spacer(modifier = Modifier.height(10.dp))
+                    CustomText(
+                        text = "토모",
+                        type = CustomTextType.headlineSmall
+                    )
+                    CustomText(
+                        text = "친구와의 우정을 기록하세요",
+                        type = CustomTextType.bodyMedium,
+                        color = CustomColor.gray300
+                    )
+                    HorizontalDivider(
+                        modifier = Modifier.fillMaxWidth(),
+                        color = CustomColor.gray100,
+                        thickness = 1.dp
+                    )
+                }
             }
-
         },
         bottomBar = {
-            BottomNavigationBar(selectedTab = selectedTab, onTabSelected = { selectedTab = it })
+            if (!routingAddFriends) {
+                BottomNavigationBar(selectedTab = selectedTab, onTabSelected = { selectedTab = it })
+            }
         }
     ) { paddingValues ->
         Box(
@@ -93,11 +99,22 @@ fun MainScreen(onSignOut: () -> Unit) {
                 .background(CustomColor.white)
                 .fillMaxWidth()
         ) {
-            when (selectedTab) {
-                BottomTab.Home -> HomeScreen(paddingValues)
-                BottomTab.Friends -> FriendsScreen(paddingValues)
-                BottomTab.Profile -> ProfileScreen(name, email, userId, paddingValues)
-                BottomTab.Settings -> SettingsScreen(paddingValues, onSignOut)
+            if (routingAddFriends) {
+                AddFriendsScreen(
+                    paddingValues = paddingValues,
+                    onBackClick = { routingAddFriends = false }
+                )
+            } else {
+                when (selectedTab) {
+                    BottomTab.Home -> HomeScreen(paddingValues)
+                    BottomTab.Friends -> FriendsScreen(
+                        paddingValues = paddingValues,
+                        onAddFriendsClick = { routingAddFriends = true }
+                    )
+
+                    BottomTab.Profile -> ProfileScreen(name, email, userId, paddingValues)
+                    BottomTab.Settings -> SettingsScreen(paddingValues, onSignOut)
+                }
             }
         }
     }

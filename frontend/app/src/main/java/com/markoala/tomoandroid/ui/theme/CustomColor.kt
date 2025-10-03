@@ -15,5 +15,7 @@ object CustomColor {
     val black = Color(0xFF000000)
     val charcoal = Color(0xFF4B5563)
 
+
+    val error = Color(0xFFFF6961)
 }
 
