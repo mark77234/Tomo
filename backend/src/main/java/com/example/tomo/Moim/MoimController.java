@@ -1,6 +1,8 @@
 package com.example.tomo.Moim;
 
-import com.example.tomo.Users.ResponseUniformDto;
+import com.example.tomo.Moim.dtos.addMoimRequestDto;
+import com.example.tomo.Moim.dtos.getMoimResponseDTO;
+import com.example.tomo.Users.dtos.ResponseUniformDto;
 import com.example.tomo.global.ApiResponse;
 import com.example.tomo.global.DuplicatedException;
 import jakarta.persistence.EntityNotFoundException;

@@ -2,7 +2,7 @@ package com.example.tomo.Promise;
 
 import com.example.tomo.Moim.Moim;
 import com.example.tomo.Moim.MoimRepository;
-import com.example.tomo.Users.ResponseUniformDto;
+import com.example.tomo.Users.dtos.ResponseUniformDto;
 import com.example.tomo.global.DuplicatedException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;

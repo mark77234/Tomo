@@ -1,6 +1,6 @@
 package com.example.tomo.Promise;
 
-import com.example.tomo.Users.ResponseUniformDto;
+import com.example.tomo.Users.dtos.ResponseUniformDto;
 import com.example.tomo.global.ApiResponse;
 import com.example.tomo.global.DuplicatedException;
 import jakarta.persistence.EntityNotFoundException;

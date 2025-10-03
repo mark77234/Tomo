@@ -1,5 +1,8 @@
 package com.example.tomo.Friends;
 
+import com.example.tomo.Friends.dtos.FriendCalculatedDto;
+import com.example.tomo.Friends.dtos.ResponseFriendDetailDto;
+import com.example.tomo.Friends.dtos.ResponseGetFriendsDto;
 import com.example.tomo.Users.User;
 import com.example.tomo.Users.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
