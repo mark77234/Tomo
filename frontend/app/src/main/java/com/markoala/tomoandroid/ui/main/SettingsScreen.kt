@@ -142,7 +142,7 @@ fun SettingsScreen(
         }
         Spacer(modifier = Modifier.height(12.dp))
         OutlinedButton(
-            onClick = onSignOut,
+            onClick = {},
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.outlinedButtonColors(
                 containerColor = CustomColor.white,
