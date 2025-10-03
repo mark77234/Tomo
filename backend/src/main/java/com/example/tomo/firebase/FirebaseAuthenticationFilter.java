@@ -32,6 +32,12 @@ public class FirebaseAuthenticationFilter extends OncePerRequestFilter {
         String header = request.getHeader("Authorization");
         System.out.println("Authorization header: " + header);
 
+        // Preflight 요청(CORS OPTIONS)은 그냥 통과
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         if (header != null && header.startsWith("Bearer ")) {
             String idToken = header.substring(7);
             try {
@@ -44,13 +50,13 @@ public class FirebaseAuthenticationFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(auth);
 
             } catch (FirebaseAuthException e) {
-                System.out.println("Token verification failed: " + e.getMessage());
+                System.out.println("[DEBUG] Token verification failed: " + e.getMessage());
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid or expired Firebase ID token");
                 return; // 인증 실패 시 바로 종료
             }
         } else {
             // 헤더 없음 → 인증 실패 처리
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Missing Authorization header");
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Missing Authorization header!!!");
             return;
         }
 
