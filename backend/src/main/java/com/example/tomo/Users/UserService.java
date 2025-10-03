@@ -3,7 +3,7 @@ package com.example.tomo.Users;
 import com.example.tomo.Friends.Friend;
 import com.example.tomo.Friends.FriendRepository;
 import com.example.tomo.Users.dtos.RequestUserSignDto;
-import com.example.tomo.Users.dtos.ResponsePostUniformDto;
+import com.example.tomo.Users.dtos.ResponseUniformDto;
 import com.example.tomo.Users.dtos.addFriendRequestDto;
 import com.example.tomo.Users.dtos.getFriendResponseDto;
 import jakarta.persistence.EntityExistsException;
@@ -53,7 +53,7 @@ public class UserService {
     // 친구 추가하기
     // DTO  변환하기
     @Transactional
-    public ResponsePostUniformDto addFriends(addFriendRequestDto dto) {
+    public ResponseUniformDto addFriends(addFriendRequestDto dto) {
 
         // 액세스 토큰으로 사용자 인증하기
         // 현재는 ID 가 1인 유저 꺼내기
@@ -73,7 +73,7 @@ public class UserService {
 
         friendRepository.save(friends);
         friendRepository.save(reverseFriend);
-        return new ResponsePostUniformDto(true , "success");
+        return new ResponseUniformDto(true , "success");
 
     }
     /// 여기 부터
@@ -82,7 +82,7 @@ public class UserService {
     }
 
 
-    public ResponsePostUniformDto signUser(RequestUserSignDto dto){
+    public ResponseUniformDto signUser(RequestUserSignDto dto){
 
 
         if(!isUserAvailable(dto)){
@@ -92,20 +92,12 @@ public class UserService {
         User newUser = new User(dto.getUuid(),dto.getUsername(),dto.getEmail());
         userRepository.save(newUser);
 
-        return new ResponsePostUniformDto(true, "success");
+        return new ResponseUniformDto(true, "success");
 
 
     }
     ///  여기까지 수정이 요구
 
-    public getFriendResponseDto getUserInfo(String email){
-
-        Optional<User> user = userRepository.findByEmail(email);
-        if(user.isEmpty()){
-             throw new EntityNotFoundException("존재하지 않는 사용자입니다");
-        }
-        return new getFriendResponseDto(user.get().getUsername(), user.get().getEmail());
-    }
 
 
 }

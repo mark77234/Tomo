@@ -1,6 +1,6 @@
 package com.example.tomo.Promise;
 
-import com.example.tomo.Users.dtos.ResponsePostUniformDto;
+import com.example.tomo.Users.dtos.ResponseUniformDto;
 import com.example.tomo.global.ApiResponse;
 import com.example.tomo.global.DuplicatedException;
 import jakarta.persistence.EntityNotFoundException;
@@ -19,16 +19,16 @@ public class PromiseController {
     }
 
     @PostMapping("/promises")
-    public ResponseEntity<ResponsePostUniformDto> addPromise(@RequestBody addPromiseRequestDTO dto) {
+    public ResponseEntity<ResponseUniformDto> addPromise(@RequestBody addPromiseRequestDTO dto) {
         try{
             return ResponseEntity.ok().body(promiseService.addPromise(dto));}
         catch(EntityNotFoundException e) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(new ResponsePostUniformDto(false, "모임을 먼저 생성해 주세요"));
+                        .body(new ResponseUniformDto(false, "모임을 먼저 생성해 주세요"));
             }
         catch(DuplicatedException e){
             return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(new ResponsePostUniformDto(false, "이미 존재하는 약속입니다"));
+                    .body(new ResponseUniformDto(false, "이미 존재하는 약속입니다"));
         }
 
     }
