@@ -1,8 +1,11 @@
 package com.markoala.tomoandroid.ui.main
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,6 +15,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.runtime.Composable
@@ -19,7 +23,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.markoala.tomoandroid.ui.components.CustomText
@@ -43,6 +49,18 @@ fun SettingsScreen(
             .padding(paddingValues)
             .padding(horizontal = 24.dp)
     ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 16.dp)
+        ) {
+            CustomText(
+                text = "설정",
+                type = CustomTextType.headlineLarge,
+                fontSize = 20.sp,
+                modifier = Modifier.align(Alignment.TopStart)
+            )
+        }
         Spacer(modifier = Modifier.height(16.dp))
         Card(
             modifier = Modifier
@@ -52,27 +70,52 @@ fun SettingsScreen(
                 containerColor = CustomColor.white
             )
         ) {
-            Column(modifier = Modifier.padding(16.dp)) {
-                SettingsToggle(
-                    title = "푸시 알림",
-                    description = "모임 알림과 친구 요청을 받아보세요.",
-                    checked = pushEnabled,
-                    onCheckedChange = { pushEnabled = it },
-                    icon = com.markoala.tomoandroid.R.drawable.ic_notification
-                )
+            Column {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(color = CustomColor.gray40)
+                        .padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        painter = painterResource(id = com.markoala.tomoandroid.R.drawable.ic_setting),
+                        contentDescription = null,
+                        tint = CustomColor.gray300,
+                        modifier = Modifier.padding(end = 8.dp)
+                    )
+                    CustomText(text = "앱 설정", type = CustomTextType.titleSmall, fontSize = 14.sp)
+                }
                 HorizontalDivider(
                     modifier = Modifier
-                        .padding(vertical = 16.dp)
+
                         .fillMaxWidth(),
                     color = CustomColor.gray100
                 )
-                SettingsToggle(
-                    title = "다크 모드 (개발중)",
-                    description = "시스템 테마와 별도로 설정합니다.",
-                    checked = darkModeEnabled,
-                    onCheckedChange = { darkModeEnabled = it },
-                    icon = com.markoala.tomoandroid.R.drawable.ic_dark
+                Box(modifier = Modifier.padding(16.dp)) {
+                    SettingsToggle(
+                        title = "푸시 알림",
+                        description = "모임 알림과 친구 요청을 받아보세요.",
+                        checked = pushEnabled,
+                        onCheckedChange = { pushEnabled = it },
+                        icon = com.markoala.tomoandroid.R.drawable.ic_notification
+                    )
+                }
+                HorizontalDivider(
+                    modifier = Modifier
+
+                        .fillMaxWidth(),
+                    color = CustomColor.gray100
                 )
+                Box(modifier = Modifier.padding(16.dp)) {
+                    SettingsToggle(
+                        title = "다크 모드 (개발중)",
+                        description = "시스템 테마와 별도로 설정합니다.",
+                        checked = darkModeEnabled,
+                        onCheckedChange = { darkModeEnabled = it },
+                        icon = com.markoala.tomoandroid.R.drawable.ic_dark
+                    )
+                }
             }
         }
         Spacer(modifier = Modifier.height(24.dp))
