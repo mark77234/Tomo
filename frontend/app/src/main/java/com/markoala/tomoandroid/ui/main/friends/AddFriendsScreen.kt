@@ -1,7 +1,5 @@
 package com.markoala.tomoandroid.ui.main.friends
 
-import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -33,19 +31,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.markoala.tomoandroid.auth.AuthManager
-import com.markoala.tomoandroid.data.api.apiService
 import com.markoala.tomoandroid.data.model.FriendData
-import com.markoala.tomoandroid.data.model.FriendSearchRequest
-import com.markoala.tomoandroid.data.model.FriendSearchResponse
-import com.markoala.tomoandroid.data.model.GetFriendsResponse
+import com.markoala.tomoandroid.data.repository.friends.FriendsRepository
 import com.markoala.tomoandroid.ui.components.CustomText
 import com.markoala.tomoandroid.ui.components.CustomTextType
 import com.markoala.tomoandroid.ui.components.DashedBorderBox
 import com.markoala.tomoandroid.ui.theme.CustomColor
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 @Composable
 fun AddFriendsScreen(
@@ -57,207 +48,47 @@ fun AddFriendsScreen(
     var isSearching by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
     val context = LocalContext.current
+    val friendsRepository = remember { FriendsRepository() }
 
-    // 친구 검색 함수 (GET)
-    fun getFriends(email: String) {
-        Log.d("AddFriendsScreen", "getFriends 시작 - 입력된 이메일: $email")
-
-        if (email.isBlank()) {
-            Log.w("AddFriendsScreen", "이메일이 비어있음")
-            Toast.makeText(context, "이메일을 입력해주세요", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        isSearching = true
-        searchResults = emptyList()
-        errorMessage = null
-        Log.d("AddFriendsScreen", "검색 상태 변경: isSearching = true")
-
-        // Firebase ID 토큰 가져오기
-        Log.d("AddFriendsScreen", "Firebase 토큰 요청 시작")
-        AuthManager.auth.currentUser?.getIdToken(true)?.addOnCompleteListener { tokenTask ->
-            if (tokenTask.isSuccessful) {
-                val firebaseToken = tokenTask.result?.token
-                Log.d("AddFriendsScreen", "Firebase 토큰 획득 성공")
-
-                if (firebaseToken != null) {
-                    // API 요청
-                    Log.d("AddFriendsScreen", "getFriends API 요청 생성")
-
-                    val call = apiService.getFriends("Bearer $firebaseToken", email)
-                    Log.d("AddFriendsScreen", "getFriends API 호출 시작")
-
-                    call.enqueue(object : Callback<GetFriendsResponse> {
-                        override fun onResponse(
-                            call: Call<GetFriendsResponse>,
-                            response: Response<GetFriendsResponse>
-                        ) {
-                            Log.d("AddFriendsScreen", "getFriends API 응답 수신")
-                            Log.d("AddFriendsScreen", "응답 코드: ${response.code()}")
-
-                            isSearching = false
-                            if (response.isSuccessful) {
-                                val result = response.body()
-                                Log.d("AddFriendsScreen", "응답 본문: $result")
-
-                                if (result?.success == true && result.data != null) {
-                                    Log.d(
-                                        "AddFriendsScreen",
-                                        "친구 검색 성공 - 찾은 친구: ${result.data.username}"
-                                    )
-                                    searchResults = listOf(result.data) // 단일 객체를 리스트로 변환
-                                } else {
-                                    Log.w("AddFriendsScreen", "친구 검색 실패")
-                                    errorMessage = result?.message ?: "친구를 찾을 수 없습니다"
-                                    searchResults = emptyList()
-                                }
-                            } else {
-                                Log.e("AddFriendsScreen", "HTTP 응답 실패 - 코드: ${response.code()}")
-                                errorMessage = "검색에 실패했습니다"
-                                searchResults = emptyList()
-                            }
-                        }
-
-                        override fun onFailure(call: Call<GetFriendsResponse>, t: Throwable) {
-                            Log.e("AddFriendsScreen", "getFriends API 요청 실패", t)
-                            isSearching = false
-                            errorMessage = "네트워크 오류가 발생했습니다"
-                        }
-                    })
-                } else {
-                    Log.e("AddFriendsScreen", "Firebase 토큰이 null")
-                    isSearching = false
-                    Toast.makeText(context, "인증 토큰을 가져올 수 없습니다", Toast.LENGTH_SHORT).show()
+    // 친구 검색
+    fun searchFriends() {
+        friendsRepository.getFriends(
+            email = searchText,
+            context = context,
+            onLoading = { loading ->
+                isSearching = loading
+                if (loading) {
+                    searchResults = emptyList()
+                    errorMessage = null
                 }
-            } else {
-                Log.e("AddFriendsScreen", "Firebase 토큰 획득 실패", tokenTask.exception)
-                isSearching = false
-                Toast.makeText(context, "인증에 실패했습니다", Toast.LENGTH_SHORT).show()
+            },
+            onSuccess = { friends ->
+                searchResults = friends
+                errorMessage = null
+            },
+            onError = { error ->
+                searchResults = emptyList()
+                errorMessage = error
             }
-        } ?: run {
-            Log.e("AddFriendsScreen", "현재 사용자가 null - 로그인되지 않음")
-            isSearching = false
-            Toast.makeText(context, "로그인이 필요합니다", Toast.LENGTH_SHORT).show()
-        }
+        )
     }
 
-    // 친구 추가 함수 (POST)
-    fun postFriends(email: String) {
-        Log.d("AddFriendsScreen", "searchFriend 시작 - 입력된 이메일: $email")
-
-        if (email.isBlank()) {
-            Log.w("AddFriendsScreen", "이메일이 비어있음")
-            Toast.makeText(context, "이메일을 입력해주세요", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        isSearching = true
-        errorMessage = null
-        Log.d("AddFriendsScreen", "검색 상태 변경: isSearching = true")
-
-        // Firebase ID 토큰 가져오기
-        Log.d("AddFriendsScreen", "Firebase 토큰 요청 시작")
-        AuthManager.auth.currentUser?.getIdToken(true)?.addOnCompleteListener { tokenTask ->
-            if (tokenTask.isSuccessful) {
-                val firebaseToken = tokenTask.result?.token
-                Log.d("AddFriendsScreen", "Firebase 토큰 획득 성공")
-                Log.d("AddFriendsScreen", "토큰 길이: ${firebaseToken?.length ?: 0}")
-                Log.d("AddFriendsScreen", "토큰 앞 20자: ${firebaseToken?.take(20) ?: "null"}...")
-
-                if (firebaseToken != null) {
-                    // API 요청
-                    val request = FriendSearchRequest(email = email)
-                    Log.d("AddFriendsScreen", "API 요청 생성 - 요청 데이터: $request")
-                    Log.d(
-                        "AddFriendsScreen",
-                        "Authorization 헤더: Bearer ${firebaseToken.take(20)}..."
-                    )
-
-                    val call = apiService.postFriends("Bearer $firebaseToken", request)
-                    Log.d("AddFriendsScreen", "API 호출 시작 - URL: ${call.request().url}")
-                    Log.d("AddFriendsScreen", "HTTP 메소드: ${call.request().method}")
-
-                    call.enqueue(object : Callback<FriendSearchResponse> {
-                        override fun onResponse(
-                            call: Call<FriendSearchResponse>,
-                            response: Response<FriendSearchResponse>
-                        ) {
-                            Log.d("AddFriendsScreen", "API 응답 수신")
-                            Log.d("AddFriendsScreen", "응답 코드: ${response.code()}")
-                            Log.d("AddFriendsScreen", "응답 메시지: ${response.message()}")
-                            Log.d("AddFriendsScreen", "응답 성공 여부: ${response.isSuccessful}")
-
-                            isSearching = false
-                            if (response.isSuccessful) {
-                                val result = response.body()
-                                Log.d("AddFriendsScreen", "응답 본문: $result")
-
-                                if (result?.success == true && result.data != null) {
-                                    Log.d(
-                                        "AddFriendsScreen",
-                                        "친구 검색 성공 - 사용자명: ${result.data.username}, 이메일: ${result.data.email}"
-                                    )
-                                    Toast.makeText(context, "친구 추가 성공!", Toast.LENGTH_SHORT).show()
-                                    // 친구 목록 갱신
-                                    getFriends(searchText)
-                                } else {
-                                    Log.w(
-                                        "AddFriendsScreen",
-                                        "친구 검색 실패 - success: ${result?.success}, data: ${result?.data}, message: ${result?.message}"
-                                    )
-                                    errorMessage = result?.message ?: "친구 추가에 실패했습니다"
-                                    Toast.makeText(
-                                        context,
-                                        result?.message ?: "친구 추가에 실패했습니다",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                }
-                            } else {
-                                Log.e(
-                                    "AddFriendsScreen",
-                                    "HTTP 응답 실패 - 코드: ${response.code()}, 메시지: ${response.message()}"
-                                )
-                                Log.e(
-                                    "AddFriendsScreen",
-                                    "에러 본문: ${response.errorBody()?.string()}"
-                                )
-                                errorMessage = "검색 실패"
-                                Toast.makeText(context, "검색에 실패했습니다", Toast.LENGTH_SHORT).show()
-                            }
-                        }
-
-                        override fun onFailure(call: Call<FriendSearchResponse>, t: Throwable) {
-                            Log.e("AddFriendsScreen", "API 요청 완전 실패", t)
-                            Log.e("AddFriendsScreen", "실패 원인: ${t.javaClass.simpleName}")
-                            Log.e("AddFriendsScreen", "에러 메시지: ${t.message}")
-                            Log.e("AddFriendsScreen", "요청 URL: ${call.request().url}")
-
-                            isSearching = false
-                            errorMessage = "네트워크 오류"
-                            Toast.makeText(context, "네트워크 오류가 발생했습니다", Toast.LENGTH_SHORT).show()
-                        }
-                    })
-                } else {
-                    Log.e("AddFriendsScreen", "Firebase 토큰이 null")
-                    isSearching = false
-                    Toast.makeText(context, "인증 토큰을 가져올 수 없습니다", Toast.LENGTH_SHORT).show()
-                }
-            } else {
-                Log.e("AddFriendsScreen", "Firebase 토큰 획득 실패", tokenTask.exception)
-                Log.e(
-                    "AddFriendsScreen",
-                    "토큰 태스크 예외: ${tokenTask.exception?.javaClass?.simpleName}"
-                )
-                Log.e("AddFriendsScreen", "토큰 태스크 메시지: ${tokenTask.exception?.message}")
-
-                isSearching = false
-                Toast.makeText(context, "인증에 실패했습니다", Toast.LENGTH_SHORT).show()
+    // 친구 추가
+    fun addFriend(email: String) {
+        friendsRepository.postFriends(
+            email = email,
+            context = context,
+            onLoading = { loading ->
+                isSearching = loading
+            },
+            onSuccess = {
+                // 친구 추가 성공 시 검색 결과 갱신
+                searchFriends()
+            },
+            onError = { error ->
+                errorMessage = error
             }
-        } ?: run {
-            Log.e("AddFriendsScreen", "현재 사용자가 null - 로그인되지 않음")
-            isSearching = false
-            Toast.makeText(context, "로그인이 필요합니다", Toast.LENGTH_SHORT).show()
-        }
+        )
     }
 
     Column(
@@ -377,6 +208,7 @@ fun AddFriendsScreen(
                     type = CustomTextType.bodyMedium,
                     fontSize = 16.sp
                 )
+
             }
         }
 
@@ -389,6 +221,7 @@ fun AddFriendsScreen(
                 type = CustomTextType.bodyMedium,
                 color = CustomColor.black
             )
+            Spacer(modifier = Modifier.height(8.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.Bottom
@@ -396,16 +229,16 @@ fun AddFriendsScreen(
                 OutlinedTextField(
                     value = searchText,
                     onValueChange = { searchText = it },
-                    label = {
+                    modifier = Modifier.weight(1f),
+                    shape = RoundedCornerShape(12.dp),
+                    enabled = !isSearching,
+                    placeholder = {
                         CustomText(
-                            text = "이메일로 친구 찾기",
+                            text = "이메일을 입력하세요",
                             type = CustomTextType.bodyMedium,
                             color = CustomColor.gray300
                         )
-                    },
-                    modifier = Modifier.weight(1f),
-                    shape = RoundedCornerShape(12.dp),
-                    enabled = !isSearching
+                    }
                 )
 
                 Spacer(modifier = Modifier.width(8.dp))
@@ -420,7 +253,7 @@ fun AddFriendsScreen(
                             shape = RoundedCornerShape(12.dp)
                         )
                         .clickable(enabled = !isSearching) {
-                            getFriends(searchText) // 친구 검색
+                            searchFriends() // 친구 검색
                         },
                     color = CustomColor.white,
                     shape = RoundedCornerShape(12.dp)
@@ -489,7 +322,7 @@ fun AddFriendsScreen(
                                             shape = RoundedCornerShape(8.dp)
                                         )
                                         .clickable {
-                                            postFriends(friend.email)
+                                            addFriend(friend.email)
                                         },
                                     shape = RoundedCornerShape(8.dp),
                                     color = Color.White
