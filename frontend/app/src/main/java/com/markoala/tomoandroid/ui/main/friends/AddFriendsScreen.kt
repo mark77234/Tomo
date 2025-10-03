@@ -1,5 +1,7 @@
 package com.markoala.tomoandroid.ui.main.friends
 
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -26,14 +28,22 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.markoala.tomoandroid.auth.AuthManager
+import com.markoala.tomoandroid.data.api.apiService
+import com.markoala.tomoandroid.data.model.FriendSearchRequest
+import com.markoala.tomoandroid.data.model.FriendSearchResponse
 import com.markoala.tomoandroid.ui.components.CustomText
 import com.markoala.tomoandroid.ui.components.CustomTextType
 import com.markoala.tomoandroid.ui.components.DashedBorderBox
 import com.markoala.tomoandroid.ui.theme.CustomColor
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 @Composable
 fun AddFriendsScreen(
@@ -41,6 +51,127 @@ fun AddFriendsScreen(
     onBackClick: () -> Unit
 ) {
     var searchText by remember { mutableStateOf("") }
+    var searchResult by remember { mutableStateOf<String?>(null) }
+    var isSearching by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+
+    // 친구 검색 함수
+    fun searchFriend(email: String) {
+        Log.d("AddFriendsScreen", "searchFriend 시작 - 입력된 이메일: $email")
+
+        if (email.isBlank()) {
+            Log.w("AddFriendsScreen", "이메일이 비어있음")
+            Toast.makeText(context, "이메일을 입력해주세요", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        isSearching = true
+        searchResult = null
+        Log.d("AddFriendsScreen", "검색 상태 변경: isSearching = true")
+
+        // Firebase ID 토큰 가져오기
+        Log.d("AddFriendsScreen", "Firebase 토큰 요청 시작")
+        AuthManager.auth.currentUser?.getIdToken(true)?.addOnCompleteListener { tokenTask ->
+            if (tokenTask.isSuccessful) {
+                val firebaseToken = tokenTask.result?.token
+                Log.d("AddFriendsScreen", "Firebase 토큰 획득 성공")
+                Log.d("AddFriendsScreen", "토큰 길이: ${firebaseToken?.length ?: 0}")
+                Log.d("AddFriendsScreen", "토큰 앞 20자: ${firebaseToken?.take(20) ?: "null"}...")
+
+                if (firebaseToken != null) {
+                    // API 요청
+                    val request = FriendSearchRequest(email = email)
+                    Log.d("AddFriendsScreen", "API 요청 생성 - 요청 데이터: $request")
+                    Log.d(
+                        "AddFriendsScreen",
+                        "Authorization 헤더: Bearer ${firebaseToken.take(20)}..."
+                    )
+
+                    val call = apiService.searchFriend("Bearer $firebaseToken", request)
+                    Log.d("AddFriendsScreen", "API 호출 시작 - URL: ${call.request().url}")
+                    Log.d("AddFriendsScreen", "HTTP 메소드: ${call.request().method}")
+
+                    call.enqueue(object : Callback<FriendSearchResponse> {
+                        override fun onResponse(
+                            call: Call<FriendSearchResponse>,
+                            response: Response<FriendSearchResponse>
+                        ) {
+                            Log.d("AddFriendsScreen", "API 응답 수신")
+                            Log.d("AddFriendsScreen", "응답 코드: ${response.code()}")
+                            Log.d("AddFriendsScreen", "응답 메시지: ${response.message()}")
+                            Log.d("AddFriendsScreen", "응답 성공 여부: ${response.isSuccessful}")
+
+                            isSearching = false
+                            if (response.isSuccessful) {
+                                val result = response.body()
+                                Log.d("AddFriendsScreen", "응답 본문: $result")
+
+                                if (result?.success == true && result.data != null) {
+                                    Log.d(
+                                        "AddFriendsScreen",
+                                        "친구 검색 성공 - 사용자명: ${result.data.username}, 이메일: ${result.data.email}"
+                                    )
+                                    searchResult = "${result.data.username} (${result.data.email})"
+                                    Toast.makeText(context, "친구를 찾았습니다!", Toast.LENGTH_SHORT).show()
+                                } else {
+                                    Log.w(
+                                        "AddFriendsScreen",
+                                        "친구 검색 실패 - success: ${result?.success}, data: ${result?.data}, message: ${result?.message}"
+                                    )
+                                    searchResult = "친구를 찾을 수 없습니다"
+                                    Toast.makeText(
+                                        context,
+                                        result?.message ?: "친구를 찾을 수 없습니다",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            } else {
+                                Log.e(
+                                    "AddFriendsScreen",
+                                    "HTTP 응답 실패 - 코드: ${response.code()}, 메시지: ${response.message()}"
+                                )
+                                Log.e(
+                                    "AddFriendsScreen",
+                                    "에러 본문: ${response.errorBody()?.string()}"
+                                )
+                                searchResult = "검색 실패"
+                                Toast.makeText(context, "검색에 실패했습니다", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+
+                        override fun onFailure(call: Call<FriendSearchResponse>, t: Throwable) {
+                            Log.e("AddFriendsScreen", "API 요청 완전 실패", t)
+                            Log.e("AddFriendsScreen", "실패 원인: ${t.javaClass.simpleName}")
+                            Log.e("AddFriendsScreen", "에러 메시지: ${t.message}")
+                            Log.e("AddFriendsScreen", "요청 URL: ${call.request().url}")
+
+                            isSearching = false
+                            searchResult = "네트워크 오류"
+                            Toast.makeText(context, "네트워크 오류가 발생했습니다", Toast.LENGTH_SHORT).show()
+                        }
+                    })
+                } else {
+                    Log.e("AddFriendsScreen", "Firebase 토큰이 null")
+                    isSearching = false
+                    Toast.makeText(context, "인증 토큰을 가져올 수 없습니다", Toast.LENGTH_SHORT).show()
+                }
+            } else {
+                Log.e("AddFriendsScreen", "Firebase 토큰 획득 실패", tokenTask.exception)
+                Log.e(
+                    "AddFriendsScreen",
+                    "토큰 태스크 예외: ${tokenTask.exception?.javaClass?.simpleName}"
+                )
+                Log.e("AddFriendsScreen", "토큰 태스크 메시지: ${tokenTask.exception?.message}")
+
+                isSearching = false
+                Toast.makeText(context, "인증에 실패했습니다", Toast.LENGTH_SHORT).show()
+            }
+        } ?: run {
+            Log.e("AddFriendsScreen", "현재 사용자가 null - 로그인되지 않음")
+            isSearching = false
+            Toast.makeText(context, "로그인이 필요합니다", Toast.LENGTH_SHORT).show()
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -186,7 +317,8 @@ fun AddFriendsScreen(
                         )
                     },
                     modifier = Modifier.weight(1f),
-                    shape = RoundedCornerShape(12.dp)
+                    shape = RoundedCornerShape(12.dp),
+                    enabled = !isSearching
                 )
 
                 Spacer(modifier = Modifier.width(8.dp))
@@ -197,10 +329,12 @@ fun AddFriendsScreen(
                         .width(56.dp)
                         .border(
                             width = 1.dp,
-                            color = CustomColor.black,
+                            color = if (isSearching) CustomColor.gray300 else CustomColor.black,
                             shape = RoundedCornerShape(12.dp)
                         )
-                        .clickable { /* 검색 로직 추가 */ },
+                        .clickable(enabled = !isSearching) {
+                            searchFriend(searchText)
+                        },
                     color = CustomColor.white,
                     shape = RoundedCornerShape(12.dp)
                 ) {
@@ -211,42 +345,76 @@ fun AddFriendsScreen(
                         Icon(
                             painter = painterResource(id = com.markoala.tomoandroid.R.drawable.ic_search),
                             contentDescription = "검색",
-                            tint = CustomColor.black
+                            tint = if (isSearching) CustomColor.gray300 else CustomColor.black
                         )
                     }
                 }
             }
             Spacer(modifier = Modifier.height(24.dp))
+
+            // 검색 결과 표시
+            if (searchResult != null) {
+                DashedBorderBox(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(80.dp)
+                        .padding(bottom = 16.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    borderColor = CustomColor.gray100,
+                    borderWidth = 1.dp
+                ) {
+                    Surface(
+                        modifier = Modifier.fillMaxSize(),
+                        shape = RoundedCornerShape(16.dp),
+                        color = CustomColor.gray30
+                    ) {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CustomText(
+                                text = searchResult!!,
+                                type = CustomTextType.bodyLarge,
+                                fontSize = 14.sp,
+                                color = CustomColor.black,
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    }
+                }
+            }
         } else {
             Spacer(modifier = Modifier.height(24.dp))
         }
 
         // 안내 메시지
-        DashedBorderBox(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(80.dp)
-                .padding(bottom = 16.dp),
-            shape = RoundedCornerShape(16.dp),
-            borderColor = CustomColor.gray50,
-            borderWidth = 1.dp
-        ) {
-            Surface(
-                modifier = Modifier.fillMaxSize(),
+        if (searchResult == null) {
+            DashedBorderBox(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(80.dp)
+                    .padding(bottom = 16.dp),
                 shape = RoundedCornerShape(16.dp),
-                color = CustomColor.gray30
+                borderColor = CustomColor.gray50,
+                borderWidth = 1.dp
             ) {
-                Box(
+                Surface(
                     modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
+                    shape = RoundedCornerShape(16.dp),
+                    color = CustomColor.gray30
                 ) {
-                    CustomText(
-                        text = if (selectedOption == "phone") "준비중입니다." else "친구의 이메일을 입력하여\n새로운 친구를 추가해보세요!",
-                        type = CustomTextType.bodyLarge,
-                        fontSize = 14.sp,
-                        color = CustomColor.gray300,
-                        textAlign = TextAlign.Center
-                    )
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CustomText(
+                            text = if (selectedOption == "phone") "준비중입니다." else if (isSearching) "검색 중..." else "친구의 이메일을 입력하여\n새로운 친구를 추가해보세요!",
+                            type = CustomTextType.bodyLarge,
+                            fontSize = 14.sp,
+                            color = CustomColor.gray300,
+                            textAlign = TextAlign.Center
+                        )
+                    }
                 }
             }
         }
