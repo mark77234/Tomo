@@ -2,7 +2,7 @@ package com.example.tomo.Moim;
 
 import com.example.tomo.Moim.dtos.addMoimRequestDto;
 import com.example.tomo.Moim.dtos.getMoimResponseDTO;
-import com.example.tomo.Users.dtos.ResponseUniformDto;
+import com.example.tomo.Users.dtos.ResponsePostUniformDto;
 import com.example.tomo.global.ApiResponse;
 import com.example.tomo.global.DuplicatedException;
 import jakarta.persistence.EntityNotFoundException;
@@ -27,18 +27,18 @@ public class MoimController {
 
     // 모임 생성하기
     @PostMapping("/moims")
-    public ResponseEntity<ResponseUniformDto> addmoim(@RequestBody addMoimRequestDto dto) {
+    public ResponseEntity<ResponsePostUniformDto> addmoim(@RequestBody addMoimRequestDto dto) {
 
        try{
            return ResponseEntity.ok(moimService.addMoim(dto));
        }
        catch(EntityNotFoundException e){
            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                   new ResponseUniformDto(false ,"존재하지 않은 사용자를 친구로 추가했습니다"));
+                   new ResponsePostUniformDto(false ,"존재하지 않은 사용자를 친구로 추가했습니다"));
        }
        catch(DuplicatedException e){
            return ResponseEntity.status(HttpStatus.CONFLICT).body(
-                   new ResponseUniformDto(false ,"이미 존재하는 모임입니다."));
+                   new ResponsePostUniformDto(false ,"이미 존재하는 모임입니다."));
        }
 
 

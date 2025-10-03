@@ -2,7 +2,7 @@ package com.example.tomo.Promise;
 
 import com.example.tomo.Moim.Moim;
 import com.example.tomo.Moim.MoimRepository;
-import com.example.tomo.Users.dtos.ResponseUniformDto;
+import com.example.tomo.Users.dtos.ResponsePostUniformDto;
 import com.example.tomo.global.DuplicatedException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
@@ -23,7 +23,7 @@ public class PromiseService {
 
     // 약속 생성하기
     // 같은 날짜 같은 시간에 약속 존재 시에도 오류 발생
-    public ResponseUniformDto addPromise(addPromiseRequestDTO dto){
+    public ResponsePostUniformDto addPromise(addPromiseRequestDTO dto){
 
         Moim moim = moimRepository.findByMoimName(dto.getMoimName())
                 .orElseThrow(() -> new EntityNotFoundException("모임 생성 후 약속을 만들어 주세요"));
@@ -39,7 +39,7 @@ public class PromiseService {
          promise.setMoimBasedPromise(moim);
 
          promiseRepository.save(promise);
-         return new ResponseUniformDto(true , promise.getPromiseName() + " 약속이 생성되었습니다");
+         return new ResponsePostUniformDto(true , promise.getPromiseName() + " 약속이 생성되었습니다");
     }
 
     // 약속 단일 조회하기 promise_name

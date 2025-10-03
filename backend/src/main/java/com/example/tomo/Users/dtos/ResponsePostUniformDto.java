@@ -9,7 +9,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class ResponseUniformDto {
+public class ResponsePostUniformDto {
     private Boolean success;
     private String message;
 }
