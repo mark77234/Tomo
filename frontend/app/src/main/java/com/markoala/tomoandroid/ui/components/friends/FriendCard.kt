@@ -1,9 +1,12 @@
 package com.markoala.tomoandroid.ui.components.friends
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -45,7 +48,6 @@ fun FriendCard(friend: FriendProfile) {
         ) {
             Row(
                 horizontalArrangement = androidx.compose.foundation.layout.Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
             ) {
                 DashedCircleBorder(
                     modifier = Modifier.padding(end = 10.dp),
@@ -53,14 +55,23 @@ fun FriendCard(friend: FriendProfile) {
                     borderColor = CustomColor.gray100,
                     borderWidth = 2.dp
                 ) {
-                    Icon(
-                        painter = androidx.compose.ui.res.painterResource(id = com.markoala.tomoandroid.R.drawable.ic_profile),
-                        contentDescription = null,
-                        tint = CustomColor.gray200,
+                    Box(
                         modifier = Modifier
-                            .size(48.dp)
-                            .padding(12.dp)
-                    )
+                            .fillMaxSize()
+                            .background(
+                                color = CustomColor.gray30,
+                                shape = androidx.compose.foundation.shape.CircleShape
+                            )
+                    ) {
+                        Icon(
+                            painter = androidx.compose.ui.res.painterResource(id = com.markoala.tomoandroid.R.drawable.ic_profile),
+                            contentDescription = null,
+                            tint = CustomColor.gray200,
+                            modifier = Modifier
+                                .size(48.dp)
+                                .padding(12.dp)
+                        )
+                    }
                 }
                 Column(
                     modifier = Modifier.weight(1f)
