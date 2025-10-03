@@ -15,6 +15,7 @@ credentialsPlayServicesAuth = "1.5.0"
 googleid = "1.1.1"
 navigationCompose = "2.9.4"
 retrofit = "2.9.0"
+coil = "2.4.0"                   # 🔹 추가: Coil 버전
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -36,6 +37,7 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3" 
 # 🔹 Firebase BoM 관리
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
 firebase-auth = { group = "com.google.firebase", name = "firebase-auth" } # version 생략 → BoM 사용
+firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore-ktx" } # 🔹 추가: Firebase Firestore
 
 androidx-credentials = { group = "androidx.credentials", name = "credentials", version.ref = "credentials" }
 androidx-credentials-play-services-auth = { group = "androidx.credentials", name = "credentials-play-services-auth", version.ref = "credentialsPlayServicesAuth" }
@@ -44,6 +46,7 @@ navigation-compose = { group = "androidx.navigation", name = "navigation-compose
 play-services-auth = { group = "com.google.android.gms", name = "play-services-auth", version = "21.4.0" }
 retrofit2 = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
 retrofit2_converter_gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofit" }
+coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" } # 🔹 추가: Coil Compose
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

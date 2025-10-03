@@ -90,7 +90,7 @@ dependencies {
     implementation(libs.retrofit2.converter.gson)
 
     // Coil for image loading
-    implementation("io.coil-kt:coil-compose:2.4.0")
+    implementation(libs.coil.compose)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
@@ -100,7 +100,5 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-
-    implementation("com.google.firebase:firebase-firestore-ktx")
-
+    implementation(libs.firebase.firestore)
 }
