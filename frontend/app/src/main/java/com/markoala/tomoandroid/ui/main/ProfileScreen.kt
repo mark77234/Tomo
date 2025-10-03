@@ -1,5 +1,7 @@
 package com.markoala.tomoandroid.ui.main
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -7,9 +9,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -22,6 +26,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.markoala.tomoandroid.ui.components.CustomText
+import com.markoala.tomoandroid.ui.components.CustomTextType
+import com.markoala.tomoandroid.ui.components.DashedCircleBorder
+import com.markoala.tomoandroid.ui.theme.CustomColor
 
 @Composable
 fun ProfileScreen(
@@ -47,7 +56,53 @@ fun ProfileScreen(
             .padding(paddingValues)
             .padding(horizontal = 24.dp)
     ) {
-        Spacer(modifier = Modifier.height(16.dp))
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 16.dp)
+        ) {
+            CustomText(
+                text = "내 정보",
+                type = CustomTextType.headlineLarge,
+                fontSize = 20.sp,
+                modifier = Modifier.align(androidx.compose.ui.Alignment.TopStart)
+            )
+        }
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 32.dp),
+            contentAlignment = androidx.compose.ui.Alignment.Center
+        ) {
+            DashedCircleBorder(
+                modifier = Modifier,
+                size = 80.dp,
+                borderColor = CustomColor.gray100,
+                borderWidth = 2.dp
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(
+                            color = CustomColor.gray30,
+                            shape = androidx.compose.foundation.shape.CircleShape
+                        ),
+                    contentAlignment = androidx.compose.ui.Alignment.Center
+                ) {
+                    Icon(
+                        painter = androidx.compose.ui.res.painterResource(id = com.markoala.tomoandroid.R.drawable.ic_profile),
+                        contentDescription = null,
+                        tint = CustomColor.gray200,
+                        modifier = Modifier
+                            .size(65.dp)
+                            .padding(12.dp)
+                    )
+                }
+            }
+        }
+
+
         Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)) {
             Column(modifier = Modifier.padding(16.dp)) {
                 OutlinedTextField(
