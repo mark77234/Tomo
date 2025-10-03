@@ -38,7 +38,6 @@ fun SettingsScreen(
     paddingValues: PaddingValues,
     onSignOut: () -> Unit,
     onDeleteAccount: () -> Unit = {},
-    onOpenAppSettings: () -> Unit = {}
 ) {
     var pushEnabled by remember { mutableStateOf(true) }
     var darkModeEnabled by remember { mutableStateOf(false) }
