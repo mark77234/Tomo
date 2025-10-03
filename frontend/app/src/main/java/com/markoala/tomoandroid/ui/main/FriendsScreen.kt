@@ -119,7 +119,7 @@ fun FriendsScreen(paddingValues: PaddingValues) {
                         text = "우정을 자랑하고 추억을 기록하세요!",
                         type = CustomTextType.bodyLarge,
                         fontSize = 14.sp,
-                        color = CustomColor.black
+                        color = CustomColor.gray300
                     )
                 }
             }
