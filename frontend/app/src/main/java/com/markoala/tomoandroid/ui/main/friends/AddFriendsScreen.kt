@@ -54,6 +54,11 @@ fun AddFriendsScreen(
 
     // 친구 검색
     fun searchFriends() {
+        if (searchText.isBlank()) {
+            toastManager.showWarning("이메일을 입력해주세요.")
+            return
+        }
+
         friendsRepository.getFriends(
             email = searchText,
             context = context,
@@ -67,7 +72,11 @@ fun AddFriendsScreen(
             onSuccess = { friends ->
                 searchResults = friends
                 errorMessage = null
-                toastManager.showInfo("친구를 찾았습니다.")
+                if (friends.isEmpty()) {
+                    toastManager.showInfo("검색 결과가 없습니다.")
+                } else {
+                    toastManager.showSuccess("사용자를 찾았습니다.")
+                }
             },
             onError = { error ->
                 searchResults = emptyList()
