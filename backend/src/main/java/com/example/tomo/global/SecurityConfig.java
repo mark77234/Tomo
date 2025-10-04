@@ -41,7 +41,7 @@ public class SecurityConfig {
                 .csrf(CsrfConfigurer::disable)
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/protected/**").permitAll() // Firebase 체인 전용
+                        .requestMatchers("/api/protected/**","/swagger-ui/**").permitAll() // Firebase 체인 전용
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);

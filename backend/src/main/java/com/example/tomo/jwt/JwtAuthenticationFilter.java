@@ -36,6 +36,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
+        if (path.startsWith("/swagger-ui") || path.equals("/")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+        if (path.startsWith("/v3")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
         try {
             if (header != null && header.startsWith("Bearer ")) {

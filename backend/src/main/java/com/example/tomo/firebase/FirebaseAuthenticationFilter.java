@@ -43,6 +43,15 @@ public class FirebaseAuthenticationFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
+        if (path.startsWith("/swagger-ui")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+        if (path.startsWith("/v3")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
 
         // Preflight 요청(CORS OPTIONS)은 그냥 통과
         if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
