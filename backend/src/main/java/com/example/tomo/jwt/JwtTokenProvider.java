@@ -1,5 +1,7 @@
 package com.example.tomo.jwt;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -37,13 +39,35 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    /*// 토큰에서 UUID 추출
-    public String getUuidFromToken(String token) {
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-        return claims.getSubject();
-    }*/
+    // AccessToken 검증 후 UUID 반환
+    public String validateTokenAndGetUuid(String token) throws Exception {
+        try {
+            Claims claims = Jwts.parserBuilder()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+            return claims.getSubject();
+        } catch (ExpiredJwtException e) {
+            throw new Exception("Access token expired");
+        } catch (Exception e) {
+            throw new Exception("Invalid access token");
+        }
+    }
+
+    // RefreshToken 검증 후 UUID 반환
+    public String validateRefreshTokenAndGetUuid(String token) throws Exception {
+        try {
+            Claims claims = Jwts.parserBuilder()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+            return claims.getSubject();
+        } catch (ExpiredJwtException e) {
+            throw new Exception("Refresh token expired");
+        } catch (Exception e) {
+            throw new Exception("Invalid refresh token");
+        }
+    }
 }

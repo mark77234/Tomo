@@ -23,17 +23,38 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
-        // 예: request attribute로 Firebase에서 처리된 UUID 가져오기
-        String uuid = (String) request.getAttribute("uuid");
+        String header = request.getHeader("Authorization");
+        String refreshHeader = request.getHeader("Refresh-Token");
+        String path = request.getRequestURI();
 
-        if (uuid != null) {
-            // 토큰 생성
-            String accessToken = jwtTokenProvider.createAccessToken(uuid);
-            String refreshToken = jwtTokenProvider.createRefreshToken(uuid);
+        // /api/protected/** 요청은 JWT 검증하지 않고 다음 필터로
+        if (path.startsWith("/api/protected/")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+        try {
+            if (header != null && header.startsWith("Bearer ")) {
+                String accessToken = header.substring(7);
+                String uuid = jwtTokenProvider.validateTokenAndGetUuid(accessToken);
+                // UUID가 유효하면 SecurityContext 설정 가능
+                request.setAttribute("uuid", uuid);
 
-            // 응답 헤더에 추가
-            response.setHeader("Authorization", "Bearer " + accessToken);
-            response.setHeader("Refresh-Token", refreshToken);
+            } else if (refreshHeader != null) {
+                // RefreshToken 검증 로직 (DB와 비교, 만료 체크)
+                String uuid = jwtTokenProvider.validateRefreshTokenAndGetUuid(refreshHeader);
+
+                // 새로운 AccessToken 발급
+                String newAccessToken = jwtTokenProvider.createAccessToken(uuid);
+                response.setHeader("Authorization", "Bearer " + newAccessToken);
+
+                request.setAttribute("uuid", uuid);
+            } else {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Missing token");
+                return;
+            }
+        } catch (Exception e) {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, e.getMessage());
+            return;
         }
 
         filterChain.doFilter(request, response);
