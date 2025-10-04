@@ -1,4 +1,6 @@
-package com.markoala.tomoandroid.ui.components
+package com.markoala.tomoandroid.utils
+
+import com.markoala.tomoandroid.ui.components.ToastManager
 
 /**
  * 에러 메시지를 분석하여 적절한 사용자 친화적 메시지와 토스트 타입을 결정하는 유틸리티 클래스
