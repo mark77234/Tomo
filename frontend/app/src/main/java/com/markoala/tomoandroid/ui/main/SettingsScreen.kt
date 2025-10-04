@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.markoala.tomoandroid.ui.components.CustomText
 import com.markoala.tomoandroid.ui.components.CustomTextType
+import com.markoala.tomoandroid.ui.components.LocalToastManager
 import com.markoala.tomoandroid.ui.components.settings.SettingsToggle
 import com.markoala.tomoandroid.ui.theme.CustomColor
 
@@ -41,6 +42,7 @@ fun SettingsScreen(
 ) {
     var pushEnabled by remember { mutableStateOf(true) }
     var darkModeEnabled by remember { mutableStateOf(false) }
+    val toastManager = LocalToastManager.current
 
     Column(
         modifier = Modifier
@@ -122,7 +124,10 @@ fun SettingsScreen(
 
         Spacer(modifier = Modifier.height(12.dp))
         OutlinedButton(
-            onClick = onSignOut,
+            onClick = {
+                onSignOut()
+                toastManager.showInfo("로그아웃 되었습니다.")
+            },
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.outlinedButtonColors(
                 containerColor = CustomColor.white,
