@@ -81,7 +81,31 @@ fun AddFriendsScreen(
             onError = { error ->
                 searchResults = emptyList()
                 errorMessage = error
-                toastManager.showError("검색 중 오류가 발생했습니다: $error")
+
+                // 에러 타입에 따라 다른 토스트 메시지 표시
+                when {
+                    error.contains("찾을 수 없습니다") ||
+                            error.contains("친구를 찾을 수 없습니다") ||
+                            error.contains("사용자를 찾을 수 없습니다") -> {
+                        toastManager.showInfo("해당 이메일로 등록된 사용자가 없습니다.")
+                    }
+
+                    error.contains("네트워크") -> {
+                        toastManager.showError("네트워크 연결을 확인해주세요.")
+                    }
+
+                    error.contains("인증") -> {
+                        toastManager.showError("로그인이 필요합니다.")
+                    }
+
+                    error.contains("검색에 실패") -> {
+                        toastManager.showError("서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.")
+                    }
+
+                    else -> {
+                        toastManager.showError("검색 중 오류가 발생했습니다: $error")
+                    }
+                }
             }
         )
     }
@@ -101,7 +125,39 @@ fun AddFriendsScreen(
             },
             onError = { error ->
                 errorMessage = error
-                toastManager.showError("친구 추가 중 오류가 발생했습니다: $error")
+
+                // 에러 타입에 따라 다른 토스트 메시지 표시
+                when {
+                    error.contains("이미 친구") || error.contains("already") -> {
+                        toastManager.showInfo("이미 친구로 등록된 사용자입니다.")
+                    }
+
+                    error.contains("찾을 수 없습니다") ||
+                            error.contains("친구를 찾을 수 없습니다") ||
+                            error.contains("사용자를 찾을 수 없습니다") -> {
+                        toastManager.showInfo("해당 이메일로 등록된 사용자가 없습니다.")
+                    }
+
+                    error.contains("자신을") || error.contains("본인") -> {
+                        toastManager.showWarning("자신을 친구로 추가할 수 없습니다.")
+                    }
+
+                    error.contains("네트워크") -> {
+                        toastManager.showError("네트워크 연결을 확인해주세요.")
+                    }
+
+                    error.contains("인증") -> {
+                        toastManager.showError("로그인이 필요합니다.")
+                    }
+
+                    error.contains("친구 추가에 실패") -> {
+                        toastManager.showError("서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.")
+                    }
+
+                    else -> {
+                        toastManager.showError("친구 추가 중 오류가 발생했습니다: $error")
+                    }
+                }
             }
         )
     }
