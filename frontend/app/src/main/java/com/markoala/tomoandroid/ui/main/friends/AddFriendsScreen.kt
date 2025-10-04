@@ -36,6 +36,7 @@ import com.markoala.tomoandroid.data.repository.friends.FriendsRepository
 import com.markoala.tomoandroid.ui.components.CustomText
 import com.markoala.tomoandroid.ui.components.CustomTextType
 import com.markoala.tomoandroid.ui.components.DashedBorderBox
+import com.markoala.tomoandroid.ui.components.LocalToastManager
 import com.markoala.tomoandroid.ui.theme.CustomColor
 
 @Composable
@@ -49,6 +50,7 @@ fun AddFriendsScreen(
     var errorMessage by remember { mutableStateOf<String?>(null) }
     val context = LocalContext.current
     val friendsRepository = remember { FriendsRepository() }
+    val toastManager = LocalToastManager.current
 
     // 친구 검색
     fun searchFriends() {
@@ -65,10 +67,12 @@ fun AddFriendsScreen(
             onSuccess = { friends ->
                 searchResults = friends
                 errorMessage = null
+                toastManager.showInfo("친구를 찾았습니다.")
             },
             onError = { error ->
                 searchResults = emptyList()
                 errorMessage = error
+                toastManager.showError("검색 중 오류가 발생했습니다: $error")
             }
         )
     }
@@ -83,10 +87,12 @@ fun AddFriendsScreen(
             },
             onSuccess = {
                 // 친구 추가 성공 시 검색 결과 갱신
+                toastManager.showSuccess("친구가 성공적으로 추가되었습니다!")
                 searchFriends()
             },
             onError = { error ->
                 errorMessage = error
+                toastManager.showError("친구 추가 중 오류가 발생했습니다: $error")
             }
         )
     }
