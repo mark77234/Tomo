@@ -25,7 +25,7 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping("/friends")
+    @PostMapping("/public/friends")
     public ResponseEntity<ResponsePostUniformDto> addFriendsUsingEmail(@RequestBody addFriendRequestDto dto) {
        try{
            return ResponseEntity.status(HttpStatus.CREATED).body(userService.addFriends(dto));
@@ -33,7 +33,7 @@ public class UserController {
            return ResponseEntity.status(HttpStatus.CONFLICT).body(new ResponsePostUniformDto(false, e.getMessage()));
        }
     }
-    @GetMapping("/friends") // 이메일로 친구 검색
+    @GetMapping("/public/friends") // 이메일로 친구 검색
     public ResponseEntity<ApiResponse<getFriendResponseDto>> getFriendsUsingEmail(@RequestParam String email ) {
         try {
             return ResponseEntity.ok(ApiResponse.success(userService.getUserInfo(email),"친구 조회 완료"));
@@ -43,7 +43,7 @@ public class UserController {
     }
 
 
-    @PostMapping("/signup")
+    @PostMapping("/public/signup")
     public ResponseEntity<ResponsePostUniformDto> signUser(@RequestBody RequestUserSignDto dto) {
         try {
             return ResponseEntity.ok(userService.signUser(dto));

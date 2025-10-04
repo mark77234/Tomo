@@ -14,6 +14,7 @@ import java.util.List;
 
 
 @RestController
+@RequestMapping("/public")
 public class MoimController {
 
     private final MoimService moimService;
