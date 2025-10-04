@@ -36,7 +36,9 @@ import com.markoala.tomoandroid.data.repository.friends.FriendsRepository
 import com.markoala.tomoandroid.ui.components.CustomText
 import com.markoala.tomoandroid.ui.components.CustomTextType
 import com.markoala.tomoandroid.ui.components.DashedBorderBox
+import com.markoala.tomoandroid.ui.components.LocalToastManager
 import com.markoala.tomoandroid.ui.theme.CustomColor
+import com.markoala.tomoandroid.utils.ErrorHandler
 
 @Composable
 fun AddFriendsScreen(
@@ -49,9 +51,15 @@ fun AddFriendsScreen(
     var errorMessage by remember { mutableStateOf<String?>(null) }
     val context = LocalContext.current
     val friendsRepository = remember { FriendsRepository() }
+    val toastManager = LocalToastManager.current
 
     // 친구 검색
     fun searchFriends() {
+        if (searchText.isBlank()) {
+            toastManager.showWarning("이메일을 입력해주세요.")
+            return
+        }
+
         friendsRepository.getFriends(
             email = searchText,
             context = context,
@@ -65,10 +73,19 @@ fun AddFriendsScreen(
             onSuccess = { friends ->
                 searchResults = friends
                 errorMessage = null
+                if (friends.isEmpty()) {
+                    toastManager.showInfo("검색 결과가 없습니다.")
+                } else {
+                    toastManager.showSuccess("사용자를 찾았습니다.")
+                }
             },
             onError = { error ->
                 searchResults = emptyList()
                 errorMessage = error
+
+                // ErrorHandler를 사용하여 에러 처리
+                val errorResult = ErrorHandler.handleFriendSearchError(error)
+                ErrorHandler.showToast(toastManager, errorResult)
             }
         )
     }
@@ -83,10 +100,15 @@ fun AddFriendsScreen(
             },
             onSuccess = {
                 // 친구 추가 성공 시 검색 결과 갱신
+                toastManager.showSuccess("친구가 성공적으로 추가되었습니다!")
                 searchFriends()
             },
             onError = { error ->
                 errorMessage = error
+
+                // ErrorHandler를 사용하여 에러 처리
+                val errorResult = ErrorHandler.handleFriendAddError(error)
+                ErrorHandler.showToast(toastManager, errorResult)
             }
         )
     }

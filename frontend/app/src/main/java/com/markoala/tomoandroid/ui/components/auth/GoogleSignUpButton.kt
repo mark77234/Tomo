@@ -3,7 +3,6 @@ package com.markoala.tomoandroid.ui.components.auth
 import android.accounts.AccountManager
 import android.app.Activity
 import android.util.Log
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -34,6 +33,7 @@ import com.markoala.tomoandroid.data.repository.AuthRepository
 import com.markoala.tomoandroid.data.repository.UserRepository
 import com.markoala.tomoandroid.ui.components.CustomText
 import com.markoala.tomoandroid.ui.components.CustomTextType
+import com.markoala.tomoandroid.ui.components.LocalToastManager
 import com.markoala.tomoandroid.ui.theme.CustomColor
 import com.markoala.tomoandroid.utils.auth.GoogleCredentialHelper
 import kotlinx.coroutines.CancellationException
@@ -42,6 +42,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun GoogleSignUpButton(onSignedIn: () -> Unit) {
     val context = LocalContext.current
+    val toastManager = LocalToastManager.current
     val activity = context as? ComponentActivity ?: (context as? Activity)
     if (activity == null) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -84,11 +85,7 @@ fun GoogleSignUpButton(onSignedIn: () -> Unit) {
                                 activity,
                                 { future ->
                                     activity.runOnUiThread {
-                                        Toast.makeText(
-                                            activity,
-                                            "계정이 추가되었습니다.",
-                                            Toast.LENGTH_SHORT
-                                        ).show()
+                                        toastManager.showSuccess("계정이 추가되었습니다.")
                                     }
                                 },
                                 null
@@ -105,9 +102,9 @@ fun GoogleSignUpButton(onSignedIn: () -> Unit) {
                     if (!exists) {
                         AuthRepository.signUp(userData)
                         UserRepository.saveUserToFirestore(userData) // 최초 가입 시에만 저장
-                        Toast.makeText(context, "회원가입 성공", Toast.LENGTH_SHORT).show()
+                        toastManager.showSuccess("회원가입 성공")
                     } else {
-                        Toast.makeText(context, "로그인 성공", Toast.LENGTH_SHORT).show()
+                        toastManager.showSuccess("로그인 성공")
                     }
 
 
@@ -115,10 +112,11 @@ fun GoogleSignUpButton(onSignedIn: () -> Unit) {
                     onSignedIn()
 
                 } catch (e: CancellationException) {
+                    toastManager.showError("작업 취소됨: ${e.message}")
                     Log.w("GoogleSignIn", "작업 취소됨 ${e.message}")
                 } catch (e: Exception) {
                     Log.e("GoogleSignIn", "로그인 실패: ${e.message}", e)
-                    Toast.makeText(context, "로그인 실패: ${e.message}", Toast.LENGTH_SHORT).show()
+                    toastManager.showError("로그인 실패: ${e.message}")
                 }
             }
         },
@@ -140,4 +138,3 @@ fun GoogleSignUpButton(onSignedIn: () -> Unit) {
         }
     }
 }
-
