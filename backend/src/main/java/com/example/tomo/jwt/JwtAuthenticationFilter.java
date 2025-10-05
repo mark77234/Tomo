@@ -61,6 +61,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 request.setAttribute("uuid", uuid);
 
             } else if (refreshHeader != null) {
+                // RefreshToken 검증 로직 (DB와 비교, 만료 체크)
                 String uuid = jwtTokenProvider.validateRefreshTokenAndGetUuid(refreshHeader);
 
                 // 새로운 AccessToken 발급
