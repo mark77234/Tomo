@@ -92,6 +92,13 @@ dependencies {
     // Coil for image loading
     implementation(libs.coil.compose)
 
+    // Security Crypto for encrypted shared preferences
+    implementation("androidx.security:security-crypto:1.1.0-alpha06")
+    implementation("com.squareup.retrofit2:converter-scalars:2.9.0")
+
+    // OkHttp for HTTP client
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
