@@ -6,6 +6,7 @@ import com.markoala.tomoandroid.data.model.GetFriendsResponse
 import com.markoala.tomoandroid.data.model.PostResponse
 import com.markoala.tomoandroid.data.model.UserData
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.Retrofit
@@ -30,20 +31,25 @@ interface UserApiService {
     ): Response<String>
 
     // 친구 검색 API (AuthInterceptor가 자동으로 Authorization 헤더 추가)
-    @POST("/friends")
+    @POST("/public/friends")
     fun postFriends(
         @Body body: FriendSearchRequest
     ): Call<FriendSearchResponse>
 
-    @GET("/friends")
+    @GET("/public/friends")
     fun getFriends(
         @Query("email") email: String
     ): Call<GetFriendsResponse>
 }
 
+// HttpLoggingInterceptor 생성 및 설정
+private val loggingInterceptor = HttpLoggingInterceptor().apply {
+    level = HttpLoggingInterceptor.Level.BODY // 요청과 응답의 헤더 및 본문 모두 로깅
+}
 
 // AuthInterceptor를 포함한 OkHttpClient 생성
 private val okHttpClient = OkHttpClient.Builder()
+    .addInterceptor(loggingInterceptor) // 로깅 인터셉터 추가
     .addInterceptor(AuthInterceptor()) // 인터셉터(자동으로 헤더에 토큰 추가)
     .build()
 
