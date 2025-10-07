@@ -48,7 +48,7 @@ public class PromiseService {
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 약속입니다"));
 
         return new ResponseGetPromiseDto(promise.getPromiseName(),promise.getPromiseDate(),
-        promise.getPromiseTime(),promise.getPlace());
+        promise.getPromiseTime(),promise.getLocation());
 
 
     }

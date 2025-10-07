@@ -1,6 +1,7 @@
 package com.example.tomo.firebase;
 
 import com.example.tomo.jwt.JwtTokenProvider;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseToken;
 import jakarta.servlet.FilterChain;
@@ -75,21 +76,23 @@ public class FirebaseAuthenticationFilter extends OncePerRequestFilter {
                 String accessToken = jwtTokenProvider.createAccessToken(uuid);
                 String refreshToken = jwtTokenProvider.createRefreshToken(uuid);
 
-                // 3️⃣ 응답 헤더에 추가
-                response.setHeader("Authorization", "Bearer " + accessToken);
-                response.setHeader("Refresh-Token", refreshToken);
+                // 3️⃣ 응답 본문으로 JWT 전달
+                ResponseFirebaseLoginDto responseDto = new ResponseFirebaseLoginDto(accessToken, refreshToken);
+                response.setContentType("application/json");
+                response.setCharacterEncoding("UTF-8");
+                new ObjectMapper().writeValue(response.getWriter(), responseDto);
+
 
             } catch (FirebaseAuthException e) {
                 System.out.println("[DEBUG] Token verification failed: " + e.getMessage());
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid or expired Firebase ID token");
-                return; // 인증 실패 시 바로 종료
+
             }
         } else {
             // 헤더 없음 → 인증 실패 처리
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Missing Authorization header");
-            return;
+
         }
 
-        filterChain.doFilter(request, response);
     }
 }

@@ -1,5 +1,6 @@
 package com.example.tomo.Promise;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,7 +17,9 @@ public class ResponseGetPromiseDto {
 
     private String promiseName;
     private LocalDate promiseDate;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss", timezone = "Asia/Seoul")
     private LocalTime promiseTime;
-    private String place;
+    private String location;
 
 }

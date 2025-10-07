@@ -44,6 +44,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
+        if (path.startsWith("/public/signup")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
         try {
             if (header != null && header.startsWith("Bearer ")) {

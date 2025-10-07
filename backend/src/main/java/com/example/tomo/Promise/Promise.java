@@ -4,9 +4,7 @@ import com.example.tomo.Moim.Moim;
 import jakarta.persistence.*;
 import lombok.Getter;
 
-import java.sql.Time;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Entity
@@ -22,7 +20,7 @@ public class Promise {
     @JoinColumn(name ="moim_id")
     private Moim moim;
 
-    private String place;
+    private String location;
 
     private LocalTime promiseTime;
     private LocalDate promiseDate;
@@ -30,9 +28,9 @@ public class Promise {
 
     public Promise() {}
 
-    public Promise(String promiseName, String place,
+    public Promise(String promiseName, String location,
                    LocalTime promiseTime, LocalDate promiseDate) {
-        this.place = place;
+        this.location = location;
         this.promiseName = promiseName;
         this.promiseDate = promiseDate;
         this.promiseTime = promiseTime;

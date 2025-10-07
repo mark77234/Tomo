@@ -37,15 +37,15 @@ public class MoimService {
             throw new DuplicatedException("이미 존재하는 모임 이름입니다.");
         }
 
-        Moim moim = new Moim(dto.getMoimName(), dto.getDescription());
+        Moim moim = new Moim(dto.getMoimName(), dto.getDescription()); // 일단 생성자도 변경해야 해서 그대로 두기
         moimRepository.save(moim);
 
-        for (String userName : dto.getUserNames()) {
+        for (String email : dto.getEmails()) {
 
-            Optional<User> user = userRepository.findByUsername(userName);
+            Optional<User> user = userRepository.findByEmail(email);
 
             if(user.isEmpty()){
-                throw new EntityNotFoundException("해당 이름의 사용자가 존재하지 않습니다");
+                throw new EntityNotFoundException("해당 이메일의 사용자가 존재하지 않습니다");
             }
 
             Moim_people moim_people = new Moim_people(moim, user.get());

@@ -55,8 +55,8 @@ public class MoimController {
     }
 
     @Operation(summary = "내 모임 리스트 조회", description = "로그인한 사용자가 속한 모든 모임 정보를 조회합니다")
-    @GetMapping("/moims/mine")
-    public ResponseEntity<List<getMoimResponseDTO>> getAllMoims() {
-        return ResponseEntity.ok().body(moimService.getMoimList());
+    @GetMapping("/moims/list")
+    public ResponseEntity<ApiResponse<List<getMoimResponseDTO>>> getAllMoims() {
+        return ResponseEntity.ok().body(ApiResponse.success(moimService.getMoimList(),"모임 조회 성공"));
     }
 }

@@ -2,6 +2,9 @@ package com.example.tomo.global;
 
 import com.example.tomo.firebase.FirebaseAuthenticationFilter;
 import com.example.tomo.jwt.JwtAuthenticationFilter;
+import org.apache.catalina.connector.Connector;
+import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
+import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -39,14 +42,29 @@ public class SecurityConfig {
         http
                 .securityMatcher("/public/**")
                 .csrf(CsrfConfigurer::disable)
-                .cors(Customizer.withDefaults())
+                .cors(Customizer.withDefaults());
+        http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/protected/**","/swagger-ui/**").permitAll() // Firebase 체인 전용
+                        .requestMatchers("/api/protected/**","/swagger-ui/**","public/signup").permitAll() // Firebase 체인 전용
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
 
         return http.build();
+    }
+
+    @Bean
+    public WebServerFactoryCustomizer<TomcatServletWebServerFactory> servletContainer() {
+        return factory -> factory.addAdditionalTomcatConnectors(httpToHttpsRedirectConnector());
+    }
+
+    private Connector httpToHttpsRedirectConnector() {
+        Connector connector = new Connector(TomcatServletWebServerFactory.DEFAULT_PROTOCOL);
+        connector.setScheme("http");
+        connector.setPort(8080); // HTTP port
+        connector.setSecure(false);
+        connector.setRedirectPort(8443); // HTTPS port
+        return connector;
     }
 }

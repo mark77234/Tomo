@@ -12,11 +12,13 @@ import lombok.Setter;
 public class ResponseFriendDetailDto {
 
     private String username;
+    private String email;
     private Double friendship;
     private String createdAt;
 
-    public ResponseFriendDetailDto(String username, Double friendship, String createdAt) {
+    public ResponseFriendDetailDto(String username, String email, Double friendship, String createdAt) {
         this.username = username;
+        this.email = email;
         this.friendship = friendship;
         this.createdAt = createdAt;
     }
