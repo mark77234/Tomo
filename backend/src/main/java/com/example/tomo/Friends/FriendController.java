@@ -1,6 +1,5 @@
 package com.example.tomo.Friends;
 
-import com.example.tomo.Friends.dtos.ResponseGetFriendsDto;
 import com.example.tomo.Friends.dtos.ResponseFriendDetailDto;
 import com.example.tomo.global.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -23,16 +22,7 @@ public class FriendController {
         this.friendService = friendService;
     }
 
-    @Operation(summary = "내 친구 목록 조회", description = "로그인된 사용자의 친구 목록을 반환합니다")
-    @GetMapping("/friends/list")
-    public ResponseEntity<ApiResponse<List<ResponseGetFriendsDto>>> getMyFriends() {
-        try {
-            return ResponseEntity.ok(ApiResponse.success(friendService.getFriends(), "성공"));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(ApiResponse.failure("로그인된 사용자가 아닙니다"));
-        }
-    }
+
 
     @Operation(summary = "친구 상세 정보 조회", description = "로그인된 사용자의 친구 상세 정보를 반환합니다")
     @GetMapping("/friends/detail")

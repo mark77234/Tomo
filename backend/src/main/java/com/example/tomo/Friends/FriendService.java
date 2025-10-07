@@ -25,25 +25,6 @@ public class FriendService {
         this.userRepository = userRepository;
     }
 
-    // 친구 목록 조회하기
-    // 액세스 토큰을 받아와야 함
-    public List<ResponseGetFriendsDto> getFriends() {
-        // 액세스 토큰으로는 요청 인증만 하고, 다른 사용자 인증 프로세스가 요구됨 아이디를 받아야 겠지?
-        Long userId =1L;
-        // 근데 병찬이가 보내주면 String으로 올텐데
-
-        User existUser = userRepository.findById(userId)
-                .orElseThrow(()->new IllegalArgumentException("친구 상세 정보 출력 중 사용자 인증이 되지 않았습니다. 로그인 부탁"));
-
-        List<Long> idList= friendRepository.getFriends(existUser.getId());
-
-        return idList.stream()
-                .map(userRepository::findById)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .map(user -> new ResponseGetFriendsDto(user.getUsername()))
-                .collect(Collectors.toList());
-    }
 
     // 친구 상세 정보 출력하기
     public List<ResponseFriendDetailDto> getDetailFriends(){
