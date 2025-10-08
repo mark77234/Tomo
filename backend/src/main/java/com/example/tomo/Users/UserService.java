@@ -125,6 +125,13 @@ public class UserService {
 
         userRepository.delete(user);
     }
+    public void logout(String uid) {
+        User user = userRepository.findByFirebaseId(uid)
+                .orElseThrow(() -> new EntityNotFoundException("사용자가 존재하지 않습니다."));
+        // Refresh Token 삭제
+        user.setRefreshToken(null);
+        userRepository.save(user);
+    }
 
 
 }

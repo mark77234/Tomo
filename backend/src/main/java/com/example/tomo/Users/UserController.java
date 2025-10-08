@@ -116,6 +116,19 @@ public class UserController {
                     .body(ApiResponse.failure("Internal server error"));
         }
     }
+    @DeleteMapping("/public/logout")
+    public ResponseEntity<ApiResponse<Void>> logout(@AuthenticationPrincipal String uid) {
+        try {
+            userService.logout(uid);
+            return ResponseEntity.ok(ApiResponse.success(null, "로그아웃 완료"));
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(ApiResponse.failure("사용자를 찾을 수 없습니다."));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ApiResponse.failure("로그아웃 중 오류가 발생했습니다."));
+        }
+    }
 
 
 }
