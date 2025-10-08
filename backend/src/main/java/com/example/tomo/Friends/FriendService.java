@@ -69,20 +69,20 @@ public class FriendService {
 
     @Transactional
     public void removeFriend(String uid, String friendEmail) {
-        // 1️⃣ 본인 찾기
+        // 본인 User 조회
         User user = userRepository.findByFirebaseId(uid)
-                .orElseThrow(() -> new EntityNotFoundException("본인 사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다."));
 
-        // 2️⃣ 친구 찾기
+        // 친구 User 조회
         User friend = userRepository.findByEmail(friendEmail)
-                .orElseThrow(() -> new EntityNotFoundException("삭제할 친구를 찾을 수 없습니다."));
+                .orElseThrow(() -> new EntityNotFoundException("친구를 찾을 수 없습니다."));
 
-        // 3️⃣ Friend 관계 조회
-        Friend relation = friendRepository.findByUserAndFriend(user, friend)
-                .orElse(friendRepository.findByUserAndFriend(friend, user)
-                        .orElseThrow(() -> new EntityNotFoundException("친구 관계가 존재하지 않습니다.")));
+        // 본인이 친구로 등록한 레코드 삭제
+        friendRepository.findByUserAndFriend(user, friend)
+                .ifPresent(friendRepository::delete);
 
-        // 4️⃣ 삭제
-        friendRepository.delete(relation);
+        // 친구가 본인을 친구로 등록한 레코드 삭제
+        friendRepository.findByUserAndFriend(friend, user)
+                .ifPresent(friendRepository::delete);
     }
 }
