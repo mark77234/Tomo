@@ -67,11 +67,13 @@ public class MoimService {
     // 모임 상세 조회
 
     @Transactional
-    public List<getMoimResponseDTO> getMoimList(){
+    public List<getMoimResponseDTO> getMoimList(String userId){
         // 액세스 토큰이 들어오면 처리할 파트
-        Long userId = 1L;
 
-        List<Moim_people> moims = moimPeopleRepository.findByUserId(userId);
+        User user = userRepository.findByFirebaseId(userId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 UID를 가진 사용자가 존재하지 않습니다."));
+
+        List<Moim_people> moims = moimPeopleRepository.findByUserId(user.getId());
         List<getMoimResponseDTO> moimResponseDTOList = new ArrayList<>();
 
         for(Moim_people moim_people : moims){

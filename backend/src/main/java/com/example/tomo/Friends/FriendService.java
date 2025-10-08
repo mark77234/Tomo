@@ -27,11 +27,10 @@ public class FriendService {
 
 
     // 친구 상세 정보 출력하기
-    public List<ResponseFriendDetailDto> getDetailFriends(){
+    public List<ResponseFriendDetailDto> getDetailFriends(String userId) {
 
-        long userId =1L;
 
-        User user = userRepository.findById(userId)
+        User user = userRepository.findByFirebaseId(userId)
                 .orElseThrow(()->new IllegalArgumentException("친구 상세 정보 출력 중 사용자 인증이 되지 않았습니다. 로그인 부탁"));
 
         // 친구 엔티티를 가져와서 점수 계산하는 로직 JPQL 작성하기

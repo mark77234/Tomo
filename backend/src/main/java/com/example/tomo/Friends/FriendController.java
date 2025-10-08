@@ -25,9 +25,9 @@ public class FriendController {
 
     @Operation(summary = "친구 목록 조회", description = "사용자의 친구 목록을 반환합니다")
     @GetMapping("/friends/list")
-    public ResponseEntity<ApiResponse<List<ResponseFriendDetailDto>>> getFriendDetails() {
+    public ResponseEntity<ApiResponse<List<ResponseFriendDetailDto>>> getFriendDetails(@AuthenticationPrincipal String Uid) {
         try {
-            return ResponseEntity.ok().body(ApiResponse.success(friendService.getDetailFriends(), "성공"));
+            return ResponseEntity.ok().body(ApiResponse.success(friendService.getDetailFriends(Uid), "성공"));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(ApiResponse.failure("로그인된 사용자가 아닙니다"));

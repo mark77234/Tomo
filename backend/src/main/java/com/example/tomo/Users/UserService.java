@@ -57,7 +57,7 @@ public class UserService {
 
         // 액세스 토큰으로 사용자 인증하기
         // 현재는 ID 가 1인 유저 꺼내기
-        Optional<User> user = userRepository.findById(1L);
+        Optional<User> user = userRepository.findByFirebaseId(dto.getUid());
         if(user.isEmpty()){
             throw new EntityNotFoundException("친구 요청은 로그인이 선행되어야 합니다");
         }

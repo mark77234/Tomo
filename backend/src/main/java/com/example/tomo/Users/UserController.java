@@ -37,8 +37,11 @@ public class UserController {
 
     @Operation(summary = "친구 추가", description = "이메일을 이용하여 친구를 추가합니다.")
     @PostMapping("/public/friends")
-    public ResponseEntity<ResponsePostUniformDto> addFriendsUsingEmail(@RequestBody addFriendRequestDto dto) {
+    public ResponseEntity<ResponsePostUniformDto> addFriendsUsingEmail(
+            @AuthenticationPrincipal String uid,
+            @RequestBody addFriendRequestDto dto) {
        try{
+           dto.setUid(uid);
            return ResponseEntity.status(HttpStatus.CREATED).body(userService.addFriends(dto));
        }catch (EntityExistsException e){
            return ResponseEntity.status(HttpStatus.CONFLICT).body(new ResponsePostUniformDto(false, e.getMessage()));
