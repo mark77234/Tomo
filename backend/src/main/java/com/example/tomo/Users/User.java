@@ -32,8 +32,9 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<Friend> friends = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user")
-    private List<Moim_people> moimPeopleList= new ArrayList<>();
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Moim_people> moimPeopleList = new ArrayList<>();
+
 
     public User(String id, String username, String email) {
         this.firebaseId = id;

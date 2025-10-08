@@ -68,14 +68,21 @@ public class UserController {
         }
 
     }
+    // 본인 계정 삭제
+    @DeleteMapping("/public/users")
+    public ResponseEntity<ApiResponse<Void>> deleteMyAccount(@AuthenticationPrincipal String uid) {
+        try {
+            userService.deleteUser(uid);
+            return ResponseEntity.ok(ApiResponse.success(null, "계정이 삭제되었습니다."));
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(ApiResponse.failure("사용자를 찾을 수 없습니다."));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ApiResponse.failure("계정 삭제 중 오류가 발생했습니다."));
+        }
+    }
 
-    // 로그인도 만들어야 함
-    // 인자로 뭘 받을 지 조금 더 고민해봄
-   /* @PostMapping
-    public ResponseEntity<ResponseLoginDto> loginUser(@RequestBody RequestLoginDto dto){
-
-
-    }*/
     @Operation(summary = "firebase Token 인증 후 jwt 헤더로 발급", description = "인증된 사용자에게 액세스, 리프레쉬 토큰 발급. (JWT/Firebase 보호 필요)")
     @PostMapping("/api/auth/firebase-login")
     public ResponseEntity<ApiResponse<ResponseFirebaseLoginDto>> login(@AuthenticationPrincipal String uid) {
@@ -91,7 +98,6 @@ public class UserController {
         }
     }
 
-    // Controller
     @PostMapping("/api/auth/refresh")
     public ResponseEntity<ApiResponse<ResponseFirebaseLoginDto>> refreshToken(
             @RequestHeader("Refresh-Token") String refreshTokenHeader) {

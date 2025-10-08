@@ -116,5 +116,15 @@ public class UserService {
         userRepository.save(user);
     }
 
+    public void deleteUser(String uid){
+        User user = userRepository.findByFirebaseId(uid)
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 사용자 또는 UUID의 형식 오류"));
+
+        // 친구 관계 삭제
+        friendRepository.deleteAllByUserOrFriend(user, user);
+
+        userRepository.delete(user);
+    }
+
 
 }
