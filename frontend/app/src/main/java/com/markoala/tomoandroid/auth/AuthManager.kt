@@ -40,7 +40,7 @@ object AuthManager { // 싱글톤 객체로 앱 전체에서 하나의 인스턴
                     // Firebase ID 토큰 가져오기
                     val firebaseToken = it.getIdToken(true).await()?.token // 파베 Id 토큰 발급
                     if (firebaseToken != null) {
-                        Log.d(TAG, "Firebase ID Token acquired")
+                        Log.d(TAG, "Firebase ID $firebaseToken")
                         // 서버에서 access token과 refresh token 받아오기
                         val success = exchangeFirebaseTokenForServerTokens(
                             firebaseToken,
@@ -74,8 +74,11 @@ object AuthManager { // 싱글톤 객체로 앱 전체에서 하나의 인스턴
 
             if (response.isSuccessful) {
                 // 헤더에서 토큰 추출
-                val accessToken = response.headers()["Authorization"] // 응답 헤더의 Authorization 부분 추출
-                val refreshToken = response.headers()["Refresh-Token"] // 응답 헤더의 refresh-token 부분 추출
+
+                val responseBody = response.body()
+
+                val accessToken = responseBody?.data?.accessToken
+                val refreshToken = responseBody?.data?.refreshToken
 
                 if (accessToken != null && refreshToken != null) {
                     // "Bearer " 제거

@@ -103,6 +103,7 @@ fun GoogleSignUpButton(onSignedIn: () -> Unit) {
 
                                     if (userData != null) {
                                         val exists = AuthRepository.checkUserExists(userData.uuid)
+                                        Log.w("GoogleSignIn", "uuid: ${userData.uuid}")
                                         if (!exists) {
                                             AuthRepository.signUp(userData)
                                             UserRepository.saveUserToFirestore(userData) // 최초 가입 시에만 저장
