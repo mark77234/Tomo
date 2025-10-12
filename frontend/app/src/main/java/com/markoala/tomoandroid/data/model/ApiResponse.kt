@@ -10,7 +10,7 @@ data class FriendData(
     val email: String
 )
 
-data class GetFriendsResponse(
+data class FriendsResponseDTO(
     val success: Boolean,
     val message: String,
     val data: FriendData

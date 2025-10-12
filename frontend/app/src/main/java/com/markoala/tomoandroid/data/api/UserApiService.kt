@@ -4,7 +4,7 @@ import com.markoala.tomoandroid.data.model.FirebaseTokenResponse
 import com.markoala.tomoandroid.data.model.FriendSearchRequest
 import com.markoala.tomoandroid.data.model.FriendSearchResponse
 import com.markoala.tomoandroid.data.model.FriendsListDTO
-import com.markoala.tomoandroid.data.model.GetFriendsResponse
+import com.markoala.tomoandroid.data.model.FriendsResponseDTO
 import com.markoala.tomoandroid.data.model.PostResponse
 import com.markoala.tomoandroid.data.model.UserData
 import okhttp3.OkHttpClient
@@ -15,6 +15,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
@@ -41,7 +42,12 @@ interface UserApiService {
     @GET("/public/friends")
     fun getFriends(
         @Query("email") email: String
-    ): Call<GetFriendsResponse>
+    ): Call<FriendsResponseDTO>
+
+    @DELETE("/public/friends")
+    fun deleteFriends(
+        @Query("friendEmail") email: String
+    ): Call<FriendsResponseDTO>
 
     @GET("/public/friends/list")
     fun getFriendsList(

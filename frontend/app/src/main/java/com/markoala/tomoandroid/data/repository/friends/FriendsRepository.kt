@@ -7,7 +7,7 @@ import com.markoala.tomoandroid.data.api.apiService
 import com.markoala.tomoandroid.data.model.FriendData
 import com.markoala.tomoandroid.data.model.FriendSearchRequest
 import com.markoala.tomoandroid.data.model.FriendSearchResponse
-import com.markoala.tomoandroid.data.model.GetFriendsResponse
+import com.markoala.tomoandroid.data.model.FriendsResponseDTO
 import com.markoala.tomoandroid.utils.ErrorHandler
 import retrofit2.Call
 import retrofit2.Callback
@@ -40,10 +40,10 @@ class FriendsRepository {
         val call = apiService.getFriends(email)
         Log.d("FriendsRepository", "getFriends API 호출 시작")
 
-        call.enqueue(object : Callback<GetFriendsResponse> {
+        call.enqueue(object : Callback<FriendsResponseDTO> {
             override fun onResponse(
-                call: Call<GetFriendsResponse>,
-                response: Response<GetFriendsResponse>
+                call: Call<FriendsResponseDTO>,
+                response: Response<FriendsResponseDTO>
             ) {
                 Log.d("FriendsRepository", "getFriends API 응답 수신")
                 Log.d("FriendsRepository", "응답 코드: ${response.code()}")
@@ -74,7 +74,7 @@ class FriendsRepository {
                 }
             }
 
-            override fun onFailure(call: Call<GetFriendsResponse>, t: Throwable) {
+            override fun onFailure(call: Call<FriendsResponseDTO>, t: Throwable) {
                 Log.e("FriendsRepository", "getFriends API 요청 실패", t)
                 onLoading(false)
                 onError("네트워크 오류가 발생했습니다")
