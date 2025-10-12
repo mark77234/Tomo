@@ -14,14 +14,14 @@ import retrofit2.Callback
 import retrofit2.Response
 
 class FriendsViewModel : ViewModel() {
-    private val _friends = MutableStateFlow<List<FriendProfile>>(emptyList())
-    val friends: StateFlow<List<FriendProfile>> = _friends.asStateFlow()
+    private val _friends = MutableStateFlow<List<FriendProfile>>(emptyList()) // 내부 변경용
+    val friends: StateFlow<List<FriendProfile>> = _friends.asStateFlow() // 외부 노출용
 
-    private val _isLoading = MutableStateFlow(false)
-    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
+    private val _isLoading = MutableStateFlow(false) // 로딩 상태 표시용 flow
+    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow() // 외부 노출용
 
-    private val _error = MutableStateFlow<String?>(null)
-    val error: StateFlow<String?> = _error.asStateFlow()
+    private val _error = MutableStateFlow<String?>(null) // 에러 메시지 저장용 flow
+    val error: StateFlow<String?> = _error.asStateFlow() // 외부 노출용
 
     init {
         loadFriends()
@@ -43,17 +43,34 @@ class FriendsViewModel : ViewModel() {
                             if (friendsListDTO.success) {
                                 _friends.value = friendsListDTO.data
                             } else {
-                                _error.value = friendsListDTO.message
+                                _error.value = "서버 오류: ${friendsListDTO.message}"
                             }
+                        } ?: run {
+                            _error.value = "서버 응답이 비어있습니다."
                         }
                     } else {
-                        _error.value = "친구 목록을 불러오는데 실패했습니다."
+                        val errorMessage = when (response.code()) {
+                            401 -> "인증이 필요합니다. 다시 로그인해주세요."
+                            403 -> "접근 권한이 없습니다."
+                            404 -> "서버를 찾을 수 없습니다."
+                            500 -> "서버 내부 오류가 발생했습니다."
+                            503 -> "서버가 일시적으로 사용할 수 없습니다."
+                            else -> "친구 목록을 불러오는데 실패했습니다. (오류 코드: ${response.code()})"
+                        }
+                        _error.value = errorMessage
                     }
                 }
 
                 override fun onFailure(call: Call<FriendsListDTO>, t: Throwable) {
                     _isLoading.value = false
-                    _error.value = "네트워크 오류가 발생했습니다: ${t.message}"
+                    val errorMessage = when {
+                        t is java.net.UnknownHostException -> "인터넷 연결을 확인해주세요."
+                        t is java.net.SocketTimeoutException -> "서버 응답 시간이 초과되었습니다."
+                        t is java.net.ConnectException -> "서버에 연결할 수 없습니다."
+                        t.message?.contains("SSL") == true -> "보안 연결에 문제가 있습니다."
+                        else -> "네트워크 오류: ${t.message ?: "알 수 없는 오류"}"
+                    }
+                    _error.value = errorMessage
                 }
             })
         }

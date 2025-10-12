@@ -21,6 +21,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -46,6 +47,11 @@ fun FriendsScreen(
     val friends by viewModel.friends.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val error by viewModel.error.collectAsState()
+
+    // 화면 진입 시마다 친구 목록 새로고침
+    LaunchedEffect(Unit) {
+        viewModel.refreshFriends()
+    }
 
     Column(
         modifier = Modifier
@@ -149,17 +155,44 @@ fun FriendsScreen(
                 }
 
                 error != null -> {
-                    Box(
+                    Column(
                         modifier = Modifier.fillMaxWidth(),
-                        contentAlignment = Alignment.Center
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         CustomText(
-                            text = error ?: "오류가 발생했습니다",
+                            text = "친구 목록을 불러올 수 없습니다",
                             type = CustomTextType.bodyMedium,
-                            fontSize = 14.sp,
+                            fontSize = 16.sp,
                             color = CustomColor.gray300,
                             modifier = Modifier.padding(16.dp)
                         )
+                        CustomText(
+                            text = error ?: "알 수 없는 오류가 발생했습니다",
+                            type = CustomTextType.bodySmall,
+                            fontSize = 12.sp,
+                            color = CustomColor.gray200,
+                            modifier = Modifier.padding(horizontal = 16.dp)
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Surface(
+                            modifier = Modifier
+                                .border(
+                                    width = 1.dp,
+                                    color = CustomColor.gray100,
+                                    shape = RoundedCornerShape(8.dp)
+                                )
+                                .clickable { viewModel.refreshFriends() },
+                            shape = RoundedCornerShape(8.dp),
+                            color = Color.White
+                        ) {
+                            CustomText(
+                                text = "다시 시도",
+                                type = CustomTextType.bodyMedium,
+                                fontSize = 14.sp,
+                                color = CustomColor.black,
+                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                            )
+                        }
                     }
                 }
 
