@@ -17,5 +17,12 @@ object CustomColor {
 
 
     val error = Color(0xFFFF6961)
-}
 
+    // 친구삭제 버튼용 파스텔톤 빨간색
+    val pastelRed = Color(0xFFFFB3BA)
+    val lightRed = Color(0xFFFFC1C1)
+
+    // 친구삭제 버튼 텍스트용 색상
+    val darkRed = Color(0xFFB91C1C)
+    val redText = Color(0xFFDC2626)
+}
