@@ -33,15 +33,14 @@ import com.markoala.tomoandroid.ui.components.CustomTextType
 import com.markoala.tomoandroid.ui.components.DashedBorderBox
 import com.markoala.tomoandroid.ui.components.friends.FriendCard
 import com.markoala.tomoandroid.ui.theme.CustomColor
-import java.time.LocalDate
 
 private val sampleFriends = listOf(
-    FriendProfile("김토모", "tomoKim@gmail.com", LocalDate.of(2024, 1, 15), 70),
-    FriendProfile("이토모", "tomoLee@gmail.com", LocalDate.of(2023, 8, 22), 80),
-    FriendProfile("박토모", "tomoPark@gmail.com", LocalDate.of(2025, 9, 10), 30),
-    FriendProfile("정토모", "tomoJung@gmail.com", LocalDate.of(2022, 5, 3), 90),
-    FriendProfile("최토모", "tomoChoi@gmail.com", LocalDate.of(2024, 11, 28), 60),
-    FriendProfile("한토모", "tomoHan@gmail.com", LocalDate.of(2025, 7, 8), 50)
+    FriendProfile("김토모", "tomoKim@gmail.com", 70, "2022-01-15"),
+    FriendProfile("이토모", "tomoLee@gmail.com", 80, "2021-06-20"),
+    FriendProfile("박토모", "tomoPark@gmail.com", 30, "2023-03-10"),
+    FriendProfile("정토모", "tomoJung@gmail.com", 90, "2020-11-05"),
+    FriendProfile("최토모", "tomoChoi@gmail.com", 60, "2022-08-25"),
+    FriendProfile("한토모", "tomoHan@gmail.com", 50, "2023-01-30")
 )
 
 

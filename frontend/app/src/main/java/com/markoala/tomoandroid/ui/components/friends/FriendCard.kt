@@ -23,7 +23,6 @@ import com.markoala.tomoandroid.ui.components.CustomTextType
 import com.markoala.tomoandroid.ui.components.IntimacyStatusBar
 import com.markoala.tomoandroid.ui.components.ProfileImage
 import com.markoala.tomoandroid.ui.theme.CustomColor
-import com.markoala.tomoandroid.utils.calculateDate
 
 
 @Composable
@@ -85,7 +84,7 @@ fun FriendCard(friend: FriendProfile) {
 
                 // 우정 상태 바 추가
                 IntimacyStatusBar(
-                    intimacy = friend.intimacy,
+                    intimacy = friend.friendship,
                     modifier = Modifier,
                     height = 15,
                     width = 80
@@ -118,7 +117,7 @@ fun FriendCard(friend: FriendProfile) {
                             .size(12.dp)
                     )
                     CustomText(
-                        text = "우정 기간: " + calculateDate(friend.friendSince),
+                        text = "우정 기간: " + friend.createdAt,
                         type = CustomTextType.bodyMedium,
                         color = CustomColor.gray200,
                         fontSize = 12.sp

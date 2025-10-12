@@ -1,7 +1,5 @@
 package com.markoala.tomoandroid.data.model
 
-import java.time.LocalDate
-
 data class UserData(
     val uuid: String,
     val email: String,
@@ -11,6 +9,6 @@ data class UserData(
 data class FriendProfile(
     val name: String,
     val email: String,
-    val friendSince: LocalDate,
-    val intimacy: Int
+    val friendship: Int,
+    val createdAt: String
 )
