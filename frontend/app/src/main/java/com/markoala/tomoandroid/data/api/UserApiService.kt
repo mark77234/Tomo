@@ -23,7 +23,7 @@ import retrofit2.http.Query
 
 interface UserApiService {
     // POST 예시
-    @POST("/sign")
+    @POST("/public/signup")
     fun signup(@Body body: UserData): Call<PostResponse>
 
     // Firebase ID 토큰으로 access token과 refresh token 받기
