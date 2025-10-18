@@ -1,9 +1,9 @@
 package com.markoala.tomoandroid.data.api
 
-import com.markoala.tomoandroid.data.model.FriendSearchRequest
-import com.markoala.tomoandroid.data.model.FriendSearchResponse
-import com.markoala.tomoandroid.data.model.FriendsListDTO
-import com.markoala.tomoandroid.data.model.FriendsResponseDTO
+import com.markoala.tomoandroid.data.model.friends.FriendListResponse
+import com.markoala.tomoandroid.data.model.friends.FriendLookupResponse
+import com.markoala.tomoandroid.data.model.friends.FriendSearchRequest
+import com.markoala.tomoandroid.data.model.friends.FriendSearchResponse
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -20,15 +20,15 @@ interface FriendsApiService {
     @GET("/public/friends")
     fun getFriends(
         @Query("email") email: String
-    ): Call<FriendsResponseDTO>
+    ): Call<FriendLookupResponse>
 
     @DELETE("/public/friends")
     fun deleteFriends(
         @Query("friendEmail") email: String
-    ): Call<FriendsResponseDTO>
+    ): Call<FriendLookupResponse>
 
     @GET("/public/friends/list")
-    fun getFriendsList(): Call<FriendsListDTO>
+    fun getFriendsList(): Call<FriendListResponse>
 }
 
 val friendsApiService: FriendsApiService by lazy {

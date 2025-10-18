@@ -30,7 +30,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.markoala.tomoandroid.data.model.FriendData
+import com.markoala.tomoandroid.data.model.friends.FriendSummary
 import com.markoala.tomoandroid.data.repository.friends.FriendsRepository
 import com.markoala.tomoandroid.ui.components.CustomText
 import com.markoala.tomoandroid.ui.components.CustomTextField
@@ -45,7 +45,7 @@ fun AddFriendsScreen(
     onBackClick: () -> Unit
 ) {
     var searchText by remember { mutableStateOf("") }
-    var searchResults by remember { mutableStateOf<List<FriendData>>(emptyList()) }
+    var searchResults by remember { mutableStateOf<List<FriendSummary>>(emptyList()) }
     var isSearching by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
     val context = LocalContext.current

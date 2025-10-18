@@ -5,8 +5,8 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.markoala.tomoandroid.auth.AuthManager
 import com.markoala.tomoandroid.data.api.friendsApiService
-import com.markoala.tomoandroid.data.model.FriendProfile
-import com.markoala.tomoandroid.data.model.FriendsListDTO
+import com.markoala.tomoandroid.data.model.friends.FriendListResponse
+import com.markoala.tomoandroid.data.model.friends.FriendProfile
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -34,18 +34,18 @@ class FriendsViewModel(application: Application) : AndroidViewModel(application)
             _isLoading.value = true
             _error.value = null
 
-            friendsApiService.getFriendsList().enqueue(object : Callback<FriendsListDTO> {
+            friendsApiService.getFriendsList().enqueue(object : Callback<FriendListResponse> {
                 override fun onResponse(
-                    call: Call<FriendsListDTO>,
-                    response: Response<FriendsListDTO>
+                    call: Call<FriendListResponse>,
+                    response: Response<FriendListResponse>
                 ) {
                     _isLoading.value = false
                     if (response.isSuccessful) {
-                        response.body()?.let { friendsListDTO ->
-                            if (friendsListDTO.success) {
-                                _friends.value = friendsListDTO.data
+                        response.body()?.let { friendListResponse ->
+                            if (friendListResponse.success) {
+                                _friends.value = friendListResponse.data
                             } else {
-                                _error.value = "서버 오류: ${friendsListDTO.message}"
+                                _error.value = "서버 오류: ${friendListResponse.message}"
                             }
                         } ?: run {
                             _error.value = "서버 응답이 비어있습니다."
@@ -71,7 +71,7 @@ class FriendsViewModel(application: Application) : AndroidViewModel(application)
                     }
                 }
 
-                override fun onFailure(call: Call<FriendsListDTO>, t: Throwable) {
+                override fun onFailure(call: Call<FriendListResponse>, t: Throwable) {
                     _isLoading.value = false
                     val errorMessage = when {
                         t is java.net.UnknownHostException -> "인터넷 연결을 확인해주세요."

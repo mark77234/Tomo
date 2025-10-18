@@ -98,15 +98,15 @@ fun GoogleSignUpButton(onSignedIn: () -> Unit) {
                         if (success) {
                             coroutineScope.launch {
                                 try {
-                                    // 3) UserData 생성 및 회원가입/로그인 처리
-                                    val userData = AuthRepository.getCurrentUserData()
+                                    // 3) 사용자 프로필 생성 및 회원가입/로그인 처리
+                                    val userProfile = AuthRepository.getCurrentUserProfile()
 
-                                    if (userData != null) {
-                                        val exists = AuthRepository.checkUserExists(userData.uuid)
-                                        Log.w("GoogleSignIn", "uuid: ${userData.uuid}")
+                                    if (userProfile != null) {
+                                        val exists = AuthRepository.checkUserExists(userProfile.uuid)
+                                        Log.w("GoogleSignIn", "uuid: ${userProfile.uuid}")
                                         if (!exists) {
-                                            AuthRepository.signUp(userData)
-                                            UserRepository.saveUserToFirestore(userData) // 최초 가입 시에만 저장
+                                            AuthRepository.signUp(userProfile)
+                                            UserRepository.saveUserToFirestore(userProfile) // 최초 가입 시에만 저장
                                             toastManager.showSuccess("회원가입 성공")
                                         } else {
                                             toastManager.showSuccess("로그인 성공")
@@ -115,12 +115,12 @@ fun GoogleSignUpButton(onSignedIn: () -> Unit) {
                                         // 성공 콜백
                                         onSignedIn()
                                     } else {
-                                        Log.e("GoogleSignIn", "사용자 데이터를 가져올 수 없습니다")
-                                        toastManager.showError("사용자 데이터를 가져올 수 없습니다")
+                                        Log.e("GoogleSignIn", "사용자 프로필을 가져올 수 없습니다")
+                                        toastManager.showError("사용자 프로필을 가져올 수 없습니다")
                                     }
                                 } catch (e: Exception) {
-                                    Log.e("GoogleSignIn", "사용자 데이터 처리 실패: ${e.message}", e)
-                                    toastManager.showError("사용자 데이터 처리 실패: ${e.message}")
+                                    Log.e("GoogleSignIn", "사용자 프로필 처리 실패: ${e.message}", e)
+                                    toastManager.showError("사용자 프로필 처리 실패: ${e.message}")
                                 }
                             }
                         } else {

@@ -100,13 +100,13 @@ object AuthManager { // 싱글톤 객체로 앱 전체에서 하나의 인스턴
                 // 401 에러 발생 시 회원가입 진행
                 Log.w(TAG, "401 에러 발생 - 회원가입을 진행합니다")
 
-                // 현재 사용자 데이터 가져오기
-                val userData = AuthRepository.getCurrentUserData()
+                // 현재 사용자 프로필 가져오기
+                val userProfile = AuthRepository.getCurrentUserProfile()
 
-                if (userData != null) {
+                if (userProfile != null) {
                     try {
                         // 회원가입 진행
-                        val signupResponse = AuthRepository.signUp(userData)
+                        val signupResponse = AuthRepository.signUp(userProfile)
 
                         if (signupResponse.isSuccessful) {
                             Log.d(TAG, "회원가입 성공 - 다시 토큰 교환을 시도합니다")
@@ -142,7 +142,7 @@ object AuthManager { // 싱글톤 객체로 앱 전체에서 하나의 인스턴
                         false
                     }
                 } else {
-                    Log.e(TAG, "사용자 데이터를 가져올 수 없어 회원가입을 진행할 수 없습니다")
+                    Log.e(TAG, "사용자 프로필을 가져올 수 없어 회원가입을 진행할 수 없습니다")
                     false
                 }
             } else {

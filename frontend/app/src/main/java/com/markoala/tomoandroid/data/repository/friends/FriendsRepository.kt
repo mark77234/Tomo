@@ -4,10 +4,10 @@ import android.content.Context
 import android.util.Log
 
 import com.markoala.tomoandroid.data.api.friendsApiService
-import com.markoala.tomoandroid.data.model.FriendData
-import com.markoala.tomoandroid.data.model.FriendSearchRequest
-import com.markoala.tomoandroid.data.model.FriendSearchResponse
-import com.markoala.tomoandroid.data.model.FriendsResponseDTO
+import com.markoala.tomoandroid.data.model.friends.FriendLookupResponse
+import com.markoala.tomoandroid.data.model.friends.FriendSearchRequest
+import com.markoala.tomoandroid.data.model.friends.FriendSearchResponse
+import com.markoala.tomoandroid.data.model.friends.FriendSummary
 import com.markoala.tomoandroid.utils.ErrorHandler
 import retrofit2.Call
 import retrofit2.Callback
@@ -20,7 +20,7 @@ class FriendsRepository {
         email: String,
         context: Context,
         onLoading: (Boolean) -> Unit,
-        onSuccess: (List<FriendData>) -> Unit,
+        onSuccess: (List<FriendSummary>) -> Unit,
         onError: (String) -> Unit
     ) {
         Log.d("FriendsRepository", "getFriends 시작 - 입력된 이메일: $email")
@@ -40,10 +40,10 @@ class FriendsRepository {
         val call = friendsApiService.getFriends(email)
         Log.d("FriendsRepository", "getFriends API 호출 시작")
 
-        call.enqueue(object : Callback<FriendsResponseDTO> {
+        call.enqueue(object : Callback<FriendLookupResponse> {
             override fun onResponse(
-                call: Call<FriendsResponseDTO>,
-                response: Response<FriendsResponseDTO>
+                call: Call<FriendLookupResponse>,
+                response: Response<FriendLookupResponse>
             ) {
                 Log.d("FriendsRepository", "getFriends API 응답 수신")
                 Log.d("FriendsRepository", "응답 코드: ${response.code()}")
@@ -74,7 +74,7 @@ class FriendsRepository {
                 }
             }
 
-            override fun onFailure(call: Call<FriendsResponseDTO>, t: Throwable) {
+            override fun onFailure(call: Call<FriendLookupResponse>, t: Throwable) {
                 Log.e("FriendsRepository", "getFriends API 요청 실패", t)
                 onLoading(false)
                 onError("네트워크 오류가 발생했습니다")

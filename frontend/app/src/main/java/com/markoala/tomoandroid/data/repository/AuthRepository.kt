@@ -3,8 +3,8 @@ package com.markoala.tomoandroid.data.repository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.markoala.tomoandroid.data.api.userApiService
-import com.markoala.tomoandroid.data.model.PostResponse
-import com.markoala.tomoandroid.data.model.UserData
+import com.markoala.tomoandroid.data.model.auth.SignupResponse
+import com.markoala.tomoandroid.data.model.user.UserProfile
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import retrofit2.Response
@@ -13,12 +13,12 @@ import kotlin.coroutines.resumeWithException
 
 object AuthRepository {
     /**
-     * Firebase 현재 사용자 정보로 UserData 생성
+     * Firebase 현재 사용자 정보로 UserProfile 생성
      */
-    fun getCurrentUserData(): UserData? {
+    fun getCurrentUserProfile(): UserProfile? {
         val firebaseUser = FirebaseAuth.getInstance().currentUser
         return if (firebaseUser != null) {
-            UserData(
+            UserProfile(
                 uuid = firebaseUser.uid,
                 email = firebaseUser.email ?: "",
                 username = firebaseUser.displayName ?: ""
@@ -48,10 +48,10 @@ object AuthRepository {
     /**
      * 서버에 사용자 정보 전송 (Retrofit 동기 호출을 IO 스레드에서 수행)
      */
-    suspend fun signUp(userData: UserData): Response<PostResponse> =
+    suspend fun signUp(userProfile: UserProfile): Response<SignupResponse> =
         withContext(kotlinx.coroutines.Dispatchers.IO) {
             try {
-                userApiService.signup(userData).execute()
+                userApiService.signup(userProfile).execute()
             } catch (e: Exception) {
                 throw e
             }
