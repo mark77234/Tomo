@@ -55,10 +55,15 @@ class CreateMeetingViewModel : ViewModel() {
         isSuccess.value = null
         viewModelScope.launch {
             try {
+                val myEmail =
+                    com.markoala.tomoandroid.data.repository.AuthRepository.getCurrentUserProfile()?.email
+                        ?: ""
+                val emails =
+                    (selectedEmails.value + myEmail).filter { it.isNotBlank() }.distinct().toList()
                 val dto = CreateMoimDTO(
                     moimName = moimName.value,
                     description = description.value,
-                    emails = selectedEmails.value.toList()
+                    emails = emails
                 )
                 val response = MoimsApiService.postMoim(dto).awaitResponse()
                 isLoading.value = false
