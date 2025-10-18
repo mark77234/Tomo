@@ -1,8 +1,6 @@
 package com.markoala.tomoandroid.data.repository.friends
 
-import android.content.Context
 import android.util.Log
-
 import com.markoala.tomoandroid.data.api.friendsApiService
 import com.markoala.tomoandroid.data.model.friends.FriendLookupResponse
 import com.markoala.tomoandroid.data.model.friends.FriendSearchRequest
@@ -18,7 +16,6 @@ class FriendsRepository {
     // 친구 검색 함수 (GET)
     fun getFriends(
         email: String,
-        context: Context,
         onLoading: (Boolean) -> Unit,
         onSuccess: (List<FriendSummary>) -> Unit,
         onError: (String) -> Unit
@@ -53,7 +50,7 @@ class FriendsRepository {
                     val result = response.body()
                     Log.d("FriendsRepository", "응답 본문: $result")
 
-                    if (result?.success == true && result.data != null) {
+                    if (result?.success == true) {
                         Log.d(
                             "FriendsRepository",
                             "친구 검색 성공 - 찾은 친구: ${result.data.username}"
@@ -85,7 +82,6 @@ class FriendsRepository {
     // 친구 추가 함수 (POST)
     fun postFriends(
         email: String,
-        context: Context,
         onLoading: (Boolean) -> Unit,
         onSuccess: () -> Unit,
         onError: (String) -> Unit

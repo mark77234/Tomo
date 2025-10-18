@@ -71,7 +71,8 @@ object AuthManager { // 싱글톤 객체로 앱 전체에서 하나의 인스턴
                 initTokenManager(context)
             }
 
-            val response = userApiService.getTokensWithFirebaseToken("Bearer $firebaseToken") // 서버에 요청
+            val response =
+                userApiService.getTokensWithFirebaseToken("Bearer $firebaseToken") // 서버에 요청
 
             if (response.isSuccessful) {
                 // 헤더에서 토큰 추출
@@ -159,9 +160,9 @@ object AuthManager { // 싱글톤 객체로 앱 전체에서 하나의 인스턴
         return tokenManager?.getAccessToken()
     }
 
-    fun getStoredRefreshToken(): String? {
-        return tokenManager?.getRefreshToken()
-    }
+//    fun getStoredRefreshToken(): String? {
+//        return tokenManager?.getRefreshToken()
+//    }
 
     fun hasValidTokens(): Boolean {
         return tokenManager?.hasValidTokens() == true
