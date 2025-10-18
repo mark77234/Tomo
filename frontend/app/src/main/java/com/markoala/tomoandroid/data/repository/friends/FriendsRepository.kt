@@ -2,10 +2,11 @@ package com.markoala.tomoandroid.data.repository.friends
 
 import android.util.Log
 import com.markoala.tomoandroid.data.api.friendsApiService
-import com.markoala.tomoandroid.data.model.friends.FriendLookupResponse
+
 import com.markoala.tomoandroid.data.model.friends.FriendSearchRequest
-import com.markoala.tomoandroid.data.model.friends.FriendSearchResponse
+
 import com.markoala.tomoandroid.data.model.friends.FriendSummary
+import com.markoala.tomoandroid.data.model.user.BaseResponse
 import com.markoala.tomoandroid.utils.ErrorHandler
 import retrofit2.Call
 import retrofit2.Callback
@@ -37,10 +38,10 @@ class FriendsRepository {
         val call = friendsApiService.getFriends(email)
         Log.d("FriendsRepository", "getFriends API 호출 시작")
 
-        call.enqueue(object : Callback<FriendLookupResponse> {
+        call.enqueue(object : Callback<BaseResponse<FriendSummary>> {
             override fun onResponse(
-                call: Call<FriendLookupResponse>,
-                response: Response<FriendLookupResponse>
+                call: Call<BaseResponse<FriendSummary>>,
+                response: Response<BaseResponse<FriendSummary>>
             ) {
                 Log.d("FriendsRepository", "getFriends API 응답 수신")
                 Log.d("FriendsRepository", "응답 코드: ${response.code()}")
@@ -71,7 +72,7 @@ class FriendsRepository {
                 }
             }
 
-            override fun onFailure(call: Call<FriendLookupResponse>, t: Throwable) {
+            override fun onFailure(call: Call<BaseResponse<FriendSummary>>, t: Throwable) {
                 Log.e("FriendsRepository", "getFriends API 요청 실패", t)
                 onLoading(false)
                 onError("네트워크 오류가 발생했습니다")
@@ -105,10 +106,10 @@ class FriendsRepository {
         Log.d("FriendsRepository", "API 호출 시작 - URL: ${call.request().url}")
         Log.d("FriendsRepository", "HTTP 메소드: ${call.request().method}")
 
-        call.enqueue(object : Callback<FriendSearchResponse> {
+        call.enqueue(object : Callback<BaseResponse<FriendSummary?>> {
             override fun onResponse(
-                call: Call<FriendSearchResponse>,
-                response: Response<FriendSearchResponse>
+                call: Call<BaseResponse<FriendSummary?>>,
+                response: Response<BaseResponse<FriendSummary?>>
             ) {
                 Log.d("FriendsRepository", "API 응답 수신")
                 Log.d("FriendsRepository", "응답 코드: ${response.code()}")
@@ -151,7 +152,7 @@ class FriendsRepository {
                 }
             }
 
-            override fun onFailure(call: Call<FriendSearchResponse>, t: Throwable) {
+            override fun onFailure(call: Call<BaseResponse<FriendSummary?>>, t: Throwable) {
                 Log.e("FriendsRepository", "API 요청 완전 실패", t)
                 Log.e("FriendsRepository", "실패 원인: ${t.javaClass.simpleName}")
                 Log.e("FriendsRepository", "에러 메시지: ${t.message}")

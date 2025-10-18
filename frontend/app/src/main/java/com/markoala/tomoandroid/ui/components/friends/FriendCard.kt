@@ -33,8 +33,10 @@ import androidx.compose.ui.unit.sp
 import com.markoala.tomoandroid.R
 import com.markoala.tomoandroid.auth.AuthManager.getStoredAccessToken
 import com.markoala.tomoandroid.data.api.friendsApiService
-import com.markoala.tomoandroid.data.model.friends.FriendLookupResponse
+
 import com.markoala.tomoandroid.data.model.friends.FriendProfile
+import com.markoala.tomoandroid.data.model.friends.FriendSummary
+import com.markoala.tomoandroid.data.model.user.BaseResponse
 import com.markoala.tomoandroid.ui.components.CustomText
 import com.markoala.tomoandroid.ui.components.CustomTextType
 import com.markoala.tomoandroid.ui.components.LocalToastManager
@@ -198,10 +200,10 @@ fun FriendCard(
                 }
 
                 friendsApiService.deleteFriends(friend.email)
-                    .enqueue(object : Callback<FriendLookupResponse> {
+                    .enqueue(object : Callback<BaseResponse<FriendSummary>> {
                         override fun onResponse(
-                            call: Call<FriendLookupResponse>,
-                            response: Response<FriendLookupResponse>
+                            call: Call<BaseResponse<FriendSummary>>,
+                            response: Response<BaseResponse<FriendSummary>>
                         ) {
                             Log.d("FriendCard", "=== API 응답 수신 ===")
                             Log.d("FriendCard", "Response Code: ${response.code()}")
@@ -241,7 +243,10 @@ fun FriendCard(
                             }
                         }
 
-                        override fun onFailure(call: Call<FriendLookupResponse>, t: Throwable) {
+                        override fun onFailure(
+                            call: Call<BaseResponse<FriendSummary>>,
+                            t: Throwable
+                        ) {
                             Log.e("FriendCard", "친구삭제 네트워크 오류: ${t.message}", t)
                             toastManager.showError("네트워크 오류가 발생했습니다.")
                         }

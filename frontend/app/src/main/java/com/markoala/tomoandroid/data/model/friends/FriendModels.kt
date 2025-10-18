@@ -12,24 +12,6 @@ data class FriendSummary(
     val email: String
 )
 
-data class FriendLookupResponse(
-    val success: Boolean,
-    val message: String,
-    val data: FriendSummary
-)
-
-data class FriendListResponse(
-    val success: Boolean,
-    val message: String,
-    val data: List<FriendProfile>
-)
-
 data class FriendSearchRequest(
     val email: String
-)
-
-data class FriendSearchResponse(
-    val success: Boolean,
-    val message: String,
-    val data: FriendSummary?
 )
