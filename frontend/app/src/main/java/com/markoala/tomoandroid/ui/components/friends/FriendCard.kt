@@ -32,7 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.markoala.tomoandroid.R
 import com.markoala.tomoandroid.auth.AuthManager.getStoredAccessToken
-import com.markoala.tomoandroid.data.api.apiService
+import com.markoala.tomoandroid.data.api.friendsApiService
 import com.markoala.tomoandroid.data.model.FriendProfile
 import com.markoala.tomoandroid.data.model.FriendsResponseDTO
 import com.markoala.tomoandroid.ui.components.CustomText
@@ -197,7 +197,7 @@ fun FriendCard(
                     Log.d("FriendCard", "액세스 토큰 앞 10자리: ${accessToken.take(10)}...")
                 }
 
-                apiService.deleteFriends(friend.email)
+                friendsApiService.deleteFriends(friend.email)
                     .enqueue(object : Callback<FriendsResponseDTO> {
                         override fun onResponse(
                             call: Call<FriendsResponseDTO>,

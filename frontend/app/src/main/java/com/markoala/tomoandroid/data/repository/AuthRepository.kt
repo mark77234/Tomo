@@ -2,7 +2,7 @@ package com.markoala.tomoandroid.data.repository
 
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.markoala.tomoandroid.data.api.apiService
+import com.markoala.tomoandroid.data.api.userApiService
 import com.markoala.tomoandroid.data.model.PostResponse
 import com.markoala.tomoandroid.data.model.UserData
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -51,7 +51,7 @@ object AuthRepository {
     suspend fun signUp(userData: UserData): Response<PostResponse> =
         withContext(kotlinx.coroutines.Dispatchers.IO) {
             try {
-                apiService.signup(userData).execute()
+                userApiService.signup(userData).execute()
             } catch (e: Exception) {
                 throw e
             }

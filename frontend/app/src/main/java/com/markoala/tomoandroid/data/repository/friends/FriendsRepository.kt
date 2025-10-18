@@ -3,7 +3,7 @@ package com.markoala.tomoandroid.data.repository.friends
 import android.content.Context
 import android.util.Log
 
-import com.markoala.tomoandroid.data.api.apiService
+import com.markoala.tomoandroid.data.api.friendsApiService
 import com.markoala.tomoandroid.data.model.FriendData
 import com.markoala.tomoandroid.data.model.FriendSearchRequest
 import com.markoala.tomoandroid.data.model.FriendSearchResponse
@@ -37,7 +37,7 @@ class FriendsRepository {
         // AuthInterceptor가 자동으로 토큰을 추가하므로 직접 API 호출
         Log.d("FriendsRepository", "getFriends API 요청 생성")
 
-        val call = apiService.getFriends(email)
+        val call = friendsApiService.getFriends(email)
         Log.d("FriendsRepository", "getFriends API 호출 시작")
 
         call.enqueue(object : Callback<FriendsResponseDTO> {
@@ -105,7 +105,7 @@ class FriendsRepository {
         val request = FriendSearchRequest(email = email)
         Log.d("FriendsRepository", "API 요청 생성 - 요청 데이터: $request")
 
-        val call = apiService.postFriends(request)
+        val call = friendsApiService.postFriends(request)
         Log.d("FriendsRepository", "API 호출 시작 - URL: ${call.request().url}")
         Log.d("FriendsRepository", "HTTP 메소드: ${call.request().method}")
 
