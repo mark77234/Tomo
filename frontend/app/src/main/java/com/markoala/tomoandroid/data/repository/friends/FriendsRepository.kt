@@ -27,7 +27,7 @@ class FriendsRepository {
 
         if (email.isBlank()) {
             Log.w("FriendsRepository", "이메일이 비어있음")
-            Toast.makeText(context, "이메일을 입력해주세요", Toast.LENGTH_SHORT).show()
+
             return
         }
 
@@ -87,14 +87,14 @@ class FriendsRepository {
         email: String,
         context: Context,
         onLoading: (Boolean) -> Unit,
-        onSuccess: () -> Unit,
+        onSuccess: (FriendData?) -> Unit,
         onError: (String) -> Unit
     ) {
         Log.d("FriendsRepository", "postFriends 시작 - 입력된 이메일: $email")
 
         if (email.isBlank()) {
             Log.w("FriendsRepository", "이메일이 비어있음")
-            Toast.makeText(context, "이메일을 입력해주세요", Toast.LENGTH_SHORT).show()
+
             return
         }
 
@@ -124,13 +124,13 @@ class FriendsRepository {
                     val result = response.body()
                     Log.d("FriendsRepository", "응답 본문: $result")
 
-                    if (result?.success == true && result.data != null) {
+                    if (result?.success == true) {
                         Log.d(
                             "FriendsRepository",
-                            "친구 추가 성공 - 사용자명: ${result.data.username}, 이메일: ${result.data.email}"
+                            "친구 추가 성공 - message: ${result.message}"
                         )
                         Toast.makeText(context, "친구 추가 성공!", Toast.LENGTH_SHORT).show()
-                        onSuccess()
+                        onSuccess(result.data)
                     } else {
                         Log.w(
                             "FriendsRepository",
@@ -151,7 +151,7 @@ class FriendsRepository {
                     // HTTP 상태 코드에 따른 구체적인 에러 메시지 생성
                     val errorResult = ErrorHandler.handleHttpError(response.code(), errorBody)
                     onError(errorResult.message)
-                    Toast.makeText(context, errorResult.message, Toast.LENGTH_SHORT).show()
+
                 }
             }
 
@@ -163,7 +163,7 @@ class FriendsRepository {
 
                 onLoading(false)
                 onError("네트워크 오류")
-                Toast.makeText(context, "네트워크 오류가 발생했습니다", Toast.LENGTH_SHORT).show()
+
             }
         })
     }

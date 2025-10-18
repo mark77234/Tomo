@@ -106,10 +106,13 @@ fun AddFriendsScreen(
             onLoading = { loading ->
                 isSearching = loading
             },
-            onSuccess = {
-                // 친구 추가 성공 시 검색 결과 갱신
-                toastManager.showSuccess("친구가 성공적으로 추가되었습니다!")
-                searchFriends()
+            onSuccess = { friend ->
+                // 친구 추가 성공 시 누가 추가됐는지 토스트로 안내
+                if (friend != null) {
+                    toastManager.showSuccess("${friend.username}님(${friend.email})이 친구로 추가되었습니다!")
+                } else {
+                    toastManager.showSuccess("친구가 성공적으로 추가되었습니다!")
+                }
             },
             onError = { error ->
                 errorMessage = error
