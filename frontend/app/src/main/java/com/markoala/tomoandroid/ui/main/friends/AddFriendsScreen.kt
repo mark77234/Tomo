@@ -61,7 +61,7 @@ fun AddFriendsScreen(
 
         friendsRepository.getFriends(
             email = searchText,
-            context = context,
+
             onLoading = { loading ->
                 isSearching = loading
                 if (loading) {
@@ -102,7 +102,7 @@ fun AddFriendsScreen(
     fun addFriend(email: String) {
         friendsRepository.postFriends(
             email = email,
-            context = context,
+
             onLoading = { loading ->
                 isSearching = loading
             },
