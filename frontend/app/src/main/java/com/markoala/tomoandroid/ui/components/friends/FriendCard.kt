@@ -92,7 +92,7 @@ fun FriendCard(
                         )
                     ) {
                         Icon(
-                            painter = androidx.compose.ui.res.painterResource(id = com.markoala.tomoandroid.R.drawable.ic_email),
+                            painter = painterResource(id = R.drawable.ic_email),
                             contentDescription = null,
                             tint = CustomColor.gray200,
                             modifier = Modifier
@@ -181,6 +181,7 @@ fun FriendCard(
         DeleteFriendDialog(
             friendName = friend.username,
             onConfirm = {
+
                 // API 호출로 친구 삭제
                 Log.d("FriendCard", "=== 친구삭제 API 호출 시작 ===")
                 Log.d("FriendCard", "삭제할 친구 이메일: ${friend.email}")

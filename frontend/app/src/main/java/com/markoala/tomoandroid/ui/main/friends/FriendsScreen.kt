@@ -213,7 +213,10 @@ fun FriendsScreen(
 
                 else -> {
                     friends.forEach { friend ->
-                        FriendCard(friend)
+                        FriendCard(
+                            friend = friend,
+                            onFriendDeleted = { viewModel.refreshFriends() }
+                        )
                     }
                 }
             }
