@@ -112,7 +112,11 @@ fun MainScreen(onSignOut: () -> Unit) {
                 routingCreateMeeting -> {
                     CreateMeetingScreen(
                         paddingValues = paddingValues,
-                        onBackClick = { routingCreateMeeting = false }
+                        onBackClick = { routingCreateMeeting = false },
+                        onSuccess = {
+                            routingCreateMeeting = false
+                            selectedTab = BottomTab.Home
+                        }
                     )
                 }
 

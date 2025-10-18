@@ -52,6 +52,7 @@ class CreateMeetingViewModel : ViewModel() {
         }
         isLoading.value = true
         errorMessage.value = null
+        isSuccess.value = null
         viewModelScope.launch {
             try {
                 val dto = CreateMoimDTO(
@@ -72,5 +73,12 @@ class CreateMeetingViewModel : ViewModel() {
             }
         }
     }
-}
 
+    fun consumeSuccess() {
+        isSuccess.value = null
+    }
+
+    fun clearError() {
+        errorMessage.value = null
+    }
+}
