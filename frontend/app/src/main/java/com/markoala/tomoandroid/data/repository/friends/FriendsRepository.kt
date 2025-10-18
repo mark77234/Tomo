@@ -2,7 +2,7 @@ package com.markoala.tomoandroid.data.repository.friends
 
 import android.content.Context
 import android.util.Log
-import android.widget.Toast
+
 import com.markoala.tomoandroid.data.api.apiService
 import com.markoala.tomoandroid.data.model.FriendData
 import com.markoala.tomoandroid.data.model.FriendSearchRequest
@@ -87,7 +87,7 @@ class FriendsRepository {
         email: String,
         context: Context,
         onLoading: (Boolean) -> Unit,
-        onSuccess: (FriendData?) -> Unit,
+        onSuccess: () -> Unit,
         onError: (String) -> Unit
     ) {
         Log.d("FriendsRepository", "postFriends 시작 - 입력된 이메일: $email")
@@ -129,8 +129,8 @@ class FriendsRepository {
                             "FriendsRepository",
                             "친구 추가 성공 - message: ${result.message}"
                         )
-                        Toast.makeText(context, "친구 추가 성공!", Toast.LENGTH_SHORT).show()
-                        onSuccess(result.data)
+
+                        onSuccess()
                     } else {
                         Log.w(
                             "FriendsRepository",
@@ -138,7 +138,7 @@ class FriendsRepository {
                         )
                         val errorMsg = result?.message ?: "친구 추가에 실패했습니다"
                         onError(errorMsg)
-                        Toast.makeText(context, errorMsg, Toast.LENGTH_SHORT).show()
+
                     }
                 } else {
                     Log.e(
