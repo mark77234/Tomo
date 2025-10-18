@@ -33,7 +33,10 @@ import com.markoala.tomoandroid.ui.components.home.MeetingCard
 import com.markoala.tomoandroid.ui.theme.CustomColor
 
 @Composable
-fun HomeScreen(paddingValues: PaddingValues) {
+fun HomeScreen(
+    paddingValues: PaddingValues,
+    onCreateMeetingClick: () -> Unit = {}
+) {
     val homeViewModel: HomeViewModel = viewModel()
     val meetings = homeViewModel.meetings.collectAsState().value
 
@@ -62,7 +65,7 @@ fun HomeScreen(paddingValues: PaddingValues) {
                         color = CustomColor.gray100,
                         shape = RoundedCornerShape(32.dp)
                     )
-                    .clickable { /* TODO: 모임 생성 액션 */ },
+                    .clickable { onCreateMeetingClick() },
                 shape = RoundedCornerShape(32.dp),
                 color = Color.White
             ) {

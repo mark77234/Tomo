@@ -27,6 +27,7 @@ import com.markoala.tomoandroid.ui.components.CustomText
 import com.markoala.tomoandroid.ui.components.CustomTextType
 import com.markoala.tomoandroid.ui.main.friends.AddFriendsScreen
 import com.markoala.tomoandroid.ui.main.friends.FriendsScreen
+import com.markoala.tomoandroid.ui.main.meeting.CreateMeetingScreen
 import com.markoala.tomoandroid.ui.theme.CustomColor
 
 // 탭 타입 정의
@@ -48,6 +49,7 @@ fun MainScreen(onSignOut: () -> Unit) {
     var userId by remember { mutableStateOf("") }
     var selectedTab by remember { mutableStateOf(BottomTab.Home) }
     var routingAddFriends by remember { mutableStateOf(false) }
+    var routingCreateMeeting by remember { mutableStateOf(false) }
 
     LaunchedEffect(user) {
         user?.let {
@@ -61,7 +63,7 @@ fun MainScreen(onSignOut: () -> Unit) {
     }
     Scaffold(
         topBar = {
-            if (!routingAddFriends) {
+            if (!routingAddFriends && !routingCreateMeeting) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -89,7 +91,7 @@ fun MainScreen(onSignOut: () -> Unit) {
             }
         },
         bottomBar = {
-            if (!routingAddFriends) {
+            if (!routingAddFriends && !routingCreateMeeting) {
                 BottomNavigationBar(selectedTab = selectedTab, onTabSelected = { selectedTab = it })
             }
         }
@@ -99,21 +101,36 @@ fun MainScreen(onSignOut: () -> Unit) {
                 .background(CustomColor.white)
                 .fillMaxWidth()
         ) {
-            if (routingAddFriends) {
-                AddFriendsScreen(
-                    paddingValues = paddingValues,
-                    onBackClick = { routingAddFriends = false }
-                )
-            } else {
-                when (selectedTab) {
-                    BottomTab.Home -> HomeScreen(paddingValues)
-                    BottomTab.Friends -> FriendsScreen(
+            when {
+                routingAddFriends -> {
+                    AddFriendsScreen(
                         paddingValues = paddingValues,
-                        onAddFriendsClick = { routingAddFriends = true }
+                        onBackClick = { routingAddFriends = false }
                     )
+                }
 
-                    BottomTab.Profile -> ProfileScreen(name, email, userId, paddingValues)
-                    BottomTab.Settings -> SettingsScreen(paddingValues, onSignOut)
+                routingCreateMeeting -> {
+                    CreateMeetingScreen(
+                        paddingValues = paddingValues,
+                        onBackClick = { routingCreateMeeting = false }
+                    )
+                }
+
+                else -> {
+                    when (selectedTab) {
+                        BottomTab.Home -> HomeScreen(
+                            paddingValues = paddingValues,
+                            onCreateMeetingClick = { routingCreateMeeting = true }
+                        )
+
+                        BottomTab.Friends -> FriendsScreen(
+                            paddingValues = paddingValues,
+                            onAddFriendsClick = { routingAddFriends = true }
+                        )
+
+                        BottomTab.Profile -> ProfileScreen(name, email, userId, paddingValues)
+                        BottomTab.Settings -> SettingsScreen(paddingValues, onSignOut)
+                    }
                 }
             }
         }

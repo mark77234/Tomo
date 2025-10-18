@@ -25,7 +25,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -48,7 +47,6 @@ fun AddFriendsScreen(
     var searchResults by remember { mutableStateOf<List<FriendSummary>>(emptyList()) }
     var isSearching by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
-    val context = LocalContext.current
     val friendsRepository = remember { FriendsRepository() }
     val toastManager = LocalToastManager.current
 
