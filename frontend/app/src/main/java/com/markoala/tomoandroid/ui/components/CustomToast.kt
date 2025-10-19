@@ -136,7 +136,7 @@ private fun ToastContent(
 
             CustomText(
                 text = config.message,
-                type = CustomTextType.bodyMedium,
+                type = CustomTextType.body,
                 color = Color.White,
                 modifier = Modifier.weight(1f)
             )

@@ -35,7 +35,7 @@ import com.markoala.tomoandroid.R
 import com.markoala.tomoandroid.ui.components.CustomText
 import com.markoala.tomoandroid.ui.components.CustomTextType
 import com.markoala.tomoandroid.ui.components.DashedBorderBox
-import com.markoala.tomoandroid.ui.components.friends.FriendCard
+import com.markoala.tomoandroid.ui.main.friends.components.FriendCard
 import com.markoala.tomoandroid.ui.theme.CustomColor
 
 @Composable
@@ -68,7 +68,7 @@ fun FriendsScreen(
         ) {
             CustomText(
                 text = "친구 목록",
-                type = CustomTextType.headlineLarge,
+                type = CustomTextType.headline,
                 fontSize = 20.sp
             )
             Surface(
@@ -97,7 +97,7 @@ fun FriendsScreen(
                     Spacer(modifier = Modifier.width(8.dp))
                     CustomText(
                         text = "친구추가",
-                        type = CustomTextType.bodyMedium,
+                        type = CustomTextType.body,
                         fontSize = 14.sp,
                         color = CustomColor.black
                     )
@@ -126,7 +126,7 @@ fun FriendsScreen(
                 ) {
                     CustomText(
                         text = "우정을 자랑하고 추억을 기록하세요!",
-                        type = CustomTextType.bodyLarge,
+                        type = CustomTextType.body,
                         fontSize = 14.sp,
                         color = CustomColor.gray300
                     )
@@ -161,14 +161,14 @@ fun FriendsScreen(
                     ) {
                         CustomText(
                             text = "친구 목록을 불러올 수 없습니다",
-                            type = CustomTextType.bodyMedium,
+                            type = CustomTextType.body,
                             fontSize = 16.sp,
                             color = CustomColor.gray300,
                             modifier = Modifier.padding(16.dp)
                         )
                         CustomText(
                             text = error ?: "알 수 없는 오류가 발생했습니다",
-                            type = CustomTextType.bodySmall,
+                            type = CustomTextType.body,
                             fontSize = 12.sp,
                             color = CustomColor.gray200,
                             modifier = Modifier.padding(horizontal = 16.dp)
@@ -187,7 +187,7 @@ fun FriendsScreen(
                         ) {
                             CustomText(
                                 text = "다시 시도",
-                                type = CustomTextType.bodyMedium,
+                                type = CustomTextType.body,
                                 fontSize = 14.sp,
                                 color = CustomColor.black,
                                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
@@ -203,7 +203,7 @@ fun FriendsScreen(
                     ) {
                         CustomText(
                             text = "친구가 없습니다",
-                            type = CustomTextType.bodyMedium,
+                            type = CustomTextType.body,
                             fontSize = 14.sp,
                             color = CustomColor.gray300,
                             modifier = Modifier.padding(16.dp)

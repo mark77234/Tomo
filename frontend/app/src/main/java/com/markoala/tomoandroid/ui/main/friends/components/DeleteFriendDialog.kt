@@ -1,5 +1,6 @@
-package com.markoala.tomoandroid.ui.components.friends
+package com.markoala.tomoandroid.ui.main.friends.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -31,7 +32,7 @@ fun DeleteFriendDialog(
         title = {
             CustomText(
                 text = "친구 삭제",
-                type = CustomTextType.titleMedium,
+                type = CustomTextType.title,
                 color = CustomColor.black,
                 fontSize = 18.sp
             )
@@ -40,14 +41,14 @@ fun DeleteFriendDialog(
             Column {
                 CustomText(
                     text = "'$friendName'님을 친구 목록에서 삭제하시겠습니까?",
-                    type = CustomTextType.bodyMedium,
+                    type = CustomTextType.body,
                     color = CustomColor.gray300,
                     fontSize = 14.sp
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 CustomText(
                     text = "삭제된 친구는 다시 복구할 수 없습니다.",
-                    type = CustomTextType.bodyMedium,
+                    type = CustomTextType.body,
                     color = CustomColor.redText,
                     fontSize = 12.sp
                 )
@@ -61,13 +62,13 @@ fun DeleteFriendDialog(
                         containerColor = CustomColor.white,
                         contentColor = CustomColor.gray300
                     ),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, CustomColor.gray100),
+                    border = BorderStroke(1.dp, CustomColor.gray100),
                     shape = RoundedCornerShape(8.dp),
                     modifier = Modifier.weight(1f)
                 ) {
                     CustomText(
                         text = "취소",
-                        type = CustomTextType.bodyMedium,
+                        type = CustomTextType.body,
                         color = CustomColor.gray300,
                         fontSize = 14.sp
                     )
@@ -83,7 +84,7 @@ fun DeleteFriendDialog(
                 ) {
                     CustomText(
                         text = "삭제",
-                        type = CustomTextType.bodyMedium,
+                        type = CustomTextType.body,
                         color = CustomColor.darkRed,
                         fontSize = 14.sp
                     )

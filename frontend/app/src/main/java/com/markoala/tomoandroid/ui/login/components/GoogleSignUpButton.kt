@@ -1,4 +1,4 @@
-package com.markoala.tomoandroid.ui.components.auth
+package com.markoala.tomoandroid.ui.login.components
 
 import android.accounts.AccountManager
 import android.app.Activity
@@ -102,7 +102,8 @@ fun GoogleSignUpButton(onSignedIn: () -> Unit) {
                                     val userProfile = AuthRepository.getCurrentUserProfile()
 
                                     if (userProfile != null) {
-                                        val exists = AuthRepository.checkUserExists(userProfile.uuid)
+                                        val exists =
+                                            AuthRepository.checkUserExists(userProfile.uuid)
                                         Log.w("GoogleSignIn", "uuid: ${userProfile.uuid}")
                                         if (!exists) {
                                             AuthRepository.signUp(userProfile)
@@ -151,7 +152,7 @@ fun GoogleSignUpButton(onSignedIn: () -> Unit) {
             CustomText(
                 text = "Google 계정으로 로그인",
                 color = Color.Black,
-                type = CustomTextType.labelLarge
+                type = CustomTextType.label
             )
         }
     }

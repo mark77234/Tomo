@@ -1,5 +1,6 @@
-package com.markoala.tomoandroid.ui.main
+package com.markoala.tomoandroid.ui.main.settings
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -28,10 +30,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.markoala.tomoandroid.R
 import com.markoala.tomoandroid.ui.components.CustomText
 import com.markoala.tomoandroid.ui.components.CustomTextType
 import com.markoala.tomoandroid.ui.components.LocalToastManager
-import com.markoala.tomoandroid.ui.components.settings.SettingsToggle
+import com.markoala.tomoandroid.ui.main.settings.components.SettingsToggle
 import com.markoala.tomoandroid.ui.theme.CustomColor
 
 @Composable
@@ -57,7 +60,7 @@ fun SettingsScreen(
         ) {
             CustomText(
                 text = "설정",
-                type = CustomTextType.headlineLarge,
+                type = CustomTextType.headline,
                 fontSize = 20.sp,
                 modifier = Modifier.align(Alignment.TopStart)
             )
@@ -80,12 +83,12 @@ fun SettingsScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
-                        painter = painterResource(id = com.markoala.tomoandroid.R.drawable.ic_setting),
+                        painter = painterResource(id = R.drawable.ic_setting),
                         contentDescription = null,
                         tint = CustomColor.gray300,
                         modifier = Modifier.padding(end = 8.dp)
                     )
-                    CustomText(text = "앱 설정", type = CustomTextType.titleSmall, fontSize = 14.sp)
+                    CustomText(text = "앱 설정", type = CustomTextType.title, fontSize = 14.sp)
                 }
                 HorizontalDivider(
                     modifier = Modifier
@@ -99,7 +102,7 @@ fun SettingsScreen(
                         description = "모임 알림과 친구 요청을 받아보세요.",
                         checked = pushEnabled,
                         onCheckedChange = { pushEnabled = it },
-                        icon = com.markoala.tomoandroid.R.drawable.ic_notification
+                        icon = R.drawable.ic_notification
                     )
                 }
                 HorizontalDivider(
@@ -114,7 +117,7 @@ fun SettingsScreen(
                         description = "시스템 테마와 별도로 설정합니다.",
                         checked = darkModeEnabled,
                         onCheckedChange = { darkModeEnabled = it },
-                        icon = com.markoala.tomoandroid.R.drawable.ic_dark
+                        icon = R.drawable.ic_dark
                     )
                 }
             }
@@ -133,13 +136,13 @@ fun SettingsScreen(
                 containerColor = CustomColor.white,
                 contentColor = MaterialTheme.colorScheme.onSurface
             ),
-            border = androidx.compose.foundation.BorderStroke(1.dp, CustomColor.gray100),
-            shape = androidx.compose.foundation.shape.RoundedCornerShape(10.dp),
+            border = BorderStroke(1.dp, CustomColor.gray100),
+            shape = RoundedCornerShape(10.dp),
             contentPadding = PaddingValues(vertical = 16.dp)
         ) {
             CustomText(
                 text = "로그아웃",
-                type = CustomTextType.titleSmall,
+                type = CustomTextType.title,
                 fontSize = 16.sp,
                 color = CustomColor.gray300
             )
@@ -152,13 +155,13 @@ fun SettingsScreen(
                 containerColor = CustomColor.white,
                 contentColor = MaterialTheme.colorScheme.onSurface
             ),
-            border = androidx.compose.foundation.BorderStroke(1.dp, CustomColor.gray100),
+            border = BorderStroke(1.dp, CustomColor.gray100),
             shape = androidx.compose.foundation.shape.RoundedCornerShape(10.dp),
             contentPadding = PaddingValues(vertical = 16.dp)
         ) {
             CustomText(
                 text = "계정삭제",
-                type = CustomTextType.titleSmall,
+                type = CustomTextType.title,
                 fontSize = 16.sp,
                 color = CustomColor.gray300
             )

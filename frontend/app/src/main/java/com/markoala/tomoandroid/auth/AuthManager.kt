@@ -9,7 +9,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
-import com.markoala.tomoandroid.data.api.userApiService
+import com.markoala.tomoandroid.data.api.userApi
 import com.markoala.tomoandroid.data.repository.AuthRepository
 import com.markoala.tomoandroid.utils.auth.TokenManager
 import kotlinx.coroutines.tasks.await
@@ -72,7 +72,7 @@ object AuthManager { // 싱글톤 객체로 앱 전체에서 하나의 인스턴
             }
 
             val response =
-                userApiService.getTokensWithFirebaseToken("Bearer $firebaseToken") // 서버에 요청
+                userApi.getTokensWithFirebaseToken("Bearer $firebaseToken") // 서버에 요청
 
             if (response.isSuccessful) {
                 // 헤더에서 토큰 추출
@@ -114,7 +114,7 @@ object AuthManager { // 싱글톤 객체로 앱 전체에서 하나의 인스턴
 
                             // 회원가입 성공 후 다시 토큰 교환 시도
                             val retryResponse =
-                                userApiService.getTokensWithFirebaseToken("Bearer $firebaseToken")
+                                userApi.getTokensWithFirebaseToken("Bearer $firebaseToken")
 
                             if (retryResponse.isSuccessful) {
                                 val responseBody = retryResponse.body()

@@ -11,7 +11,7 @@ import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Query
 
-interface FriendsApiService {
+interface FriendsApi {
     @POST("/public/friends")
     fun postFriends(
         @Body body: FriendSearchRequest
@@ -31,6 +31,6 @@ interface FriendsApiService {
     fun getFriendsList(): Call<BaseResponse<List<FriendProfile>>>
 }
 
-val friendsApiService: FriendsApiService by lazy {
-    ApiClient.create(FriendsApiService::class.java)
+val friendsApi: FriendsApi by lazy {
+    ApiClient.create(FriendsApi::class.java)
 }

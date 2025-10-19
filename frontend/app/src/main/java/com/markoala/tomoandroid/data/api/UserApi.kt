@@ -10,7 +10,7 @@ import retrofit2.http.DELETE
 import retrofit2.http.Header
 import retrofit2.http.POST
 
-interface UserApiService {
+interface UserApi {
     @POST("/public/signup")
     fun signup(@Body body: UserProfile): Call<BaseResponse<Unit>>
 
@@ -25,6 +25,6 @@ interface UserApiService {
     fun deleteUser(): Call<Unit>
 }
 
-val userApiService: UserApiService by lazy {
-    ApiClient.create(UserApiService::class.java)
+val userApi: UserApi by lazy {
+    ApiClient.create(UserApi::class.java)
 }

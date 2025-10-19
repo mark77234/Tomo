@@ -4,7 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.markoala.tomoandroid.auth.AuthManager
-import com.markoala.tomoandroid.data.api.friendsApiService
+import com.markoala.tomoandroid.data.api.friendsApi
 import com.markoala.tomoandroid.data.model.friends.FriendProfile
 import com.markoala.tomoandroid.data.model.user.BaseResponse
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -34,7 +34,7 @@ class FriendsViewModel(application: Application) : AndroidViewModel(application)
             _isLoading.value = true
             _error.value = null
 
-            friendsApiService.getFriendsList()
+            friendsApi.getFriendsList()
                 .enqueue(object : Callback<BaseResponse<List<FriendProfile>>> {
                     override fun onResponse(
                         call: Call<BaseResponse<List<FriendProfile>>>,

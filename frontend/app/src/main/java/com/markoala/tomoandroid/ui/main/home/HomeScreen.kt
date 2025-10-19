@@ -1,4 +1,4 @@
-package com.markoala.tomoandroid.ui.main
+package com.markoala.tomoandroid.ui.main.home
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -18,28 +18,47 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.markoala.tomoandroid.data.model.meeting.Meeting
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.markoala.tomoandroid.ui.components.CustomText
 import com.markoala.tomoandroid.ui.components.CustomTextType
-import com.markoala.tomoandroid.ui.components.home.MeetingCard
-
+import com.markoala.tomoandroid.ui.main.home.components.MeetingCard
 import com.markoala.tomoandroid.ui.theme.CustomColor
 
-private val sampleMeetings = listOf(
-    Meeting("주말 브런치", "강남역 11번 출구", "토요일 11:00", 3),
-    Meeting("영화 모임", "잠실 롯데시네마", "금요일 19:30", 5),
-    Meeting("스터디", "온라인 Google Meet", "수요일 20:00", 4)
-)
-
 @Composable
-fun HomeScreen(paddingValues: PaddingValues) {
+fun HomeScreen(
+    paddingValues: PaddingValues,
+    onCreateMeetingClick: () -> Unit = {}
+) {
+    val homeViewModel: HomeViewModel = viewModel()
+    val meetings = homeViewModel.meetings.collectAsState().value
+    val isLoading = homeViewModel.isLoading.collectAsState().value
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                homeViewModel.fetchMeetings()
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -52,11 +71,11 @@ fun HomeScreen(paddingValues: PaddingValues) {
                 .padding(vertical = 16.dp)
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically
         ) {
             CustomText(
                 text = "모임 목록",
-                type = CustomTextType.headlineLarge,
+                type = CustomTextType.headline,
                 fontSize = 20.sp
             )
             Surface(
@@ -66,13 +85,13 @@ fun HomeScreen(paddingValues: PaddingValues) {
                         color = CustomColor.gray100,
                         shape = RoundedCornerShape(32.dp)
                     )
-                    .clickable { /* TODO: 모임 생성 액션 */ },
+                    .clickable { onCreateMeetingClick() },
                 shape = RoundedCornerShape(32.dp),
                 color = Color.White
             ) {
                 Row(
                     modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-                    verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
                         imageVector = Icons.Filled.Add,
@@ -83,7 +102,7 @@ fun HomeScreen(paddingValues: PaddingValues) {
                     Spacer(modifier = Modifier.width(8.dp))
                     CustomText(
                         text = "모임 생성",
-                        type = CustomTextType.bodyMedium,
+                        type = CustomTextType.body,
                         fontSize = 14.sp,
                         color = CustomColor.black
                     )
@@ -91,9 +110,36 @@ fun HomeScreen(paddingValues: PaddingValues) {
             }
         }
         Spacer(modifier = Modifier.height(16.dp))
-        LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            items(sampleMeetings) { meeting ->
-                MeetingCard(meeting)
+        if (isLoading) {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                CircularProgressIndicator(
+                    color = CustomColor.gray300,
+                    modifier = Modifier.padding(16.dp)
+                )
+            }
+        } else if (meetings.isEmpty()) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 48.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                CustomText(
+                    text = "생성된 모임이 없습니다.",
+                    type = CustomTextType.body,
+                    color = CustomColor.gray200,
+                    fontSize = 16.sp
+                )
+            }
+        } else {
+            LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                items(meetings) { meeting ->
+                    MeetingCard(meeting)
+                }
             }
         }
     }

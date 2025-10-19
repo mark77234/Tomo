@@ -30,7 +30,7 @@ import androidx.navigation.compose.rememberNavController
 import com.markoala.tomoandroid.R
 import com.markoala.tomoandroid.ui.components.CustomText
 import com.markoala.tomoandroid.ui.components.CustomTextType
-import com.markoala.tomoandroid.ui.components.auth.GoogleSignUpButton
+import com.markoala.tomoandroid.ui.login.components.GoogleSignUpButton
 import com.markoala.tomoandroid.ui.theme.CustomColor
 
 @Composable
@@ -50,11 +50,11 @@ fun LoginScreen(navController: NavController) {
         ) {
             CustomText(
                 text = "토모",
-                type = CustomTextType.headlineSmall
+                type = CustomTextType.headline
             )
             CustomText(
                 text = "친구와의 우정을 기록하세요",
-                type = CustomTextType.bodyMedium,
+                type = CustomTextType.body,
                 color = CustomColor.gray300
             )
 
@@ -72,11 +72,11 @@ fun LoginScreen(navController: NavController) {
             ) {
                 CustomText(
                     text = "로그인",
-                    type = CustomTextType.titleMedium
+                    type = CustomTextType.title
                 )
                 CustomText(
                     text = "계정에 로그인하여 친구들과 약속을 만들고 관리하세요.",
-                    type = CustomTextType.bodyMedium,
+                    type = CustomTextType.body,
                     color = CustomColor.gray300,
                     modifier = Modifier
                         .widthIn(max = 240.dp)
@@ -104,7 +104,7 @@ fun LoginScreen(navController: NavController) {
                     Spacer(modifier = Modifier.width(10.dp))
                     CustomText(
                         text = "또는",
-                        type = CustomTextType.bodyMedium,
+                        type = CustomTextType.body,
                         color = CustomColor.gray100
                     )
                     Spacer(modifier = Modifier.width(10.dp))
@@ -139,14 +139,14 @@ fun LoginScreen(navController: NavController) {
                     Spacer(modifier = Modifier.width(10.dp))
                     CustomText(
                         text = "이메일로 로그인(준비중)",
-                        type = CustomTextType.labelLarge,
+                        type = CustomTextType.label,
                         color = CustomColor.gray200
                     )
                 }
             }
             CustomText(
                 text = "로그인하면 토모의 이용약관과 개인정보처리방침에 동의하게 됩니다.",
-                type = CustomTextType.bodyMedium,
+                type = CustomTextType.body,
                 color = CustomColor.gray200,
                 textAlign = androidx.compose.ui.text.style.TextAlign.Center
             )

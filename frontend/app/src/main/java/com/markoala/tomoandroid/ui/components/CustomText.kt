@@ -25,101 +25,36 @@ val Pretendard = FontFamily(
 )
 
 enum class CustomTextType {
-    displayLarge, displayMedium, displaySmall,
-    headlineLarge, headlineMedium, headlineSmall,
-    titleLarge, titleMedium, titleSmall,
-    bodyLarge, bodyMedium, bodySmall,
-    labelLarge, labelMedium, labelSmall
+    display, headline, title, body, label
 }
 
 private fun getTextStyle(type: CustomTextType): TextStyle = when (type) {
-    CustomTextType.displayLarge -> TextStyle(
-        fontSize = 57.sp,
-        fontWeight = FontWeight.W700,
-        fontFamily = Pretendard,
-        letterSpacing = (-0.25).sp
-    )
-
-    CustomTextType.displayMedium -> TextStyle(
-        fontSize = 45.sp,
-        fontWeight = FontWeight.W700,
-        fontFamily = Pretendard
-    )
-
-    CustomTextType.displaySmall -> TextStyle(
+    CustomTextType.display -> TextStyle(
         fontSize = 36.sp,
         fontWeight = FontWeight.W700,
         fontFamily = Pretendard
     )
 
-    CustomTextType.headlineLarge -> TextStyle(
-        fontSize = 32.sp,
-        fontWeight = FontWeight.W700,
-        fontFamily = Pretendard
-    )
-
-    CustomTextType.headlineMedium -> TextStyle(
+    CustomTextType.headline -> TextStyle(
         fontSize = 28.sp,
         fontWeight = FontWeight.W700,
         fontFamily = Pretendard
     )
 
-    CustomTextType.headlineSmall -> TextStyle(
-        fontSize = 24.sp,
-        fontWeight = FontWeight.W700,
-        fontFamily = Pretendard
-    )
-
-    CustomTextType.titleLarge -> TextStyle(
-        fontSize = 22.sp,
+    CustomTextType.title -> TextStyle(
+        fontSize = 18.sp,
         fontWeight = FontWeight.W600,
         fontFamily = Pretendard
     )
 
-    CustomTextType.titleMedium -> TextStyle(
-        fontSize = 16.sp,
-        fontWeight = FontWeight.W600,
-        fontFamily = Pretendard
-    )
-
-    CustomTextType.titleSmall -> TextStyle(
-        fontSize = 14.sp,
-        fontWeight = FontWeight.W600,
-        fontFamily = Pretendard
-    )
-
-    CustomTextType.bodyLarge -> TextStyle(
-        fontSize = 16.sp,
-        fontWeight = FontWeight.W400,
-        fontFamily = Pretendard
-    )
-
-    CustomTextType.bodyMedium -> TextStyle(
+    CustomTextType.body -> TextStyle(
         fontSize = 14.sp,
         fontWeight = FontWeight.W400,
         fontFamily = Pretendard
     )
 
-    CustomTextType.bodySmall -> TextStyle(
+    CustomTextType.label -> TextStyle(
         fontSize = 12.sp,
-        fontWeight = FontWeight.W400,
-        fontFamily = Pretendard
-    )
-
-    CustomTextType.labelLarge -> TextStyle(
-        fontSize = 14.sp,
-        fontWeight = FontWeight.W500,
-        fontFamily = Pretendard
-    )
-
-    CustomTextType.labelMedium -> TextStyle(
-        fontSize = 12.sp,
-        fontWeight = FontWeight.W500,
-        fontFamily = Pretendard
-    )
-
-    CustomTextType.labelSmall -> TextStyle(
-        fontSize = 11.sp,
         fontWeight = FontWeight.W500,
         fontFamily = Pretendard
     )
@@ -129,7 +64,7 @@ private fun getTextStyle(type: CustomTextType): TextStyle = when (type) {
 fun CustomText(
     text: String,
     modifier: Modifier = Modifier,
-    type: CustomTextType = CustomTextType.bodyMedium,
+    type: CustomTextType = CustomTextType.body,
     style: TextStyle? = null,
     color: Color = Color.Unspecified,
     textAlign: TextAlign? = null,

@@ -31,7 +31,7 @@ fun CustomTextField(
         placeholder = {
             CustomText(
                 text = placeholder,
-                type = CustomTextType.bodyMedium,
+                type = CustomTextType.body,
                 color = CustomColor.gray300
             )
         }

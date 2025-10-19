@@ -1,8 +1,9 @@
-package com.markoala.tomoandroid.ui.components.friends
+package com.markoala.tomoandroid.ui.main.friends.components
 
 import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Arrangement.Absolute.spacedBy
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -32,7 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.markoala.tomoandroid.R
 import com.markoala.tomoandroid.auth.AuthManager.getStoredAccessToken
-import com.markoala.tomoandroid.data.api.friendsApiService
+import com.markoala.tomoandroid.data.api.friendsApi
 
 import com.markoala.tomoandroid.data.model.friends.FriendProfile
 import com.markoala.tomoandroid.data.model.friends.FriendSummary
@@ -68,10 +69,10 @@ fun FriendCard(
         Column(
             modifier = Modifier
                 .padding(16.dp),
-            verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(4.dp)
+            verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             Row(
-                horizontalArrangement = androidx.compose.foundation.layout.Arrangement.SpaceBetween,
+                horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 ProfileImage(
                     modifier = Modifier.padding(end = 10.dp),
@@ -83,13 +84,13 @@ fun FriendCard(
                 ) {
                     CustomText(
                         text = friend.username,
-                        type = CustomTextType.titleMedium,
+                        type = CustomTextType.title,
                         color = CustomColor.black,
                         fontSize = 16.sp
                     )
                     Spacer(modifier = Modifier.height(10.dp))
                     Row(
-                        horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(
+                        horizontalArrangement = Arrangement.spacedBy(
                             4.dp
                         )
                     ) {
@@ -103,7 +104,7 @@ fun FriendCard(
                         )
                         CustomText(
                             text = friend.email,
-                            type = CustomTextType.bodyMedium,
+                            type = CustomTextType.body,
                             color = CustomColor.gray200,
                             fontSize = 12.sp
                         )
@@ -111,7 +112,7 @@ fun FriendCard(
                 }
                 CustomText(
                     text = "친밀도: " + friend.friendship.toString(),
-                    type = CustomTextType.bodyMedium,
+                    type = CustomTextType.body,
                     color = CustomColor.gray200,
                     fontSize = 12.sp
                 )
@@ -145,7 +146,7 @@ fun FriendCard(
                     )
                     CustomText(
                         text = "우정 기간: " + friend.createdAt,
-                        type = CustomTextType.bodyMedium,
+                        type = CustomTextType.body,
                         color = CustomColor.gray200,
                         fontSize = 12.sp
                     )
@@ -168,7 +169,7 @@ fun FriendCard(
 
                     CustomText(
                         text = "친구삭제",
-                        type = CustomTextType.titleMedium,
+                        type = CustomTextType.title,
                         fontSize = 14.sp,
                         color = CustomColor.gray300
                     )
@@ -199,7 +200,7 @@ fun FriendCard(
                     Log.d("FriendCard", "액세스 토큰 앞 10자리: ${accessToken.take(10)}...")
                 }
 
-                friendsApiService.deleteFriends(friend.email)
+                friendsApi.deleteFriends(friend.email)
                     .enqueue(object : Callback<BaseResponse<FriendSummary>> {
                         override fun onResponse(
                             call: Call<BaseResponse<FriendSummary>>,
