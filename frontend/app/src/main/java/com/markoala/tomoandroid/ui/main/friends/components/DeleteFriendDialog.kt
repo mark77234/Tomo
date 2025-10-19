@@ -1,5 +1,6 @@
-package com.markoala.tomoandroid.ui.components.friends
+package com.markoala.tomoandroid.ui.main.friends.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -61,7 +62,7 @@ fun DeleteFriendDialog(
                         containerColor = CustomColor.white,
                         contentColor = CustomColor.gray300
                     ),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, CustomColor.gray100),
+                    border = BorderStroke(1.dp, CustomColor.gray100),
                     shape = RoundedCornerShape(8.dp),
                     modifier = Modifier.weight(1f)
                 ) {

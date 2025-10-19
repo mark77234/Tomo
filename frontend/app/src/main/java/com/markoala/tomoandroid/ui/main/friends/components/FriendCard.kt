@@ -1,8 +1,9 @@
-package com.markoala.tomoandroid.ui.components.friends
+package com.markoala.tomoandroid.ui.main.friends.components
 
 import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Arrangement.Absolute.spacedBy
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -68,10 +69,10 @@ fun FriendCard(
         Column(
             modifier = Modifier
                 .padding(16.dp),
-            verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(4.dp)
+            verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             Row(
-                horizontalArrangement = androidx.compose.foundation.layout.Arrangement.SpaceBetween,
+                horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 ProfileImage(
                     modifier = Modifier.padding(end = 10.dp),
@@ -89,7 +90,7 @@ fun FriendCard(
                     )
                     Spacer(modifier = Modifier.height(10.dp))
                     Row(
-                        horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(
+                        horizontalArrangement = Arrangement.spacedBy(
                             4.dp
                         )
                     ) {
