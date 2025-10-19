@@ -1,4 +1,4 @@
-package com.markoala.tomoandroid.ui.main.friends.add_friends
+package com.markoala.tomoandroid.ui.main.friends
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -18,9 +18,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -28,7 +29,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.markoala.tomoandroid.R
+import com.markoala.tomoandroid.data.model.friends.FriendSummary
 import com.markoala.tomoandroid.data.repository.friends.FriendsRepository
 import com.markoala.tomoandroid.ui.components.CustomText
 import com.markoala.tomoandroid.ui.components.CustomTextField
@@ -42,14 +43,89 @@ fun AddFriendsScreen(
     paddingValues: PaddingValues,
     onBackClick: () -> Unit
 ) {
-    val viewModel: AddFriendsViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
-    val searchText by viewModel.searchText.collectAsState()
-    val searchResults by viewModel.searchResults.collectAsState()
-    val isSearching by viewModel.isLoading.collectAsState()
-    val errorMessage by viewModel.errorMessage.collectAsState()
-    val selectedOption by viewModel.selectedOption.collectAsState()
-    remember { FriendsRepository() }
-    LocalToastManager.current
+    var searchText by remember { mutableStateOf("") }
+    var searchResults by remember { mutableStateOf<List<FriendSummary>>(emptyList()) }
+    var isSearching by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
+    val friendsRepository = remember { FriendsRepository() }
+    val toastManager = LocalToastManager.current
+
+    // 친구 검색
+    fun searchFriends() {
+        if (searchText.isBlank()) {
+            toastManager.showWarning("이메일을 입력해주세요.")
+            return
+        }
+
+        friendsRepository.getFriends(
+            email = searchText,
+
+            onLoading = { loading ->
+                isSearching = loading
+                if (loading) {
+                    searchResults = emptyList()
+                    errorMessage = null
+                }
+            },
+            onSuccess = { friends ->
+                searchResults = friends
+                errorMessage = null
+                if (friends.isEmpty()) {
+                    toastManager.showInfo("검색 결과가 없습니다.")
+                } else {
+                    toastManager.showSuccess("사용자를 찾았습니다.")
+                }
+            },
+            onError = { error ->
+                searchResults = emptyList()
+                errorMessage = error
+                // HTTP 상태 코드에 따른 에러 처리는 Repository에서 이미 수행됨
+                // 추가로 UI에서 에러 타입을 구분하려면 ErrorHandler 사용
+                if (error.contains("해당 이메일로 등록된 사용자가 없습니다") ||
+                    error.contains("찾을 수 없습니다")
+                ) {
+                    toastManager.showInfo(error)
+                } else if (error.contains("인증") || error.contains("로그인")) {
+                    toastManager.showError(error)
+                } else if (error.contains("입력") || error.contains("잘못된")) {
+                    toastManager.showWarning(error)
+                } else {
+                    toastManager.showError(error)
+                }
+            }
+        )
+    }
+
+    // 친구 추가
+    fun addFriend(email: String) {
+        friendsRepository.postFriends(
+            email = email,
+
+            onLoading = { loading ->
+                isSearching = loading
+            },
+            onSuccess = {
+                toastManager.showSuccess("친구가 성공적으로 추가되었습니다!")
+
+            },
+            onError = { error ->
+                errorMessage = error
+                // HTTP 상태 코드에 따른 에러 처리는 Repository에서 이미 수행됨
+                // 추가로 UI에서 에러 타입을 구분하려면 ErrorHandler 사용
+                if (error.contains("이미 친구") || error.contains("이미 친구입니다")) {
+                    toastManager.showInfo(error)
+                } else if (error.contains("자신을")) {
+                    toastManager.showWarning(error)
+                } else if (error.contains("인증") || error.contains("로그인")) {
+                    toastManager.showError(error)
+                } else if (error.contains("입력") || error.contains("잘못된")) {
+                    toastManager.showWarning(error)
+                } else {
+                    toastManager.showError(error)
+                }
+            }
+        )
+    }
 
     Column(
         modifier = Modifier
@@ -103,6 +179,7 @@ fun AddFriendsScreen(
 
 
         Spacer(modifier = Modifier.height(16.dp))
+        var selectedOption by remember { mutableStateOf("email") } // "phone" 또는 "email"
 
         Row(
             modifier = Modifier
@@ -124,13 +201,13 @@ fun AddFriendsScreen(
                         color = if (selectedOption == "phone") CustomColor.gray50 else Color.White,
                         shape = RoundedCornerShape(topStart = 16.dp, bottomStart = 16.dp)
                     )
-                    .clickable { viewModel.setSelectedOption("phone") }
+                    .clickable { selectedOption = "phone" }
                     .padding(vertical = 16.dp, horizontal = 32.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ) {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_call),
+                    painter = painterResource(id = com.markoala.tomoandroid.R.drawable.ic_call),
                     contentDescription = "call",
                     tint = CustomColor.black
                 )
@@ -151,13 +228,13 @@ fun AddFriendsScreen(
                         color = if (selectedOption == "email") CustomColor.gray50 else Color.White,
                         shape = RoundedCornerShape(topEnd = 16.dp, bottomEnd = 16.dp)
                     )
-                    .clickable { viewModel.setSelectedOption("email") }
+                    .clickable { selectedOption = "email" }
                     .padding(vertical = 16.dp, horizontal = 32.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ) {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_email_at),
+                    painter = painterResource(id = com.markoala.tomoandroid.R.drawable.ic_email_at),
                     contentDescription = "@",
                     tint = CustomColor.black
                 )
@@ -187,7 +264,7 @@ fun AddFriendsScreen(
             ) {
                 CustomTextField(
                     value = searchText,
-                    onValueChange = { viewModel.setSearchText(it) },
+                    onValueChange = { searchText = it },
                     modifier = Modifier.weight(1f),
                     placeholder = "이메일을 입력하세요",
                     enabled = !isSearching
@@ -205,7 +282,7 @@ fun AddFriendsScreen(
                             shape = RoundedCornerShape(12.dp)
                         )
                         .clickable(enabled = !isSearching) {
-                            viewModel.searchFriends()
+                            searchFriends() // 친구 검색
                         },
                     color = CustomColor.white,
                     shape = RoundedCornerShape(12.dp)
@@ -215,7 +292,7 @@ fun AddFriendsScreen(
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
-                            painter = painterResource(id = R.drawable.ic_search),
+                            painter = painterResource(id = com.markoala.tomoandroid.R.drawable.ic_search),
                             contentDescription = "검색",
                             tint = if (isSearching) CustomColor.gray300 else CustomColor.black
                         )
@@ -274,7 +351,7 @@ fun AddFriendsScreen(
                                             shape = RoundedCornerShape(8.dp)
                                         )
                                         .clickable {
-                                            viewModel.addFriend(friend.email)
+                                            addFriend(friend.email)
                                         },
                                     shape = RoundedCornerShape(8.dp),
                                     color = Color.White
