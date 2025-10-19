@@ -26,10 +26,11 @@ fun NavigationBottomButtons(
     isLoading: Boolean,
     canGoNext: Boolean,
     onPrevious: () -> Unit,
-    onNext: () -> Unit
+    onNext: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         if (currentStep > 1) {
@@ -77,6 +78,7 @@ fun NavigationBottomButtons(
                 color = if (canGoNext) CustomColor.black else CustomColor.gray200
             )
         }
+
 
     }
 }

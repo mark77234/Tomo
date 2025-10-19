@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
@@ -75,48 +76,59 @@ fun CreateMeetingScreen(
             .padding(paddingValues)
             .padding(horizontal = 24.dp, vertical = 16.dp)
     ) {
-        MeetingHeader(onBackClick = onBackClick)
-        Spacer(modifier = Modifier.height(16.dp))
-        StepIndicator(currentStep = currentStep)
-        Spacer(modifier = Modifier.height(24.dp))
+        Column(
+            modifier = Modifier
+                .weight(1f, fill = true)
+                .fillMaxWidth()
+        ) {
+            MeetingHeader(onBackClick = onBackClick)
+            Spacer(modifier = Modifier.height(16.dp))
+            StepIndicator(currentStep = currentStep)
+            Spacer(modifier = Modifier.height(24.dp))
 
-        when (currentStep) {
-            1 -> StepOneSection(
-                moimName = moimName,
-                description = description,
-                onNameChange = {
-                    viewModel.moimName.value = it
-                    viewModel.clearError()
-                },
-                onDescriptionChange = {
-                    viewModel.description.value = it
-                    viewModel.clearError()
-                }
-            )
+            when (currentStep) {
+                1 -> StepOneSection(
+                    moimName = moimName,
+                    description = description,
+                    onNameChange = {
+                        viewModel.moimName.value = it
+                        viewModel.clearError()
+                    },
+                    onDescriptionChange = {
+                        viewModel.description.value = it
+                        viewModel.clearError()
+                    }
+                )
 
-            2 -> StepTwoSection(
-                friends = friends,
-                selectedEmails = selectedEmails,
-                onToggleEmail = { viewModel.toggleEmail(it) }
-            )
+                2 -> StepTwoSection(
+                    friends = friends,
+                    selectedEmails = selectedEmails,
+                    onToggleEmail = { viewModel.toggleEmail(it) }
+                )
 
-            3 -> StepThreeSection(
-                moimName = moimName,
-                description = description,
-                selectedFriends = friends.filter { selectedEmails.contains(it.email) }
-            )
+                3 -> StepThreeSection(
+                    moimName = moimName,
+                    description = description,
+                    selectedFriends = friends.filter { selectedEmails.contains(it.email) }
+                )
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
-
-        if (errorMessage != null) {
+        errorMessage?.let {
             CustomText(
-                text = errorMessage ?: "",
+                text = it,
                 type = CustomTextType.body,
                 color = CustomColor.gray300
             )
-            Spacer(modifier = Modifier.height(12.dp))
         }
+
+        Spacer(
+            modifier = Modifier.height(
+                if (errorMessage != null) 12.dp else 16.dp
+            )
+        )
 
         NavigationBottomButtons(
             currentStep = currentStep,
@@ -140,5 +152,6 @@ fun CreateMeetingScreen(
                 }
             }
         )
+        Spacer(modifier = Modifier.height(32.dp))
     }
 }
