@@ -10,10 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -23,11 +20,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.markoala.tomoandroid.R
 import com.markoala.tomoandroid.ui.components.CustomText
+import com.markoala.tomoandroid.ui.components.CustomTextField
 import com.markoala.tomoandroid.ui.components.CustomTextType
 import com.markoala.tomoandroid.ui.components.ProfileImage
 import com.markoala.tomoandroid.ui.theme.CustomColor
@@ -40,14 +37,14 @@ fun ProfileScreen(
     paddingValues: PaddingValues,
     onSaveProfile: (String, String) -> Unit = { _, _ -> }
 ) {
-    var profileName by remember { mutableStateOf(TextFieldValue(name)) }
-    var profileEmail by remember { mutableStateOf(TextFieldValue(email)) }
+    var profileName by remember { mutableStateOf(name) }
+    var profileEmail by remember { mutableStateOf(email) }
 
     LaunchedEffect(name) {
-        profileName = TextFieldValue(name)
+        profileName = name
     }
     LaunchedEffect(email) {
-        profileEmail = TextFieldValue(email)
+        profileEmail = email
     }
 
     Column(
@@ -100,18 +97,17 @@ fun ProfileScreen(
                 )
             }
 
-            OutlinedTextField(
+            CustomTextField(
                 value = profileName,
                 onValueChange = { profileName = it },
                 enabled = false,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 8.dp, vertical = 8.dp),
-                shape = RoundedCornerShape(8.dp),
-                colors = OutlinedTextFieldDefaults.colors(
-                    unfocusedBorderColor = CustomColor.gray100,
-                    focusedBorderColor = CustomColor.gray100
-                )
+                cornerRadius = 8,
+                unfocusedBorderColor = CustomColor.gray100,
+                focusedBorderColor = CustomColor.gray100,
+                placeholder = "이름"
             )
         }
 
@@ -135,18 +131,17 @@ fun ProfileScreen(
                 )
             }
 
-            OutlinedTextField(
+            CustomTextField(
                 value = profileEmail,
                 onValueChange = { },
                 enabled = false,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 8.dp, vertical = 8.dp),
-                shape = RoundedCornerShape(8.dp),
-                colors = OutlinedTextFieldDefaults.colors(
-                    unfocusedBorderColor = CustomColor.gray100,
-                    focusedBorderColor = CustomColor.gray100
-                )
+                cornerRadius = 8,
+                unfocusedBorderColor = CustomColor.gray100,
+                focusedBorderColor = CustomColor.gray100,
+                placeholder = "이메일"
             )
         }
 
