@@ -3,12 +3,10 @@ package com.markoala.tomoandroid.ui.main.home.meeting.steps
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.markoala.tomoandroid.ui.components.CustomText
-import com.markoala.tomoandroid.ui.components.CustomTextType
+import com.markoala.tomoandroid.ui.components.CustomTextField
 
 @Composable
 fun StepOneSection(
@@ -18,18 +16,18 @@ fun StepOneSection(
     onDescriptionChange: (String) -> Unit
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-        OutlinedTextField(
+
+        CustomTextField(
             value = moimName,
             onValueChange = onNameChange,
-            label = { CustomText(text = "모임 제목", type = CustomTextType.bodyMedium) },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            placeholder = "모임명을 입력해주세요"
         )
-        OutlinedTextField(
+        CustomTextField(
             value = description,
             onValueChange = onDescriptionChange,
-            label = { CustomText(text = "모임 설명", type = CustomTextType.bodyMedium) },
             modifier = Modifier.fillMaxWidth(),
-            minLines = 3
+            placeholder = "모임 설명을 적어주세요"
         )
     }
 }
