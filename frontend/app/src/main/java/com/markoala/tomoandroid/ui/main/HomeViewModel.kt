@@ -15,12 +15,16 @@ class HomeViewModel : ViewModel() {
     private val _meetings = MutableStateFlow<List<Meeting>>(emptyList())
     val meetings: StateFlow<List<Meeting>> = _meetings
 
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading
+
     init {
         fetchMeetings()
     }
 
     fun fetchMeetings() {
         viewModelScope.launch {
+            _isLoading.value = true
             try {
                 val response = MoimsApiService.getMoimsList().awaitResponse()
                 if (response.isSuccessful) {
@@ -37,6 +41,8 @@ class HomeViewModel : ViewModel() {
                 }
             } catch (e: Exception) {
                 // 에러 처리 필요시 추가
+            } finally {
+                _isLoading.value = false
             }
         }
     }

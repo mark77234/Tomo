@@ -18,11 +18,13 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -42,6 +44,7 @@ fun HomeScreen(
 ) {
     val homeViewModel: HomeViewModel = viewModel()
     val meetings = homeViewModel.meetings.collectAsState().value
+    val isLoading = homeViewModel.isLoading.collectAsState().value
     val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
 
     DisposableEffect(lifecycleOwner) {
@@ -67,7 +70,7 @@ fun HomeScreen(
                 .padding(vertical = 16.dp)
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically
         ) {
             CustomText(
                 text = "모임 목록",
@@ -87,7 +90,7 @@ fun HomeScreen(
             ) {
                 Row(
                     modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-                    verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
                         imageVector = Icons.Filled.Add,
@@ -106,12 +109,23 @@ fun HomeScreen(
             }
         }
         Spacer(modifier = Modifier.height(16.dp))
-        if (meetings.isEmpty()) {
+        if (isLoading) {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                CircularProgressIndicator(
+                    color = CustomColor.gray300,
+                    modifier = Modifier.padding(16.dp)
+                )
+            }
+        } else if (meetings.isEmpty()) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 48.dp),
-                horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 CustomText(
                     text = "생성된 모임이 없습니다.",
