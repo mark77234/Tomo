@@ -35,7 +35,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.markoala.tomoandroid.ui.components.CustomText
 import com.markoala.tomoandroid.ui.components.CustomTextType
-import com.markoala.tomoandroid.ui.components.home.MeetingCard
+import com.markoala.tomoandroid.ui.main.home.components.MeetingCard
 import com.markoala.tomoandroid.ui.theme.CustomColor
 
 @Composable
