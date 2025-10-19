@@ -36,10 +36,11 @@ fun NavigationBottomButtons(
             OutlinedButton(
                 onClick = onPrevious,
                 modifier = Modifier.weight(1f),
+                enabled = true,
                 colors = ButtonDefaults.outlinedButtonColors(
                     containerColor = CustomColor.white,
                 ),
-                border = BorderStroke(1.dp, CustomColor.black),
+                border = BorderStroke(1.dp, CustomColor.gray100),
                 shape = RoundedCornerShape(14.dp),
                 contentPadding = PaddingValues(vertical = 12.dp),
             ) {
@@ -55,27 +56,25 @@ fun NavigationBottomButtons(
             enabled = canGoNext && !isLoading,
             modifier = Modifier.weight(1f),
             colors = ButtonDefaults.outlinedButtonColors(
-                containerColor = CustomColor.white,
+                containerColor = if (canGoNext && !isLoading) CustomColor.white else CustomColor.gray50,
+                disabledContainerColor = CustomColor.gray50
             ),
-            border = BorderStroke(1.dp, CustomColor.gray100),
+            border = BorderStroke(1.dp, CustomColor.gray200),
             shape = RoundedCornerShape(14.dp),
             contentPadding = PaddingValues(vertical = 12.dp),
-
-            ) {
+        ) {
             if (isLoading && currentStep == 3) {
                 CircularProgressIndicator(
-                    modifier = Modifier
-                        .size(18.dp),
+                    modifier = Modifier.size(18.dp),
                     strokeWidth = 2.dp,
                     color = Color.White
                 )
                 Spacer(modifier = Modifier.width(8.dp))
             }
-
             CustomText(
                 text = if (currentStep < 3) "다음" else "모임 만들기",
                 type = CustomTextType.body,
-                color = CustomColor.black
+                color = if (canGoNext) CustomColor.black else CustomColor.gray200
             )
         }
 
