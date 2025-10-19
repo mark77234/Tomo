@@ -1,6 +1,5 @@
 package com.markoala.tomoandroid.ui.main.home.meeting
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -16,16 +15,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -40,9 +34,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.markoala.tomoandroid.data.model.friends.FriendProfile
 import com.markoala.tomoandroid.ui.components.CustomText
 import com.markoala.tomoandroid.ui.components.CustomTextType
+import com.markoala.tomoandroid.ui.main.home.meeting.steps.StepOneSection
+import com.markoala.tomoandroid.ui.main.home.meeting.steps.StepThreeSection
+import com.markoala.tomoandroid.ui.main.home.meeting.steps.StepTwoSection
 import com.markoala.tomoandroid.ui.theme.CustomColor
 
 @Composable
@@ -233,192 +229,6 @@ private fun StepIndicator(currentStep: Int) {
     }
 }
 
-@Composable
-private fun StepOneSection(
-    moimName: String,
-    description: String,
-    onNameChange: (String) -> Unit,
-    onDescriptionChange: (String) -> Unit
-) {
-    Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-        OutlinedTextField(
-            value = moimName,
-            onValueChange = onNameChange,
-            label = { CustomText(text = "모임 제목", type = CustomTextType.bodyMedium) },
-            modifier = Modifier.fillMaxWidth()
-        )
-        OutlinedTextField(
-            value = description,
-            onValueChange = onDescriptionChange,
-            label = { CustomText(text = "모임 설명", type = CustomTextType.bodyMedium) },
-            modifier = Modifier.fillMaxWidth(),
-            minLines = 3
-        )
-    }
-}
-
-@Composable
-private fun StepTwoSection(
-    friends: List<FriendProfile>,
-    selectedEmails: Set<String>,
-    onToggleEmail: (String) -> Unit
-) {
-    Column(modifier = Modifier.fillMaxWidth()) {
-        CustomText(
-            text = "초대할 친구를 선택하세요",
-            type = CustomTextType.bodyMedium,
-            color = CustomColor.gray300
-        )
-        Spacer(modifier = Modifier.height(12.dp))
-        if (friends.isEmpty()) {
-            Surface(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp),
-                color = CustomColor.gray30
-            ) {
-                Box(
-                    modifier = Modifier.padding(vertical = 24.dp, horizontal = 16.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CustomText(
-                        text = "초대할 친구가 없습니다.",
-                        type = CustomTextType.bodyMedium,
-                        color = CustomColor.gray200
-                    )
-                }
-            }
-        } else {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(280.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(friends, key = { it.email }) { friend ->
-                    val selected = selectedEmails.contains(friend.email)
-                    Surface(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { onToggleEmail(friend.email) },
-                        shape = RoundedCornerShape(12.dp),
-                        color = if (selected) CustomColor.gray30 else Color.White,
-                        border = BorderStroke(
-                            width = 1.dp,
-                            color = if (selected) CustomColor.gray300 else CustomColor.gray100
-                        )
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .padding(horizontal = 16.dp, vertical = 14.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Column {
-                                CustomText(
-                                    text = friend.username,
-                                    type = CustomTextType.bodyMedium,
-                                    color = CustomColor.black
-                                )
-                                Spacer(modifier = Modifier.height(4.dp))
-                                CustomText(
-                                    text = friend.email,
-                                    type = CustomTextType.bodySmall,
-                                    color = CustomColor.gray200
-                                )
-                            }
-                            Spacer(modifier = Modifier.weight(1f))
-                            if (selected) {
-                                CustomText(
-                                    text = "선택됨",
-                                    type = CustomTextType.bodySmall,
-                                    color = CustomColor.gray300,
-                                    fontSize = 12.sp
-                                )
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun StepThreeSection(
-    moimName: String,
-    description: String,
-    selectedFriends: List<FriendProfile>
-) {
-    Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-        CustomText(
-            text = "입력한 내용을 확인하세요",
-            type = CustomTextType.bodyMedium,
-            color = CustomColor.gray300
-        )
-
-        SummaryCard(title = "모임 제목", value = moimName)
-        SummaryCard(title = "모임 설명", value = description)
-
-        Card(
-            colors = CardDefaults.cardColors(containerColor = Color.White),
-            shape = RoundedCornerShape(16.dp),
-            border = BorderStroke(1.dp, CustomColor.gray100),
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Column(modifier = Modifier.padding(16.dp)) {
-                CustomText(
-                    text = "초대 친구",
-                    type = CustomTextType.titleMedium,
-                    color = CustomColor.black
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                if (selectedFriends.isEmpty()) {
-                    CustomText(
-                        text = "선택된 친구가 없습니다.",
-                        type = CustomTextType.bodySmall,
-                        color = CustomColor.gray200
-                    )
-                } else {
-                    selectedFriends.forEachIndexed { index, friend ->
-                        CustomText(
-                            text = "${index + 1}. ${friend.username} (${friend.email})",
-                            type = CustomTextType.bodySmall,
-                            color = CustomColor.black
-                        )
-                        if (index != selectedFriends.lastIndex) {
-                            Spacer(modifier = Modifier.height(6.dp))
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun SummaryCard(title: String, value: String) {
-    Card(
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        shape = RoundedCornerShape(16.dp),
-        border = BorderStroke(1.dp, CustomColor.gray100),
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            CustomText(
-                text = title,
-                type = CustomTextType.bodySmall,
-                color = CustomColor.gray200
-            )
-            CustomText(
-                text = value,
-                type = CustomTextType.bodyMedium,
-                color = CustomColor.black
-            )
-        }
-    }
-}
 
 @Composable
 private fun NavigationButtons(
