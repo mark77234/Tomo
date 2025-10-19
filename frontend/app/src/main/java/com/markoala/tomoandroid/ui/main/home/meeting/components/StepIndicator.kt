@@ -29,7 +29,7 @@ fun StepIndicator(currentStep: Int) {
 
     Row(
         modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         steps.forEachIndexed { index, title ->
             val stepNumber = index + 1
@@ -38,21 +38,56 @@ fun StepIndicator(currentStep: Int) {
                 modifier = Modifier.weight(1f)
             ) {
                 val isCurrentStep = currentStep >= stepNumber
-                Surface(
-                    shape = CircleShape,
-                    color = if (isCurrentStep) CustomColor.gray50 else CustomColor.white,
-                    contentColor = if (isCurrentStep) CustomColor.black else CustomColor.gray100,
-                    border = BorderStroke(
-                        width = 1.dp,
-                        color = if (isCurrentStep) CustomColor.black else CustomColor.gray100
-                    ),
-                    modifier = Modifier.size(36.dp)
+                val isStepCompleted = currentStep > stepNumber
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Box(contentAlignment = Alignment.Center) {
-                        CustomText(
-                            text = stepNumber.toString(),
-                            type = CustomTextType.body,
-                            color = if (isCurrentStep) CustomColor.black else CustomColor.gray200
+                    val leftConnectorModifier = Modifier
+                        .weight(1f)
+                        .height(1.dp)
+
+                    if (index == 0) {
+                        Box(modifier = leftConnectorModifier)
+                    } else {
+                        Box(
+                            modifier = leftConnectorModifier.background(
+                                if (currentStep >= stepNumber) CustomColor.black else CustomColor.gray50
+                            )
+                        )
+                    }
+
+                    Surface(
+                        shape = CircleShape,
+                        color = if (isCurrentStep) CustomColor.gray50 else CustomColor.white,
+                        contentColor = if (isCurrentStep) CustomColor.black else CustomColor.gray100,
+                        border = BorderStroke(
+                            width = 1.dp,
+                            color = if (isCurrentStep) CustomColor.gray300 else CustomColor.gray100
+                        ),
+                        modifier = Modifier.size(36.dp)
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            CustomText(
+                                text = stepNumber.toString(),
+                                type = CustomTextType.body,
+                                color = if (isCurrentStep) CustomColor.black else CustomColor.gray100
+                            )
+                        }
+                    }
+
+                    val rightConnectorModifier = Modifier
+                        .weight(1f)
+                        .height(1.dp)
+
+                    if (index == steps.lastIndex) {
+                        Box(modifier = rightConnectorModifier)
+                    } else {
+                        Box(
+                            modifier = rightConnectorModifier.background(
+                                if (isStepCompleted) CustomColor.black else CustomColor.gray50
+                            )
                         )
                     }
                 }
@@ -61,15 +96,6 @@ fun StepIndicator(currentStep: Int) {
                     text = title,
                     type = CustomTextType.body,
                     color = if (currentStep == stepNumber) CustomColor.black else CustomColor.gray200
-                )
-            }
-
-            if (index < steps.lastIndex) {
-                Box(
-                    modifier = Modifier
-                        .weight(0.2f)
-                        .height(1.dp)
-                        .background(if (currentStep > stepNumber) CustomColor.black else CustomColor.gray50)
                 )
             }
         }
