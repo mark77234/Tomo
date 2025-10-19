@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -89,13 +90,16 @@ fun StepTwoSection(
                             Checkbox(
                                 checked = selected,
                                 onCheckedChange = { onToggleEmail(friend.email) },
-                                modifier = Modifier.padding(end = 12.dp),
+                                modifier = Modifier
+                                    .padding(start = 6.dp, end = 16.dp)
+                                    .size(20.dp), // 체크박스 크기 축소
                                 colors = CheckboxDefaults.colors(
                                     checkedColor = CustomColor.gray300, // 체크된 상태의 색상
                                     uncheckedColor = CustomColor.gray100, // 체크 안 된 상태의 색상
                                     checkmarkColor = CustomColor.white // 체크 표시 색상
+                                ),
+
                                 )
-                            )
                             ProfileImage(size = 48.dp)
                             Spacer(Modifier.width(12.dp))
                             Column {
