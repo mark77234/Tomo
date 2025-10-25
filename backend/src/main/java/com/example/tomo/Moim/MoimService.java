@@ -67,10 +67,17 @@ public class MoimService {
                  () -> new EntityNotFoundException("존재하지 않는 모임입니다")
          );
 
+        // 모임의 리더를 찾아서 이름을 반환해주어야 함
+        Long leaderId = moimPeopleRepository.findBymoimLeader(moim.getId());
+        String name = userRepository.findById(leaderId).orElseThrow(EntityNotFoundException::new).getUsername();
+
         return new getMoimResponseDTO(
                 moim.getTitle(),
                 moim.getDescription(),
-                moim.getMoimPeopleList().size());
+                moim.getMoimPeopleList().size(),
+                name,
+                moim.getCreatedAt());
+
     }
     // 모임 상세 조회
 

@@ -5,6 +5,7 @@ import com.example.tomo.Promise.Promise;
 import jakarta.persistence.*;
 import lombok.Getter;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,5 +37,13 @@ public class Moim {
     public Moim(String title, String description) {
         this.title = title;
         this.description = description;
+    }
+
+    private LocalDateTime createdAt;
+
+    // DB에 저장해두고 가져와야함
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
     }
 }
