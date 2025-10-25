@@ -32,7 +32,7 @@ public class MoimService {
     }
 
     @Transactional // 이메일로 처리하기
-    public ResponsePostUniformDto addMoim(addMoimRequestDto dto) {
+    public ResponsePostUniformDto addMoim(String uid, addMoimRequestDto dto) {
         if (moimRepository.existsByTitle(dto.getTitle())) {
             throw new DuplicatedException("이미 존재하는 모임 이름입니다.");
         }
@@ -40,7 +40,12 @@ public class MoimService {
         Moim moim = new Moim(dto.getTitle(), dto.getDescription()); // 일단 생성자도 변경해야 해서 그대로 두기
         moimRepository.save(moim);
 
-        for (String email : dto.getEmails()) {
+        List<String> emailList = dto.getEmails();
+        User leader = userRepository.findByFirebaseId(uid).orElseThrow(EntityNotFoundException::new);
+        Moim_people moimLeader = new Moim_people(moim, leader, true);
+        moimPeopleRepository.save(moimLeader);
+
+        for (String email : emailList) {
 
             Optional<User> user = userRepository.findByEmail(email);
 
@@ -48,7 +53,7 @@ public class MoimService {
                 throw new EntityNotFoundException("해당 이메일의 사용자가 존재하지 않습니다");
             }
 
-            Moim_people moim_people = new Moim_people(moim, user.get());
+            Moim_people moim_people = new Moim_people(moim, user.get(), false);
             moimPeopleRepository.save(moim_people);
         }
 

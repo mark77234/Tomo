@@ -23,11 +23,14 @@ public class Moim_people {
     @JoinColumn(name ="user_id")
     private User user;
 
+    private Boolean leader;
+
     public Moim_people() {}
 
-    public Moim_people(Moim moim, User user) {
+    public Moim_people(Moim moim, User user, Boolean leader) {
         this.moim = moim;
         this.user = user;
+        this.leader = leader;
     }
 
 }

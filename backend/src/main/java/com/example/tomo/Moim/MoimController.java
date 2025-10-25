@@ -38,9 +38,11 @@ public class MoimController {
     )
     @PostMapping("/moims")
     public ResponseEntity<ResponsePostUniformDto> addmoim(
-            @RequestBody addMoimRequestDto dto) {
+            @RequestBody addMoimRequestDto dto,
+            @AuthenticationPrincipal String uid
+    ) {
         try {
-            return ResponseEntity.ok(moimService.addMoim(dto));
+            return ResponseEntity.ok(moimService.addMoim(uid, dto));
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                     new ResponsePostUniformDto(false ,"존재하지 않은 사용자를 친구로 추가했습니다"));
