@@ -61,9 +61,9 @@ public class MoimController {
     @GetMapping("/moims")
     public ResponseEntity<ApiResponse<getMoimResponseDTO>> moimGet(
             @Parameter(description = "조회할 모임 이름", required = true)
-            @RequestParam String moimName) {
+            @RequestParam String title) {
         try {
-            return ResponseEntity.ok(ApiResponse.success(moimService.getMoim(moimName),"성공"));
+            return ResponseEntity.ok(ApiResponse.success(moimService.getMoim(title),"성공"));
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).
                     body(ApiResponse.failure("존재하지 않는 모임입니다."));

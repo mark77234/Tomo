@@ -19,13 +19,13 @@ public class Moim {
     private Long id;
 
     @OneToMany(mappedBy = "moim")
-    private List<Promise> promiseList = new ArrayList<>();
+    private final List<Promise> promiseList = new ArrayList<>();
 
     // 모임 사람
     @OneToMany(mappedBy = "moim")
-    private List<Moim_people> moimPeopleList = new ArrayList<>();
+    private final List<Moim_people> moimPeopleList = new ArrayList<>();
 
-    private String moimName;
+    private String title;
 
     @Lob
     private String description;
@@ -33,8 +33,8 @@ public class Moim {
     public Moim() {
     }
 
-    public Moim(String moimName, String description) {
-        this.moimName = moimName;
+    public Moim(String title, String description) {
+        this.title = title;
         this.description = description;
     }
 }

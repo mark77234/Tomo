@@ -9,7 +9,7 @@ import java.util.List;
 @Setter
 public class addMoimRequestDto {
 
-    private String moimName;
-    private String description; // 병찬이가 필요없대
+    private String title;
+    private String description; //
     private List<String> emails; // 사용자 이름 , 이메일로
 }

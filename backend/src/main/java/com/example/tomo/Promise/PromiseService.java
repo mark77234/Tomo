@@ -25,7 +25,7 @@ public class PromiseService {
     // 같은 날짜 같은 시간에 약속 존재 시에도 오류 발생
     public ResponsePostUniformDto addPromise(addPromiseRequestDTO dto){
 
-        Moim moim = moimRepository.findByMoimName(dto.getMoimName())
+        Moim moim = moimRepository.findByTitle(dto.getTitle())
                 .orElseThrow(() -> new EntityNotFoundException("모임 생성 후 약속을 만들어 주세요"));
 
          if(promiseRepository.existsByPromiseName(dto.getPromiseName()) &&
@@ -33,8 +33,11 @@ public class PromiseService {
              throw new DuplicatedException("이미 존재하는 약속입니다");
          }
 
-         Promise promise = new Promise(dto.getPromiseName(),dto.getPlace(),
-                dto.getPromiseTime(),dto.getPromiseDate());
+         Promise promise = new Promise(
+                 dto.getPromiseName(),
+                 dto.getPlace(),
+                 dto.getPromiseTime(),
+                 dto.getPromiseDate());
 
          promise.setMoimBasedPromise(moim);
 
@@ -52,8 +55,8 @@ public class PromiseService {
 
 
     }
-    public List<ResponseGetPromiseDto> getAllPromise(String moimName){
-        Optional<Moim> moim = moimRepository.findByMoimName(moimName);
+    public List<ResponseGetPromiseDto> getAllPromise(String title){
+        Optional<Moim> moim = moimRepository.findByTitle(title);
         if(moim.isPresent()){
             return promiseRepository.findByMoimId(moim.get().getId());
         }
@@ -62,6 +65,4 @@ public class PromiseService {
         }
     }
 
-
-    // 약속 몰록 조회하기 moim_id, user_id
 }

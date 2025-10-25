@@ -33,11 +33,11 @@ public class MoimService {
 
     @Transactional // 이메일로 처리하기
     public ResponsePostUniformDto addMoim(addMoimRequestDto dto) {
-        if (moimRepository.existsByMoimName(dto.getMoimName())) {
+        if (moimRepository.existsByTitle(dto.getTitle())) {
             throw new DuplicatedException("이미 존재하는 모임 이름입니다.");
         }
 
-        Moim moim = new Moim(dto.getMoimName(), dto.getDescription()); // 일단 생성자도 변경해야 해서 그대로 두기
+        Moim moim = new Moim(dto.getTitle(), dto.getDescription()); // 일단 생성자도 변경해야 해서 그대로 두기
         moimRepository.save(moim);
 
         for (String email : dto.getEmails()) {
@@ -57,12 +57,15 @@ public class MoimService {
 
     // 모임 단일 조회
     @Transactional
-    public getMoimResponseDTO getMoim(String moimName) {
-         Moim moim= moimRepository.findByMoimName(moimName).orElseThrow(
+    public getMoimResponseDTO getMoim(String title) {
+         Moim moim= moimRepository.findByTitle(title).orElseThrow(
                  () -> new EntityNotFoundException("존재하지 않는 모임입니다")
          );
 
-        return new getMoimResponseDTO(moim.getMoimName(), moim.getDescription(), moim.getMoimPeopleList().size());
+        return new getMoimResponseDTO(
+                moim.getTitle(),
+                moim.getDescription(),
+                moim.getMoimPeopleList().size());
     }
     // 모임 상세 조회
 
@@ -77,7 +80,7 @@ public class MoimService {
         List<getMoimResponseDTO> moimResponseDTOList = new ArrayList<>();
 
         for(Moim_people moim_people : moims){
-            moimResponseDTOList.add(this.getMoim(moim_people.getMoim().getMoimName()));
+            moimResponseDTOList.add(this.getMoim(moim_people.getMoim().getTitle()));
         }
 
         return moimResponseDTOList;
