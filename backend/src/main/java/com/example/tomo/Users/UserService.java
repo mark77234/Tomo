@@ -41,12 +41,15 @@ public class UserService {
     // 이미 친구 관계이면 TRUE 404
     public boolean alreadyFriend(addFriendRequestDto dto){
         // 친구 추가하고자 하는 사용자 엔티티를 꺼내기
-        Optional<User> user = userRepository.findByEmail(dto.getEmail());
+        User user = userRepository.findByFirebaseId(dto.getUid())
+                .orElseThrow(() -> new EntityNotFoundException("로그인 사용자가 존재하지 않습니다"));
 
-        if(user.isEmpty()){
-            throw new EntityNotFoundException("친구 관계 확인중에 오류");
-        }
-        return friendRepository.findFriendsByIdById(user.get().getId());
+        // 친구가 될 사용자
+        User friend = userRepository.findByEmail(dto.getEmail())
+                .orElseThrow(() -> new EntityNotFoundException("친구 요청한 사용자가 존재하지 않습니다"));
+
+        // user-friend 관계 존재 여부 체크
+        return friendRepository.existsByUserAndFriend(user, friend);
 
     }
 
