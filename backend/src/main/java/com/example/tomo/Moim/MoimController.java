@@ -1,6 +1,7 @@
 package com.example.tomo.Moim;
 
 import com.example.tomo.Moim.dtos.addMoimRequestDto;
+import com.example.tomo.Moim.dtos.getDetailMoimDto;
 import com.example.tomo.Moim.dtos.getMoimResponseDTO;
 import com.example.tomo.Users.dtos.ResponsePostUniformDto;
 import com.example.tomo.global.ApiResponse;
@@ -61,11 +62,11 @@ public class MoimController {
             }
     )
     @GetMapping("/moims")
-    public ResponseEntity<ApiResponse<getMoimResponseDTO>> moimGet(
+    public ResponseEntity<ApiResponse<getDetailMoimDto>> moimGet(
             @Parameter(description = "조회할 모임 이름", required = true)
-            @RequestParam String title) {
+            @RequestParam(name = "moimTitle") String title) {
         try {
-            return ResponseEntity.ok(ApiResponse.success(moimService.getMoim(title),"성공"));
+            return ResponseEntity.ok(ApiResponse.success(moimService.getMoimDetail(title),"성공"));
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).
                     body(ApiResponse.failure("존재하지 않는 모임입니다."));

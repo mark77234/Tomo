@@ -1,12 +1,14 @@
 package com.example.tomo.Moim;
 
 import com.example.tomo.Moim.dtos.addMoimRequestDto;
+import com.example.tomo.Moim.dtos.getDetailMoimDto;
 import com.example.tomo.Moim.dtos.getMoimResponseDTO;
 import com.example.tomo.Moim_people.MoimPeopleRepository;
 import com.example.tomo.Moim_people.Moim_people;
 import com.example.tomo.Users.dtos.ResponsePostUniformDto;
 import com.example.tomo.Users.User;
 import com.example.tomo.Users.UserRepository;
+import com.example.tomo.Users.dtos.userSimpleDto;
 import com.example.tomo.global.DuplicatedException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -61,15 +63,14 @@ public class MoimService {
     }
 
     // 모임 단일 조회
-    @Transactional
     public getMoimResponseDTO getMoim(String title) {
          Moim moim= moimRepository.findByTitle(title).orElseThrow(
                  () -> new EntityNotFoundException("존재하지 않는 모임입니다")
          );
 
         // 모임의 리더를 찾아서 이름을 반환해주어야 함
-        Long leaderId = moimPeopleRepository.findBymoimLeader(moim.getId());
-        String name = userRepository.findById(leaderId).orElseThrow(EntityNotFoundException::new).getUsername();
+
+        String name = moimPeopleRepository.findBymoimLeader(moim.getId()).getUsername();
 
         return new getMoimResponseDTO(
                 moim.getTitle(),
@@ -83,7 +84,6 @@ public class MoimService {
 
     @Transactional
     public List<getMoimResponseDTO> getMoimList(String userId){
-        // 액세스 토큰이 들어오면 처리할 파트
 
         User user = userRepository.findByFirebaseId(userId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 UID를 가진 사용자가 존재하지 않습니다."));
@@ -98,5 +98,29 @@ public class MoimService {
         return moimResponseDTOList;
     }
 
+    @Transactional
+    public getDetailMoimDto getMoimDetail(String title){
+        // 1. 모임명을 입력받아, 모임의 ID 알아내기 없다면 예외
+        Moim find = moimRepository.findByTitle(title).orElseThrow(EntityNotFoundException::new);
+        // 2. 모임 ID를 통해서 moim_people 테이블에서 모임 참가하는 사용자 ID 추출 없다면, 모임에 2명 이상 포함되어 있지 않습니다
+        List<Long> userIdList = moimPeopleRepository.findUserIdsByMoimId(find.getId());
+        // 3. .stream().map(entity :: toDto).collect.toList 로 반환하기
+        List<userSimpleDto> userSimpleDtoList = new ArrayList<>();
+
+        for (Long userId : userIdList) {
+            User user = userRepository.findById(userId).orElseThrow(EntityNotFoundException::new);
+            userSimpleDtoList.add(user.toSimpleDto());
+        }
+        // 4. 리더명 조회
+        String name = moimPeopleRepository.findBymoimLeader(find.getId()).getUsername();
+
+        return new getDetailMoimDto(
+                find.getTitle(),
+                find.getDescription(),
+                userSimpleDtoList,
+                find.getCreatedAt(),
+                name);
+
+    }
 }
 
