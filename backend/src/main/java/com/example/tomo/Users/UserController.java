@@ -5,6 +5,7 @@ import com.example.tomo.Users.dtos.ResponsePostUniformDto;
 import com.example.tomo.firebase.ResponseFirebaseLoginDto;
 import com.example.tomo.global.ApiResponse;
 import com.example.tomo.global.AuthService;
+import com.example.tomo.global.NoDataApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.EntityExistsException;
@@ -64,16 +65,16 @@ public class UserController {
             }
     )
     @DeleteMapping("/public/users")
-    public ResponseEntity<ApiResponse<Void>> deleteMyAccount(@AuthenticationPrincipal String uid) {
+    public ResponseEntity<NoDataApiResponse> deleteMyAccount(@AuthenticationPrincipal String uid) {
         try {
             userService.deleteUser(uid);
-            return ResponseEntity.ok(ApiResponse.success(null, "계정이 삭제되었습니다."));
+            return ResponseEntity.ok(NoDataApiResponse.success("계정이 삭제되었습니다."));
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(ApiResponse.failure("사용자를 찾을 수 없습니다."));
+                    .body(NoDataApiResponse.failure("사용자를 찾을 수 없습니다."));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(ApiResponse.failure("계정 삭제 중 오류가 발생했습니다."));
+                    .body(NoDataApiResponse.failure("계정 삭제 중 오류가 발생했습니다."));
         }
     }
 
@@ -134,16 +135,16 @@ public class UserController {
             }
     )
     @DeleteMapping("/public/logout")
-    public ResponseEntity<ApiResponse<Void>> logout(@AuthenticationPrincipal String uid) {
+    public ResponseEntity<NoDataApiResponse> logout(@AuthenticationPrincipal String uid) {
         try {
             userService.logout(uid);
-            return ResponseEntity.ok(ApiResponse.success(null, "로그아웃 완료"));
+            return ResponseEntity.ok(NoDataApiResponse.success("로그아웃 완료"));
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(ApiResponse.failure("사용자를 찾을 수 없습니다."));
+                    .body(NoDataApiResponse.failure("사용자를 찾을 수 없습니다."));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(ApiResponse.failure("로그아웃 중 오류가 발생했습니다."));
+                    .body(NoDataApiResponse.failure("로그아웃 중 오류가 발생했습니다."));
         }
     }
 }
