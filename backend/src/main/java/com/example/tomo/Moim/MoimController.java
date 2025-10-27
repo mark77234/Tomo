@@ -6,6 +6,8 @@ import com.example.tomo.Moim.dtos.getMoimResponseDTO;
 import com.example.tomo.Users.dtos.ResponsePostUniformDto;
 import com.example.tomo.global.ApiResponse;
 import com.example.tomo.global.DuplicatedException;
+import com.example.tomo.global.NoDataApiResponse;
+import com.example.tomo.global.NotLeaderUserException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -87,5 +89,22 @@ public class MoimController {
         return ResponseEntity.ok(
                 ApiResponse.success(moimService.getMoimList(uid), "모임 조회 성공")
         );
+    }
+
+    @DeleteMapping("/moims/{title}")
+    public ResponseEntity<NoDataApiResponse> deleteMoim(
+            @PathVariable("title") String title,
+            @AuthenticationPrincipal String uid
+    ){
+        try{
+            moimService.deleteMoim(title,uid);
+            return ResponseEntity.noContent().build();
+        }catch(EntityNotFoundException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(NoDataApiResponse.failure("삭제하려는 모임이 존재하지 않습니다"));
+        }catch(NotLeaderUserException e){
+            return ResponseEntity.status(403).body(NoDataApiResponse.failure("모임 삭제는 리더만 가능합니다"));
+        }
+
+
     }
 }

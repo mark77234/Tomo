@@ -23,7 +23,7 @@ public class Moim {
     private final List<Promise> promiseList = new ArrayList<>();
 
     // 모임 사람
-    @OneToMany(mappedBy = "moim")
+    @OneToMany(mappedBy = "moim", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private final List<Moim_people> moimPeopleList = new ArrayList<>();
 
     private String title;

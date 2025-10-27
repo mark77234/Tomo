@@ -10,6 +10,7 @@ import com.example.tomo.Users.User;
 import com.example.tomo.Users.UserRepository;
 import com.example.tomo.Users.dtos.userSimpleDto;
 import com.example.tomo.global.DuplicatedException;
+import com.example.tomo.global.NotLeaderUserException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -120,6 +121,17 @@ public class MoimService {
                 find.getCreatedAt()
                 );
 
+    }
+    @Transactional
+    public void deleteMoim(String title, String uid) {
+        //1. 사용자가 리더일 때만 모임을 삭제할 수 있다.
+        User user = userRepository.findByFirebaseId(uid).orElseThrow(EntityNotFoundException::new);
+        Moim moim= moimRepository.findByTitle(title).orElseThrow(EntityNotFoundException::new);
+        if(!moimPeopleRepository.findLeaderByMoimIdAndUserId(moim.getId(),user.getId())){
+            throw new NotLeaderUserException("모임을 삭제할 수 있는 권한이 없습니다");
+        }
+        //2. 삭제하려는 모임 가져오기,
+        moimRepository.delete(moim);
     }
 }
 
