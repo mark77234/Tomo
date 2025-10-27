@@ -1,5 +1,7 @@
 package com.example.tomo.jwt;
 
+import com.example.tomo.global.InvalidTokenException;
+import com.example.tomo.global.TokenExpiredException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -40,7 +42,7 @@ public class JwtTokenProvider {
     }
 
     // AccessToken 검증 후 UUID 반환
-    public String validateTokenAndGetUuid(String token) throws Exception {
+    public String validateTokenAndGetUuid(String token) throws TokenExpiredException, InvalidTokenException {
         try {
             Claims claims = Jwts.parserBuilder()
                     .setSigningKey(key)
@@ -49,14 +51,14 @@ public class JwtTokenProvider {
                     .getBody();
             return claims.getSubject();
         } catch (ExpiredJwtException e) {
-            throw new Exception("Access token expired");
+            throw new TokenExpiredException("Access token expired");
         } catch (Exception e) {
-            throw new Exception("Invalid access token");
+            throw new InvalidTokenException("Invalid access token");
         }
     }
 
     // RefreshToken 검증 후 UUID 반환
-    public String validateRefreshTokenAndGetUuid(String token) throws Exception {
+    public String validateRefreshTokenAndGetUuid(String token) throws TokenExpiredException, InvalidTokenException {
         try {
             Claims claims = Jwts.parserBuilder()
                     .setSigningKey(key)
@@ -65,9 +67,9 @@ public class JwtTokenProvider {
                     .getBody();
             return claims.getSubject();
         } catch (ExpiredJwtException e) {
-            throw new Exception("Refresh token expired");
+            throw new TokenExpiredException("Refresh token expired");
         } catch (Exception e) {
-            throw new Exception("Invalid refresh token");
+            throw new InvalidTokenException("Invalid refresh token");
         }
     }
 }

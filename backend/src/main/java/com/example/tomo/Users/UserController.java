@@ -117,10 +117,10 @@ public class UserController {
             ResponseFirebaseLoginDto tokens = authService.reissueAccessToken(refreshTokenHeader);
             return ResponseEntity.ok(ApiResponse.success(tokens, "Access token 재발급 성공"));
         } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+            return ResponseEntity.status(401)
                     .body(ApiResponse.failure("리프레쉬 토큰이 올바르지 않습니다. 다시 로그인해 주세요"));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            return ResponseEntity.status(419)
                     .body(ApiResponse.failure("Internal server error"));
         }
     }
