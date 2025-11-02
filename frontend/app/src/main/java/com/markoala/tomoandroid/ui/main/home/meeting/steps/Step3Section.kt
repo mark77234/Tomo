@@ -22,7 +22,7 @@ import com.markoala.tomoandroid.ui.theme.CustomColor
 
 @Composable
 fun StepThreeSection(
-    moimName: String,
+    title: String,
     description: String,
     selectedFriends: List<FriendProfile>
 ) {
@@ -58,7 +58,7 @@ fun StepThreeSection(
                         color = CustomColor.gray300
                     )
                     CustomText(
-                        text = moimName,
+                        text = title,
                         type = CustomTextType.title,
                         color = CustomColor.black,
                         fontSize = 14.sp

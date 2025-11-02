@@ -14,7 +14,7 @@ data class MoimDTO(
 )
 
 data class CreateMoimDTO(
-    val moimName: String,
+    val title: String,
     val description: String,
     val emails: List<String>
 )

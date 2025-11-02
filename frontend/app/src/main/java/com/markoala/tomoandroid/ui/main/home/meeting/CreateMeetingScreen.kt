@@ -37,7 +37,7 @@ fun CreateMeetingScreen(
     onSuccess: () -> Unit = {}
 ) {
     val viewModel: CreateMeetingViewModel = viewModel()
-    val moimName by viewModel.moimName.collectAsState()
+    val title by viewModel.title.collectAsState()
     val description by viewModel.description.collectAsState()
     val friends by viewModel.friends.collectAsState()
     val selectedEmails by viewModel.selectedEmails.collectAsState()
@@ -88,10 +88,10 @@ fun CreateMeetingScreen(
 
             when (currentStep) {
                 1 -> StepOneSection(
-                    moimName = moimName,
+                    title = title,
                     description = description,
                     onNameChange = {
-                        viewModel.moimName.value = it
+                        viewModel.title.value = it
                         viewModel.clearError()
                     },
                     onDescriptionChange = {
@@ -107,7 +107,7 @@ fun CreateMeetingScreen(
                 )
 
                 3 -> StepThreeSection(
-                    moimName = moimName,
+                    title = title,
                     description = description,
                     selectedFriends = friends.filter { selectedEmails.contains(it.email) }
                 )
@@ -134,7 +134,7 @@ fun CreateMeetingScreen(
             currentStep = currentStep,
             isLoading = isLoading,
             canGoNext = when (currentStep) {
-                1 -> moimName.isNotBlank() && description.isNotBlank()
+                1 -> title.isNotBlank() && description.isNotBlank()
                 else -> true
             },
             onPrevious = {
