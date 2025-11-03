@@ -5,8 +5,10 @@ import com.markoala.tomoandroid.data.model.moim.MoimListDTO
 import com.markoala.tomoandroid.data.model.user.BaseResponse
 import retrofit2.Call
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface MoimsApi {
@@ -22,6 +24,11 @@ interface MoimsApi {
     @POST("/public/moims")
     fun postMoim(
         @Body body: CreateMoimDTO
+    ): Call<BaseResponse<Unit>>
+
+    @DELETE("/public/moims/{title}")
+    fun deleteMoim(
+        @Path("title") title: String
     ): Call<BaseResponse<Unit>>
 }
 

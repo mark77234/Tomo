@@ -47,4 +47,21 @@ class HomeViewModel : ViewModel() {
             }
         }
     }
+
+    fun deleteMeeting(title: String) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            try {
+                val response = MoimsApiService.deleteMoim(title).awaitResponse()
+                if (response.isSuccessful) {
+                    // 삭제 성공 시 리스트 갱신
+                    fetchMeetings()
+                }
+            } catch (e: Exception) {
+                // 에러 처리 필요시 추가
+            } finally {
+                _isLoading.value = false
+            }
+        }
+    }
 }
