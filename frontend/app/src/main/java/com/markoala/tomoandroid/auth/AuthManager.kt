@@ -4,7 +4,10 @@ import android.content.Context
 import android.util.Log
 import androidx.credentials.ClearCredentialStateRequest
 import androidx.credentials.CredentialManager
+import androidx.credentials.GetCredentialRequest
 import androidx.credentials.exceptions.ClearCredentialException
+import com.google.android.libraries.identity.googleid.GetGoogleIdOption
+import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
@@ -198,5 +201,136 @@ object AuthManager { // 싱글톤 객체로 앱 전체에서 하나의 인스턴
         Log.w(TAG, "401 Unauthorized - 자동 로그아웃 처리")
         signOutSuspend(context)
         onUnauthorizedCallback?.invoke()
+    }
+
+    /**
+     * 재인증을 수행합니다 (Google 로그인)
+     */
+    private suspend fun reauthenticateUser(context: Context): Boolean {
+        return try {
+            val firebaseUser = auth.currentUser ?: return false
+
+            Log.d(TAG, "재인증 시작")
+
+            // Google ID 옵션 설정 (web client ID는 실제 값으로 교체 필요)
+            val googleIdOption = GetGoogleIdOption.Builder()
+                .setFilterByAuthorizedAccounts(false)
+                .setServerClientId(
+                    context.getString(
+                        context.resources.getIdentifier(
+                            "default_web_client_id",
+                            "string",
+                            context.packageName
+                        )
+                    )
+                )
+                .build()
+
+            val request = GetCredentialRequest.Builder()
+                .addCredentialOption(googleIdOption)
+                .build()
+
+            val credentialManager = CredentialManager.create(context)
+            val result = credentialManager.getCredential(context, request)
+            val credential = result.credential
+
+            val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
+            val idToken = googleIdTokenCredential.idToken
+
+            // Firebase 재인증
+            val authCredential = GoogleAuthProvider.getCredential(idToken, null)
+            firebaseUser.reauthenticate(authCredential).await()
+
+            Log.d(TAG, "재인증 성공")
+            true
+        } catch (e: Exception) {
+            Log.e(TAG, "재인증 실패", e)
+            false
+        }
+    }
+
+    /**
+     * 계정 삭제: 서버, Firestore, Firebase Authentication에서 계정 삭제
+     */
+    suspend fun deleteAccount(context: Context): Pair<Boolean, String?> {
+        return try {
+            val firebaseUser = auth.currentUser
+            val uuid = firebaseUser?.uid
+
+            if (uuid == null) {
+                Log.e(TAG, "사용자 정보를 찾을 수 없습니다")
+                return Pair(false, "사용자 정보를 찾을 수 없습니다")
+            }
+
+            // 1. 서버에서 계정 삭제
+            try {
+                val serverResponse = AuthRepository.deleteUserFromServer()
+                if (serverResponse.isSuccessful) {
+                    Log.d(TAG, "서버 계정 삭제 성공")
+                } else if (serverResponse.code() == 404) {
+                    // 서버에 사용자가 없으면 이미 삭제된 것으로 간주
+                    Log.w(TAG, "서버에 사용자가 없습니다 (이미 삭제됨). 계속 진행합니다.")
+                } else {
+                    Log.e(TAG, "서버 계정 삭제 실패: ${serverResponse.code()}")
+                    // 서버 삭제 실패해도 계속 진행 (이미 삭제되었을 수 있음)
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "서버 계정 삭제 중 오류 발생", e)
+                // 서버 삭제 실패해도 계속 진행 (이미 삭제되었을 수 있음)
+                Log.w(TAG, "서버 삭제 오류 무시하고 계속 진행")
+            }
+
+            // 2. Firestore에서 사용자 문서 삭제
+            try {
+                val firestoreDeleted = AuthRepository.deleteUserFromFirestore(uuid)
+                if (firestoreDeleted) {
+                    Log.d(TAG, "Firestore 사용자 문서 삭제 성공")
+                } else {
+                    Log.w(TAG, "Firestore 사용자 문서 삭제 실패")
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Firestore 삭제 중 오류 발생", e)
+                // Firestore 삭제 실패해도 계속 진행
+            }
+
+            // 3. 재인증 시도
+            Log.d(TAG, "Firebase 계정 삭제를 위해 재인증 시도")
+            val reauthSuccess = reauthenticateUser(context)
+
+            if (!reauthSuccess) {
+                Log.w(TAG, "재인증 실패. 사용자에게 다시 로그인하도록 안내합니다.")
+                return Pair(false, "계정 삭제를 위해 다시 로그인해주세요.")
+            }
+
+            // 4. Firebase Authentication에서 계정 삭제
+            try {
+                val firebaseDeleted = AuthRepository.deleteFirebaseAccount()
+                if (firebaseDeleted) {
+                    Log.d(TAG, "Firebase 계정 삭제 성공")
+                } else {
+                    Log.e(TAG, "Firebase 계정 삭제 실패")
+                    return Pair(false, "Firebase 계정 삭제 실패")
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Firebase 계정 삭제 중 오류 발생", e)
+                return Pair(false, "Firebase 계정 삭제 실패: ${e.localizedMessage}")
+            }
+
+            // 5. 로컬 토큰 삭제 및 로그아웃 처리
+            tokenManager?.clearTokens()
+            val credentialManager = CredentialManager.create(context)
+            val clearRequest = ClearCredentialStateRequest()
+            try {
+                credentialManager.clearCredentialState(clearRequest)
+            } catch (e: ClearCredentialException) {
+                Log.w(TAG, "CredentialManager clear failed: ${e.localizedMessage}")
+            }
+
+            Log.d(TAG, "계정 삭제 완료")
+            Pair(true, null)
+        } catch (e: Exception) {
+            Log.e(TAG, "계정 삭제 중 오류 발생", e)
+            Pair(false, e.localizedMessage)
+        }
     }
 }

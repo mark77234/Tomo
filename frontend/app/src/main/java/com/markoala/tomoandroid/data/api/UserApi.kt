@@ -22,7 +22,7 @@ interface UserApi {
     ): Response<BaseResponse<AuthTokenBundle>>
 
     @DELETE("/public/users")
-    fun deleteUser(): Call<Unit>
+    fun deleteUser(): Call<BaseResponse<Unit>>
 }
 
 val userApi: UserApi by lazy {
