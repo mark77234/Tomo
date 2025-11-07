@@ -1,11 +1,9 @@
 package com.markoala.tomoandroid.ui.main.friends.components
 
 import android.util.Log
-import androidx.compose.foundation.border
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Arrangement.Absolute.spacedBy
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,10 +11,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.HorizontalDivider
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -26,7 +23,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.markoala.tomoandroid.R
 import com.markoala.tomoandroid.auth.AuthManager.getStoredAccessToken
 import com.markoala.tomoandroid.data.api.friendsApi
@@ -42,7 +38,6 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-
 @Composable
 fun FriendCard(
     friend: FriendProfile,
@@ -51,155 +46,70 @@ fun FriendCard(
     var showDeleteDialog by remember { mutableStateOf(false) }
     val toastManager = LocalToastManager.current
 
-    Card(
-        colors = CardDefaults.cardColors(containerColor = CustomColor.white),
-        modifier = Modifier
-            .fillMaxWidth()
-            .border(
-                1.dp,
-                CustomColor.gray100,
-                androidx.compose.foundation.shape.RoundedCornerShape(16.dp)
-            )
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(24.dp),
+        color = CustomColor.surface,
+        border = BorderStroke(1.dp, CustomColor.outline)
     ) {
-        Box(
-            modifier = Modifier.fillMaxWidth(),
-            contentAlignment = Alignment.BottomEnd
+        Column(
+            modifier = Modifier.padding(20.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Column(
-                modifier = Modifier.padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                ProfileImage(size = 56.dp)
+                Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    CustomText(text = friend.username, type = CustomTextType.title, color = CustomColor.textPrimary)
+                    CustomText(text = friend.email, type = CustomTextType.bodySmall, color = CustomColor.textSecondary)
+                }
+                Surface(
+                    shape = RoundedCornerShape(12.dp),
+                    color = CustomColor.secondary.copy(alpha = 0.15f)
+                ) {
+                    CustomText(
+                        text = "친밀도 ${friend.friendship}",
+                        type = CustomTextType.bodySmall,
+                        color = CustomColor.secondary,
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
+                    )
+                }
+            }
+
+            Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
+                MetaInfo(icon = R.drawable.ic_time, text = "우정 기간: ${friend.createdAt}")
+            }
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
             ) {
                 Row(
-                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier.clickable { showDeleteDialog = true },
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
-                    ProfileImage(
-                        modifier = Modifier.padding(end = 10.dp),
-                        size = 50.dp,
-                        imageUrl = null // 기본 아이콘 표시
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_trash),
+                        contentDescription = "친구 삭제",
+                        tint = CustomColor.textSecondary,
+                        modifier = Modifier.size(16.dp)
                     )
-                    Column(
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        CustomText(
-                            text = friend.username,
-                            type = CustomTextType.title,
-                            color = CustomColor.black,
-                            fontSize = 16.sp
-                        )
-                        Spacer(modifier = Modifier.height(10.dp))
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(
-                                4.dp
-                            )
-                        ) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_email),
-                                contentDescription = null,
-                                tint = CustomColor.gray200,
-                                modifier = Modifier
-                                    .padding(top = 2.dp)
-                                    .size(12.dp)
-                            )
-                            CustomText(
-                                text = friend.email,
-                                type = CustomTextType.body,
-                                color = CustomColor.gray200,
-                                fontSize = 12.sp
-                            )
-                        }
-                    }
                     CustomText(
-                        text = "친밀도: " + friend.friendship.toString(),
-                        type = CustomTextType.body,
-                        color = CustomColor.gray200,
-                        fontSize = 12.sp
+                        text = "친구 삭제",
+                        type = CustomTextType.bodySmall,
+                        color = CustomColor.textSecondary
                     )
-
                 }
-                Column(
-                    modifier = Modifier.padding(horizontal = 4.dp),
-                    verticalArrangement = spacedBy(4.dp)
-                ) {
-
-                    HorizontalDivider(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 8.dp),
-                        color = CustomColor.gray50,
-                        thickness = 1.dp
-                    )
-                    Row(
-                        horizontalArrangement = spacedBy(
-                            4.dp
-                        ),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_time),
-                            contentDescription = null,
-                            tint = CustomColor.gray200,
-                            modifier = Modifier
-                                .padding(top = 2.dp)
-                                .size(12.dp)
-                        )
-                        CustomText(
-                            text = "우정 기간: " + friend.createdAt,
-                            type = CustomTextType.body,
-                            color = CustomColor.gray200,
-                            fontSize = 12.sp
-                        )
-                    }
-
-                }
-
             }
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .padding(16.dp)
-                    .clickable {
-                        showDeleteDialog = true
-                    }
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_trash),
-                    contentDescription = "모임 삭제",
-                    tint = CustomColor.gray200,
-                    modifier = Modifier.size(14.dp)
-                )
-
-                CustomText(
-                    text = "친구삭제",
-                    type = CustomTextType.body,
-                    color = CustomColor.gray200,
-                    fontSize = 12.sp
-                )
-            }
-
         }
     }
 
-    // 친구삭제 확인 다이얼로그
     if (showDeleteDialog) {
         DeleteFriendDialog(
             friendName = friend.username,
             onConfirm = {
-
-                // API 호출로 친구 삭제
-                Log.d("FriendCard", "=== 친구삭제 API 호출 시작 ===")
-                Log.d("FriendCard", "삭제할 친구 이메일: ${friend.email}")
-                Log.d(
-                    "FriendCard",
-                    "요청 URL: DELETE /public/friends?email=${friend.email}"
-                )
-
-                // 현재 저장된 액세스 토큰 확인
                 val accessToken = getStoredAccessToken()
-                Log.d("FriendCard", "현재 액세스 토큰 존재 여부: ${accessToken != null}")
-                if (accessToken != null) {
-                    Log.d("FriendCard", "액세스 토큰 앞 10자리: ${accessToken.take(10)}...")
-                }
+                Log.d("FriendCard", "삭제 요청 – 토큰 존재 여부: ${accessToken != null}")
 
                 friendsApi.deleteFriends(friend.email)
                     .enqueue(object : Callback<BaseResponse<FriendSummary>> {
@@ -207,40 +117,11 @@ fun FriendCard(
                             call: Call<BaseResponse<FriendSummary>>,
                             response: Response<BaseResponse<FriendSummary>>
                         ) {
-                            Log.d("FriendCard", "=== API 응답 수신 ===")
-                            Log.d("FriendCard", "Response Code: ${response.code()}")
-                            Log.d(
-                                "FriendCard",
-                                "Response Message: ${response.message()}"
-                            )
-                            Log.d("FriendCard", "Request URL: ${call.request().url}")
-                            Log.d(
-                                "FriendCard",
-                                "Request Headers: ${call.request().headers}"
-                            )
-
                             if (response.isSuccessful) {
-                                val responseBody = response.body()
-                                Log.d("FriendCard", "친구삭제 성공!")
-                                Log.d("FriendCard", "응답 본문: $responseBody")
                                 toastManager.showSuccess("${friend.username}님이 친구 목록에서 삭제되었습니다.")
                                 onFriendDeleted?.invoke()
                             } else {
-                                val errorBody = response.errorBody()?.string()
-                                Log.e("FriendCard", "=== 친구삭제 실패 ===")
-                                Log.e("FriendCard", "오류 코드: ${response.code()}")
-                                Log.e("FriendCard", "오류 메시지: ${response.message()}")
-                                Log.e("FriendCard", "오류 본문: $errorBody")
-                                Log.e("FriendCard", "응답 헤더: ${response.headers()}")
-
-                                // 400 에러인 경우 추가 정보 로깅
-                                if (response.code() == 400) {
-                                    Log.e("FriendCard", "400 Bad Request - 가능한 원인:")
-                                    Log.e("FriendCard", "1. 인증 토큰 문제")
-                                    Log.e("FriendCard", "2. 요청 형식 문제")
-                                    Log.e("FriendCard", "3. 친구 관계가 존재하지 않음")
-                                    Log.e("FriendCard", "4. 권한 부족")
-                                }
+                                Log.e("FriendCard", "친구삭제 실패: ${response.code()} ${response.message()}")
                                 toastManager.showError("친구삭제에 실패했습니다.")
                             }
                         }
@@ -256,9 +137,21 @@ fun FriendCard(
                 showDeleteDialog = false
             },
             onDismiss = {
-                Log.d("FriendCard", "친구삭제 다이얼로그 취소됨")
                 showDeleteDialog = false
             }
         )
+    }
+}
+
+@Composable
+private fun MetaInfo(icon: Int, text: String) {
+    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+        Icon(
+            painter = painterResource(id = icon),
+            contentDescription = null,
+            tint = CustomColor.textSecondary,
+            modifier = Modifier.size(14.dp)
+        )
+        CustomText(text = text, type = CustomTextType.bodySmall, color = CustomColor.textSecondary)
     }
 }

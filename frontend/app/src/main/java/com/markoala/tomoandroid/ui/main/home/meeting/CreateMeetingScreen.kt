@@ -1,12 +1,13 @@
 package com.markoala.tomoandroid.ui.main.home.meeting
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -19,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.markoala.tomoandroid.ui.components.CustomText
 import com.markoala.tomoandroid.ui.components.CustomTextType
@@ -47,8 +49,7 @@ fun CreateMeetingScreen(
 
     var currentStep by rememberSaveable { mutableStateOf(1) }
 
-    // 화면이 포커스될 때마다 친구 목록을 refetch + 데이터 초기화
-    val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
+    val lifecycleOwner = LocalLifecycleOwner.current
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_RESUME) {
@@ -58,9 +59,7 @@ fun CreateMeetingScreen(
             }
         }
         lifecycleOwner.lifecycle.addObserver(observer)
-        onDispose {
-            lifecycleOwner.lifecycle.removeObserver(observer)
-        }
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
     }
 
     LaunchedEffect(isSuccess) {
@@ -73,19 +72,19 @@ fun CreateMeetingScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(CustomColor.background)
             .padding(paddingValues)
             .padding(horizontal = 24.dp, vertical = 16.dp)
     ) {
-        Column(
-            modifier = Modifier
-                .weight(1f, fill = true)
-                .fillMaxWidth()
-        ) {
-            MeetingHeader(onBackClick = onBackClick)
-            Spacer(modifier = Modifier.height(16.dp))
-            StepIndicator(currentStep = currentStep)
-            Spacer(modifier = Modifier.height(24.dp))
+        MeetingHeader(onBackClick = onBackClick)
+        Spacer(modifier = Modifier.height(16.dp))
+        StepIndicator(currentStep = currentStep)
+        Spacer(modifier = Modifier.height(24.dp))
 
+        Surface(
+            modifier = Modifier.weight(1f, fill = true),
+            color = CustomColor.background
+        ) {
             when (currentStep) {
                 1 -> StepOneSection(
                     title = title,
@@ -103,7 +102,10 @@ fun CreateMeetingScreen(
                 2 -> StepTwoSection(
                     friends = friends,
                     selectedEmails = selectedEmails,
-                    onToggleEmail = { viewModel.toggleEmail(it) }
+                    onToggleEmail = {
+                        viewModel.toggleEmail(it)
+                        viewModel.clearError()
+                    }
                 )
 
                 3 -> StepThreeSection(
@@ -112,29 +114,24 @@ fun CreateMeetingScreen(
                     selectedFriends = friends.filter { selectedEmails.contains(it.email) }
                 )
             }
-
-            Spacer(modifier = Modifier.height(24.dp))
         }
 
         errorMessage?.let {
+            Spacer(modifier = Modifier.height(8.dp))
             CustomText(
                 text = it,
-                type = CustomTextType.body,
-                color = CustomColor.gray300
+                type = CustomTextType.bodySmall,
+                color = CustomColor.danger
             )
         }
 
-        Spacer(
-            modifier = Modifier.height(
-                if (errorMessage != null) 12.dp else 16.dp
-            )
-        )
-
+        Spacer(modifier = Modifier.height(16.dp))
         NavigationBottomButtons(
             currentStep = currentStep,
             isLoading = isLoading,
             canGoNext = when (currentStep) {
                 1 -> title.isNotBlank() && description.isNotBlank()
+                2 -> selectedEmails.isNotEmpty()
                 else -> true
             },
             onPrevious = {
@@ -152,6 +149,6 @@ fun CreateMeetingScreen(
                 }
             }
         )
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(16.dp))
     }
 }

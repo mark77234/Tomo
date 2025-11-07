@@ -50,15 +50,16 @@ fun SettingsToggle(
             Column {
                 CustomText(
                     text = title,
-                    type = CustomTextType.title,
+                    type = CustomTextType.body,
+                    color = CustomColor.textBody,
                     fontSize = 16.sp
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 CustomText(
                     text = description,
-                    type = CustomTextType.body,
+                    type = CustomTextType.bodySmall,
                     fontSize = 12.sp,
-                    color = CustomColor.gray300
+                    color = CustomColor.textSecondary
                 )
             }
         }
@@ -68,9 +69,10 @@ fun SettingsToggle(
             colors = SwitchDefaults.colors(
                 checkedThumbColor = CustomColor.white,
                 uncheckedThumbColor = CustomColor.white,
-                checkedTrackColor = CustomColor.charcoal,
-                uncheckedTrackColor = CustomColor.gray100,
-                uncheckedBorderColor = CustomColor.gray100
+                checkedTrackColor = CustomColor.primary,
+                uncheckedTrackColor = CustomColor.outline,
+                checkedBorderColor = CustomColor.primary,
+                uncheckedBorderColor = CustomColor.outline
             )
         )
     }

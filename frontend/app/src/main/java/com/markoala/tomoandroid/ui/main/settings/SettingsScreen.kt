@@ -1,12 +1,9 @@
 package com.markoala.tomoandroid.ui.main.settings
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,14 +11,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Surface
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -32,11 +23,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.markoala.tomoandroid.R
 import com.markoala.tomoandroid.auth.AuthManager
+import com.markoala.tomoandroid.ui.components.ButtonStyle
+import com.markoala.tomoandroid.ui.components.CustomButton
 import com.markoala.tomoandroid.ui.components.CustomText
 import com.markoala.tomoandroid.ui.components.CustomTextType
 import com.markoala.tomoandroid.ui.components.LocalToastManager
@@ -58,60 +49,47 @@ fun SettingsScreen(
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
 
-    // 계정 삭제 확인 다이얼로그
     if (showDeleteDialog) {
         AlertDialog(
             onDismissRequest = { if (!isDeleting) showDeleteDialog = false },
+            containerColor = CustomColor.surface,
+            shape = RoundedCornerShape(24.dp),
             title = {
-                CustomText(
-                    text = "계정 삭제",
-                    type = CustomTextType.title,
-                    fontSize = 18.sp
-                )
+                CustomText(text = "계정 삭제", type = CustomTextType.title, color = CustomColor.textPrimary)
             },
             text = {
                 CustomText(
-                    text = "정말로 계정을 삭제하시겠습니까?\n이 작업은 되돌릴 수 없으며, 모든 데이터가 영구적으로 삭제됩니다.",
+                    text = "정말로 계정을 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.",
                     type = CustomTextType.body,
-                    fontSize = 14.sp
+                    color = CustomColor.textSecondary
                 )
             },
             confirmButton = {
                 if (isDeleting) {
-                    CircularProgressIndicator()
+                    CircularProgressIndicator(color = CustomColor.primary)
                 } else {
-                    TextButton(
-                        onClick = {
-                            isDeleting = true
-                            coroutineScope.launch {
-                                val (success, error) = AuthManager.deleteAccount(context)
-                                isDeleting = false
-                                showDeleteDialog = false
-
-                                if (success) {
-                                    toastManager.showSuccess("계정이 삭제되었습니다.")
-                                    onDeleteAccount()
-                                } else {
-                                    toastManager.showError(error ?: "계정 삭제에 실패했습니다.")
-                                }
+                    TextButton(onClick = {
+                        isDeleting = true
+                        coroutineScope.launch {
+                            val (success, error) = AuthManager.deleteAccount(context)
+                            isDeleting = false
+                            showDeleteDialog = false
+                            if (success) {
+                                toastManager.showSuccess("계정이 삭제되었습니다.")
+                                onDeleteAccount()
+                            } else {
+                                toastManager.showError(error ?: "계정 삭제에 실패했습니다.")
                             }
                         }
-                    ) {
-                        CustomText(
-                            text = "삭제",
-                            type = CustomTextType.title,
-                            color = MaterialTheme.colorScheme.error
-                        )
+                    }) {
+                        CustomText(text = "삭제", type = CustomTextType.button, color = CustomColor.danger)
                     }
                 }
             },
             dismissButton = {
                 if (!isDeleting) {
                     TextButton(onClick = { showDeleteDialog = false }) {
-                        CustomText(
-                            text = "취소",
-                            type = CustomTextType.title
-                        )
+                        CustomText(text = "취소", type = CustomTextType.button, color = CustomColor.textSecondary)
                     }
                 }
             }
@@ -121,121 +99,53 @@ fun SettingsScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(CustomColor.background)
             .padding(paddingValues)
-            .padding(horizontal = 24.dp)
+            .padding(horizontal = 24.dp, vertical = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 16.dp)
+        CustomText(text = "설정", type = CustomTextType.headline, color = CustomColor.textPrimary)
+        CustomText(text = "알림과 테마를 관리하세요", type = CustomTextType.bodySmall, color = CustomColor.textSecondary)
+        Surface(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(28.dp),
+            color = CustomColor.surface
         ) {
-            CustomText(
-                text = "설정",
-                type = CustomTextType.headline,
-                fontSize = 20.sp,
-                modifier = Modifier.align(Alignment.TopStart)
-            )
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .border(1.dp, CustomColor.gray100, MaterialTheme.shapes.medium),
-            colors = CardDefaults.cardColors(
-                containerColor = CustomColor.white
-            )
-        ) {
-            Column {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(color = CustomColor.gray40)
-                        .padding(16.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_setting),
-                        contentDescription = null,
-                        tint = CustomColor.gray300,
-                        modifier = Modifier.padding(end = 8.dp)
-                    )
-                    CustomText(text = "앱 설정", type = CustomTextType.title, fontSize = 14.sp)
-                }
-                HorizontalDivider(
-                    modifier = Modifier
-
-                        .fillMaxWidth(),
-                    color = CustomColor.gray100
+            Column(
+                modifier = Modifier.fillMaxWidth().padding(20.dp),
+                verticalArrangement = Arrangement.spacedBy(20.dp)
+            ) {
+                SettingsToggle(
+                    title = "푸시 알림",
+                    description = "모임 알림과 친구 요청을 받아보세요.",
+                    checked = pushEnabled,
+                    onCheckedChange = { pushEnabled = it },
+                    icon = R.drawable.ic_notification
                 )
-                Box(modifier = Modifier.padding(16.dp)) {
-                    SettingsToggle(
-                        title = "푸시 알림",
-                        description = "모임 알림과 친구 요청을 받아보세요.",
-                        checked = pushEnabled,
-                        onCheckedChange = { pushEnabled = it },
-                        icon = R.drawable.ic_notification
-                    )
-                }
-                HorizontalDivider(
-                    modifier = Modifier
-
-                        .fillMaxWidth(),
-                    color = CustomColor.gray100
+                SettingsToggle(
+                    title = "다크 모드 (개발중)",
+                    description = "시스템 테마와 별도로 설정합니다.",
+                    checked = darkModeEnabled,
+                    onCheckedChange = { darkModeEnabled = it },
+                    icon = R.drawable.ic_dark
                 )
-                Box(modifier = Modifier.padding(16.dp)) {
-                    SettingsToggle(
-                        title = "다크 모드 (개발중)",
-                        description = "시스템 테마와 별도로 설정합니다.",
-                        checked = darkModeEnabled,
-                        onCheckedChange = { darkModeEnabled = it },
-                        icon = R.drawable.ic_dark
-                    )
-                }
             }
         }
-        Spacer(modifier = Modifier.height(24.dp))
-
-
-        Spacer(modifier = Modifier.height(12.dp))
-        OutlinedButton(
+        Spacer(modifier = Modifier.height(8.dp))
+        CustomButton(
+            text = "로그아웃",
             onClick = {
                 onSignOut()
                 toastManager.showInfo("로그아웃 되었습니다.")
             },
-            modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.outlinedButtonColors(
-                containerColor = CustomColor.white,
-                contentColor = MaterialTheme.colorScheme.onSurface
-            ),
-            border = BorderStroke(1.dp, CustomColor.gray100),
-            shape = RoundedCornerShape(10.dp),
-            contentPadding = PaddingValues(vertical = 16.dp)
-        ) {
-            CustomText(
-                text = "로그아웃",
-                type = CustomTextType.title,
-                fontSize = 16.sp,
-                color = CustomColor.gray300
-            )
-        }
-        Spacer(modifier = Modifier.height(12.dp))
-        OutlinedButton(
+            style = ButtonStyle.Secondary,
+            modifier = Modifier.fillMaxWidth()
+        )
+        CustomButton(
+            text = "계정 삭제",
             onClick = { showDeleteDialog = true },
-            modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.outlinedButtonColors(
-                containerColor = CustomColor.white,
-                contentColor = MaterialTheme.colorScheme.onSurface
-            ),
-            border = BorderStroke(1.dp, CustomColor.gray100),
-            shape = androidx.compose.foundation.shape.RoundedCornerShape(10.dp),
-            contentPadding = PaddingValues(vertical = 16.dp)
-        ) {
-            CustomText(
-                text = "계정삭제",
-                type = CustomTextType.title,
-                fontSize = 16.sp,
-                color = CustomColor.gray300
-            )
-        }
+            style = ButtonStyle.Primary,
+            modifier = Modifier.fillMaxWidth()
+        )
     }
 }

@@ -1,8 +1,13 @@
 package com.markoala.tomoandroid.ui.components
 
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.markoala.tomoandroid.ui.theme.CustomColor
@@ -14,26 +19,54 @@ fun CustomTextField(
     modifier: Modifier = Modifier,
     placeholder: String = "",
     enabled: Boolean = true,
-    unfocusedBorderColor: androidx.compose.ui.graphics.Color = CustomColor.gray100,
-    focusedBorderColor: androidx.compose.ui.graphics.Color = CustomColor.gray300,
-    cornerRadius: Int = 12
+    singleLine: Boolean = true,
+    supportingText: String? = null,
+    leadingIcon: (@Composable (() -> Unit))? = null,
 ) {
+    val interactionSource = remember { MutableInteractionSource() }
+
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
-        modifier = modifier,
-        shape = RoundedCornerShape(cornerRadius.dp),
+        modifier = modifier.defaultMinSize(minHeight = 56.dp),
+        shape = RoundedCornerShape(16.dp),
+        textStyle = MaterialTheme.typography.bodyLarge,
         enabled = enabled,
-        colors = androidx.compose.material3.OutlinedTextFieldDefaults.colors(
-            unfocusedBorderColor = unfocusedBorderColor,
-            focusedBorderColor = focusedBorderColor
+        singleLine = singleLine,
+        interactionSource = interactionSource,
+        leadingIcon = leadingIcon,
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedBorderColor = CustomColor.primary,
+            unfocusedBorderColor = CustomColor.outline,
+            disabledBorderColor = CustomColor.outline,
+            focusedContainerColor = CustomColor.surface,
+            unfocusedContainerColor = CustomColor.surface,
+            disabledContainerColor = CustomColor.surface,
+            cursorColor = CustomColor.primary,
+            focusedTextColor = CustomColor.textBody,
+            unfocusedTextColor = CustomColor.textBody,
+            disabledTextColor = CustomColor.textSecondary,
+            focusedPlaceholderColor = CustomColor.textSecondary,
+            unfocusedPlaceholderColor = CustomColor.textSecondary,
+            disabledPlaceholderColor = CustomColor.textSecondary
         ),
         placeholder = {
-            CustomText(
-                text = placeholder,
-                type = CustomTextType.body,
-                color = CustomColor.gray300
-            )
+            if (placeholder.isNotBlank()) {
+                CustomText(
+                    text = placeholder,
+                    type = CustomTextType.body,
+                    color = CustomColor.textSecondary
+                )
+            }
+        },
+        supportingText = supportingText?.let {
+            {
+                CustomText(
+                    text = it,
+                    type = CustomTextType.bodySmall,
+                    color = CustomColor.textSecondary
+                )
+            }
         }
     )
 }

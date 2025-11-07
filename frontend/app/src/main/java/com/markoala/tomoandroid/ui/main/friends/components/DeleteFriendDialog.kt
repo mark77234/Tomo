@@ -1,20 +1,15 @@
 package com.markoala.tomoandroid.ui.main.friends.components
 
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import com.markoala.tomoandroid.ui.components.ButtonStyle
+import com.markoala.tomoandroid.ui.components.CustomButton
 import com.markoala.tomoandroid.ui.components.CustomText
 import com.markoala.tomoandroid.ui.components.CustomTextType
 import com.markoala.tomoandroid.ui.theme.CustomColor
@@ -27,66 +22,41 @@ fun DeleteFriendDialog(
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        containerColor = CustomColor.white,
-        shape = RoundedCornerShape(16.dp),
+        containerColor = CustomColor.surface,
+        shape = androidx.compose.foundation.shape.RoundedCornerShape(24.dp),
         title = {
             CustomText(
                 text = "친구 삭제",
                 type = CustomTextType.title,
-                color = CustomColor.black,
-                fontSize = 18.sp
+                color = CustomColor.textPrimary
             )
         },
         text = {
-            Column {
-                CustomText(
-                    text = "'$friendName'님을 친구 목록에서 삭제하시겠습니까?",
-                    type = CustomTextType.body,
-                    color = CustomColor.gray300,
-                    fontSize = 14.sp
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                CustomText(
-                    text = "삭제된 친구는 다시 복구할 수 없습니다.",
-                    type = CustomTextType.body,
-                    color = CustomColor.redText,
-                    fontSize = 12.sp
-                )
-            }
+            CustomText(
+                text = "${friendName}님을 친구 목록에서 삭제하시겠어요?\n이 작업은 되돌릴 수 없습니다.",
+                type = CustomTextType.body,
+                color = CustomColor.textSecondary
+            )
         },
         confirmButton = {
-            Row {
-                OutlinedButton(
+            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                CustomButton(
+                    text = "취소",
                     onClick = onDismiss,
-                    colors = ButtonDefaults.outlinedButtonColors(
-                        containerColor = CustomColor.white,
-                        contentColor = CustomColor.gray300
-                    ),
-                    border = BorderStroke(1.dp, CustomColor.gray100),
-                    shape = RoundedCornerShape(8.dp),
-                    modifier = Modifier.weight(1f)
-                ) {
-                    CustomText(
-                        text = "취소",
-                        type = CustomTextType.body,
-                        color = CustomColor.gray300,
-                        fontSize = 14.sp
-                    )
-                }
-                Spacer(modifier = Modifier.width(8.dp))
+                    style = ButtonStyle.Secondary
+                )
                 Button(
                     onClick = onConfirm,
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = CustomColor.pastelRed
+                        containerColor = CustomColor.danger,
+                        contentColor = CustomColor.white
                     ),
-                    shape = RoundedCornerShape(8.dp),
-                    modifier = Modifier.weight(1f)
+                    shape = androidx.compose.foundation.shape.RoundedCornerShape(999.dp)
                 ) {
                     CustomText(
                         text = "삭제",
-                        type = CustomTextType.body,
-                        color = CustomColor.darkRed,
-                        fontSize = 14.sp
+                        type = CustomTextType.button,
+                        color = CustomColor.white
                     )
                 }
             }

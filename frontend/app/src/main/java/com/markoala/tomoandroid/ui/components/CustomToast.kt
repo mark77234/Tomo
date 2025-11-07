@@ -35,6 +35,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
+import com.markoala.tomoandroid.ui.theme.CustomColor
 import kotlinx.coroutines.delay
 
 enum class ToastType {
@@ -85,29 +86,10 @@ private fun ToastContent(
     modifier: Modifier = Modifier
 ) {
     val (backgroundColor, iconColor, icon) = when (config.type) {
-        ToastType.SUCCESS -> Triple(
-            Color(0xFF4CAF50),
-            Color.White,
-            Icons.Default.CheckCircle
-        )
-
-        ToastType.ERROR -> Triple(
-            Color(0xFFF44336),
-            Color.White,
-            Icons.Filled.Warning
-        )
-
-        ToastType.WARNING -> Triple(
-            Color(0xFFFF9800),
-            Color.White,
-            Icons.Default.Warning
-        )
-
-        ToastType.INFO -> Triple(
-            Color(0xFF2196F3),
-            Color.White,
-            Icons.Default.Info
-        )
+        ToastType.SUCCESS -> Triple(CustomColor.success, Color.White, Icons.Default.CheckCircle)
+        ToastType.ERROR -> Triple(CustomColor.danger, Color.White, Icons.Filled.Warning)
+        ToastType.WARNING -> Triple(CustomColor.warning, Color.White, Icons.Default.Warning)
+        ToastType.INFO -> Triple(CustomColor.primary, Color.White, Icons.Default.Info)
     }
 
     Surface(

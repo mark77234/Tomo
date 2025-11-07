@@ -31,14 +31,14 @@ fun ProfileImage(
     DashedCircleBorder(
         modifier = modifier,
         size = size,
-        borderColor = CustomColor.gray100,
+        borderColor = CustomColor.outline,
         borderWidth = 2.dp
     ) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .background(
-                    color = CustomColor.gray30,
+                    color = CustomColor.surface,
                     shape = CircleShape
                 ),
             contentAlignment = Alignment.Center
@@ -51,7 +51,7 @@ fun ProfileImage(
                         .fillMaxSize()
                         .clip(CircleShape)
                         .background(
-                            color = CustomColor.gray30,
+                            color = CustomColor.surface,
                             shape = CircleShape
                         )
                 )
@@ -59,7 +59,7 @@ fun ProfileImage(
                 Icon(
                     painter = painterResource(id = R.drawable.ic_profile),
                     contentDescription = "기본 프로필 아이콘",
-                    tint = CustomColor.gray200,
+                    tint = CustomColor.textSecondary,
                     modifier = Modifier
                         .size(iconSize)
                         .padding(iconPadding)

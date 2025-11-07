@@ -24,7 +24,7 @@ import com.markoala.tomoandroid.ui.theme.CustomColor
 fun DashedBorderBox(
     modifier: Modifier = Modifier,
     shape: Shape = RoundedCornerShape(16.dp),
-    borderColor: Color = CustomColor.gray100,
+    borderColor: Color = CustomColor.outline,
     borderWidth: Dp = 1.dp,
     dashLength: Float = 5f,
     gapLength: Float = 5f,
@@ -112,7 +112,7 @@ fun DashedBorderBox(
 fun DashedCircleBorder(
     modifier: Modifier = Modifier,
     size: Dp = 48.dp,
-    borderColor: Color = CustomColor.gray100,
+    borderColor: Color = CustomColor.outline,
     borderWidth: Dp = 1.dp,
     dashLength: Float = 5f,
     gapLength: Float = 5f,

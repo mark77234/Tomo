@@ -5,57 +5,68 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
-import com.markoala.tomoandroid.R
-
-val Pretendard = FontFamily(
-    Font(R.font.pretendard_thin, FontWeight.W100),
-    Font(R.font.pretendard_extralight, FontWeight.W200),
-    Font(R.font.pretendard_light, FontWeight.W300),
-    Font(R.font.pretendard_regular, FontWeight.W400),
-    Font(R.font.pretendard_medium, FontWeight.W500),
-    Font(R.font.pretendard_semi_bold, FontWeight.W600),
-    Font(R.font.pretendard_bold, FontWeight.W700),
-    Font(R.font.pretendard_extra_bold, FontWeight.W800),
-    Font(R.font.pretendard_black, FontWeight.W900)
-)
+import com.markoala.tomoandroid.ui.theme.Pretendard
 
 enum class CustomTextType {
-    display, headline, title, body, label
+    display,
+    headline,
+    title,
+    body,
+    bodySmall,
+    label,
+    button
 }
 
 private fun getTextStyle(type: CustomTextType): TextStyle = when (type) {
     CustomTextType.display -> TextStyle(
-        fontSize = 36.sp,
-        fontWeight = FontWeight.W700,
+        fontSize = 28.sp,
+        lineHeight = 36.sp,
+        fontWeight = FontWeight.Bold,
         fontFamily = Pretendard
     )
 
     CustomTextType.headline -> TextStyle(
-        fontSize = 28.sp,
-        fontWeight = FontWeight.W700,
+        fontSize = 22.sp,
+        lineHeight = 30.sp,
+        fontWeight = FontWeight.SemiBold,
         fontFamily = Pretendard
     )
 
     CustomTextType.title -> TextStyle(
         fontSize = 18.sp,
-        fontWeight = FontWeight.W600,
+        lineHeight = 26.sp,
+        fontWeight = FontWeight.Medium,
         fontFamily = Pretendard
     )
 
     CustomTextType.body -> TextStyle(
+        fontSize = 16.sp,
+        lineHeight = 24.sp,
+        fontWeight = FontWeight.Normal,
+        fontFamily = Pretendard
+    )
+
+    CustomTextType.bodySmall -> TextStyle(
         fontSize = 14.sp,
-        fontWeight = FontWeight.W400,
+        lineHeight = 22.sp,
+        fontWeight = FontWeight.Normal,
         fontFamily = Pretendard
     )
 
     CustomTextType.label -> TextStyle(
         fontSize = 12.sp,
-        fontWeight = FontWeight.W500,
+        lineHeight = 18.sp,
+        fontWeight = FontWeight.Medium,
+        fontFamily = Pretendard
+    )
+
+    CustomTextType.button -> TextStyle(
+        fontSize = 16.sp,
+        lineHeight = 24.sp,
+        fontWeight = FontWeight.Medium,
         fontFamily = Pretendard
     )
 }

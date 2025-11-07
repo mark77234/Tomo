@@ -1,33 +1,25 @@
 package com.markoala.tomoandroid.ui.login
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeContentPadding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.markoala.tomoandroid.R
+import com.markoala.tomoandroid.ui.components.ButtonStyle
+import com.markoala.tomoandroid.ui.components.CustomButton
 import com.markoala.tomoandroid.ui.components.CustomText
 import com.markoala.tomoandroid.ui.components.CustomTextType
 import com.markoala.tomoandroid.ui.login.components.GoogleSignUpButton
@@ -35,128 +27,71 @@ import com.markoala.tomoandroid.ui.theme.CustomColor
 
 @Composable
 fun LoginScreen(navController: NavController) {
-    Box(
+    Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
-            .safeContentPadding()
-            .padding(24.dp),
-        contentAlignment = Alignment.Center
+            .background(CustomColor.background)
+            .padding(horizontal = 24.dp, vertical = 32.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
-        Column(
-            modifier = Modifier,
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            CustomText(
-                text = "토모",
-                type = CustomTextType.headline
-            )
-            CustomText(
-                text = "친구와의 우정을 기록하세요",
-                type = CustomTextType.body,
-                color = CustomColor.gray300
-            )
+        CustomText(text = "Tomo", type = CustomTextType.display, color = CustomColor.primary)
+        Spacer(modifier = Modifier.height(8.dp))
+        CustomText(
+            text = "친구와의 우정을 기록하세요",
+            type = CustomTextType.body,
+            color = CustomColor.textSecondary,
+            textAlign = TextAlign.Center
+        )
+        Spacer(modifier = Modifier.height(32.dp))
 
-            Spacer(modifier = Modifier.height(32.dp))
+        Surface(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(32.dp),
+            color = CustomColor.surface
+        ) {
             Column(
-                modifier = Modifier
-                    .border(
-                        width = 1.dp,
-                        color = CustomColor.gray100,
-                        shape = RoundedCornerShape(16.dp)
-                    )
-                    .padding(24.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                modifier = Modifier.padding(24.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 CustomText(
-                    text = "로그인",
-                    type = CustomTextType.title
+                    text = "토모에 오신 것을 환영해요",
+                    type = CustomTextType.title,
+                    color = CustomColor.textPrimary
                 )
                 CustomText(
-                    text = "계정에 로그인하여 친구들과 약속을 만들고 관리하세요.",
+                    text = "Google 계정으로 간편하게 시작하세요.",
                     type = CustomTextType.body,
-                    color = CustomColor.gray300,
-                    modifier = Modifier
-                        .widthIn(max = 240.dp)
-                        .align(Alignment.CenterHorizontally),
-                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                    color = CustomColor.textSecondary,
+                    textAlign = TextAlign.Center
                 )
-
                 GoogleSignUpButton(
                     onSignedIn = {
                         navController.navigate("main") {
                             popUpTo("login") { inclusive = true }
                         }
-                    },
+                    }
                 )
-                Row(
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    HorizontalDivider(
-                        modifier = Modifier
-                            .weight(1f)
-                            .align(Alignment.CenterVertically),
-                        color = CustomColor.gray100,
-                        thickness = 1.dp
-                    )
-                    Spacer(modifier = Modifier.width(10.dp))
-                    CustomText(
-                        text = "또는",
-                        type = CustomTextType.body,
-                        color = CustomColor.gray100
-                    )
-                    Spacer(modifier = Modifier.width(10.dp))
-                    HorizontalDivider(
-                        modifier = Modifier
-                            .weight(1f)
-                            .align(Alignment.CenterVertically),
-                        color = CustomColor.gray100,
-                        thickness = 1.dp
-                    )
-                }
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .border(
-                            width = 1.dp,
-                            color = CustomColor.gray100,
-                            shape = RoundedCornerShape(16.dp)
-
-                        )
-                        .padding(vertical = 16.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center,
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_email),
-                        contentDescription = "Google Logo",
-                        tint = Color.Unspecified,
-                        modifier = Modifier.size(24.dp)
-                    )
-                    Spacer(modifier = Modifier.width(10.dp))
-                    CustomText(
-                        text = "이메일로 로그인(준비중)",
-                        type = CustomTextType.label,
-                        color = CustomColor.gray200
-                    )
-                }
+                HorizontalDivider(color = CustomColor.outline)
+                CustomButton(
+                    text = "이메일로 로그인 (준비중)",
+                    onClick = {},
+                    style = ButtonStyle.Secondary,
+                    enabled = false
+                )
             }
-            CustomText(
-                text = "로그인하면 토모의 이용약관과 개인정보처리방침에 동의하게 됩니다.",
-                type = CustomTextType.body,
-                color = CustomColor.gray200,
-                textAlign = androidx.compose.ui.text.style.TextAlign.Center
-            )
-
         }
+        Spacer(modifier = Modifier.height(16.dp))
+        CustomText(
+            text = "로그인하면 토모의 이용약관과 개인정보처리방침에 동의하게 됩니다.",
+            type = CustomTextType.bodySmall,
+            color = CustomColor.textSecondary,
+            textAlign = TextAlign.Center
+        )
     }
 }
 
-
-@Preview(showBackground = true)
 @Composable
 fun LoginScreenPreview() {
     LoginScreen(navController = rememberNavController())
