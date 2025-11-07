@@ -8,7 +8,6 @@ import com.markoala.tomoandroid.data.api.MoimsApiService
 import com.markoala.tomoandroid.data.api.friendsApi
 import com.markoala.tomoandroid.data.model.friends.FriendProfile
 import com.markoala.tomoandroid.data.model.moim.CreateMoimDTO
-import com.markoala.tomoandroid.data.repository.AuthRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -16,7 +15,7 @@ import retrofit2.HttpException
 import retrofit2.awaitResponse
 
 class CreateMeetingViewModel(application: Application) : AndroidViewModel(application) {
-    val moimName = MutableStateFlow("")
+    val title = MutableStateFlow("")
     val description = MutableStateFlow("")
     private val _friends = MutableStateFlow<List<FriendProfile>>(emptyList())
     val friends: StateFlow<List<FriendProfile>> = _friends
@@ -55,7 +54,7 @@ class CreateMeetingViewModel(application: Application) : AndroidViewModel(applic
     }
 
     fun createMoim() {
-        if (moimName.value.isBlank() || description.value.isBlank()) {
+        if (title.value.isBlank() || description.value.isBlank()) {
             errorMessage.value = "모임 이름과 설명을 입력하세요."
             return
         }
@@ -64,13 +63,9 @@ class CreateMeetingViewModel(application: Application) : AndroidViewModel(applic
         isSuccess.value = null
         viewModelScope.launch {
             try {
-                val myEmail =
-                    AuthRepository.getCurrentUserProfile()?.email
-                        ?: ""
-                val emails =
-                    (selectedEmails.value + myEmail).filter { it.isNotBlank() }.distinct().toList()
+                val emails = selectedEmails.value.filter { it.isNotBlank() }.distinct().toList()
                 val dto = CreateMoimDTO(
-                    moimName = moimName.value,
+                    title = title.value,
                     description = description.value,
                     emails = emails
                 )
@@ -97,7 +92,7 @@ class CreateMeetingViewModel(application: Application) : AndroidViewModel(applic
     }
 
     fun resetAllData() {
-        moimName.value = ""
+        title.value = ""
         description.value = ""
         _selectedEmails.value = emptySet()
         errorMessage.value = null

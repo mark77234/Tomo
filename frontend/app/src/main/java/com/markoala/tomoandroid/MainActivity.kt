@@ -11,6 +11,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.navigation.compose.rememberNavController
+import com.google.firebase.FirebaseApp
 import com.markoala.tomoandroid.auth.AuthManager
 import com.markoala.tomoandroid.navigation.AppNavHost
 import com.markoala.tomoandroid.navigation.Screen
@@ -21,6 +22,8 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        FirebaseApp.initializeApp(this)
 
         AuthManager.init()
         AuthManager.initTokenManager(this)

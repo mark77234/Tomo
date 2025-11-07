@@ -1,20 +1,23 @@
 package com.markoala.tomoandroid.data.model.moim
 
-data class Meeting(
+data class MoimList(
     val title: String,
-    val location: String?,
-    val time: String?,
-    val peopleCounts: Int = 1
+    val description: String,
+    val peopleCount: Int = 1,
+    val leader: Boolean,
+    val createdAt: String?,
 )
 
-data class MoimDTO(
-    val moimName: String,
+data class MoimListDTO(
+    val title: String,
     val description: String,
-    val peopleCounts: Int
+    val peopleCount: Int,
+    val leader: Boolean,
+    val createdAt: String
 )
 
 data class CreateMoimDTO(
-    val moimName: String,
+    val title: String,
     val description: String,
     val emails: List<String>
 )

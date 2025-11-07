@@ -13,29 +13,36 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.markoala.tomoandroid.R
+import com.markoala.tomoandroid.auth.AuthManager
 import com.markoala.tomoandroid.ui.components.CustomText
 import com.markoala.tomoandroid.ui.components.CustomTextType
 import com.markoala.tomoandroid.ui.components.LocalToastManager
 import com.markoala.tomoandroid.ui.main.settings.components.SettingsToggle
 import com.markoala.tomoandroid.ui.theme.CustomColor
+import kotlinx.coroutines.launch
 
 @Composable
 fun SettingsScreen(
@@ -45,7 +52,71 @@ fun SettingsScreen(
 ) {
     var pushEnabled by remember { mutableStateOf(true) }
     var darkModeEnabled by remember { mutableStateOf(false) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
+    var isDeleting by remember { mutableStateOf(false) }
     val toastManager = LocalToastManager.current
+    val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
+
+    // 계정 삭제 확인 다이얼로그
+    if (showDeleteDialog) {
+        AlertDialog(
+            onDismissRequest = { if (!isDeleting) showDeleteDialog = false },
+            title = {
+                CustomText(
+                    text = "계정 삭제",
+                    type = CustomTextType.title,
+                    fontSize = 18.sp
+                )
+            },
+            text = {
+                CustomText(
+                    text = "정말로 계정을 삭제하시겠습니까?\n이 작업은 되돌릴 수 없으며, 모든 데이터가 영구적으로 삭제됩니다.",
+                    type = CustomTextType.body,
+                    fontSize = 14.sp
+                )
+            },
+            confirmButton = {
+                if (isDeleting) {
+                    CircularProgressIndicator()
+                } else {
+                    TextButton(
+                        onClick = {
+                            isDeleting = true
+                            coroutineScope.launch {
+                                val (success, error) = AuthManager.deleteAccount(context)
+                                isDeleting = false
+                                showDeleteDialog = false
+
+                                if (success) {
+                                    toastManager.showSuccess("계정이 삭제되었습니다.")
+                                    onDeleteAccount()
+                                } else {
+                                    toastManager.showError(error ?: "계정 삭제에 실패했습니다.")
+                                }
+                            }
+                        }
+                    ) {
+                        CustomText(
+                            text = "삭제",
+                            type = CustomTextType.title,
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
+                }
+            },
+            dismissButton = {
+                if (!isDeleting) {
+                    TextButton(onClick = { showDeleteDialog = false }) {
+                        CustomText(
+                            text = "취소",
+                            type = CustomTextType.title
+                        )
+                    }
+                }
+            }
+        )
+    }
 
     Column(
         modifier = Modifier
@@ -149,7 +220,7 @@ fun SettingsScreen(
         }
         Spacer(modifier = Modifier.height(12.dp))
         OutlinedButton(
-            onClick = {},
+            onClick = { showDeleteDialog = true },
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.outlinedButtonColors(
                 containerColor = CustomColor.white,

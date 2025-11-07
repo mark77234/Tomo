@@ -56,4 +56,55 @@ object AuthRepository {
                 throw e
             }
         }
+
+    /**
+     * 서버에서 계정 삭제 (Retrofit 동기 호출을 IO 스레드에서 수행)
+     */
+    suspend fun deleteUserFromServer(): Response<BaseResponse<Unit>> =
+        withContext(kotlinx.coroutines.Dispatchers.IO) {
+            try {
+                userApi.deleteUser().execute()
+            } catch (e: Exception) {
+                throw e
+            }
+        }
+
+    /**
+     * Firestore에서 사용자 문서 삭제
+     */
+    suspend fun deleteUserFromFirestore(uuid: String): Boolean =
+        suspendCancellableCoroutine { cont ->
+            try {
+                val firestore = FirebaseFirestore.getInstance()
+                val task = firestore.collection("users").document(uuid).delete()
+                task.addOnSuccessListener {
+                    cont.resume(true)
+                }.addOnFailureListener { ex ->
+                    cont.resumeWithException(ex)
+                }
+            } catch (e: Exception) {
+                cont.resumeWithException(e)
+            }
+        }
+
+    /**
+     * Firebase Authentication에서 계정 삭제
+     */
+    suspend fun deleteFirebaseAccount(): Boolean = suspendCancellableCoroutine { cont ->
+        try {
+            val firebaseUser = FirebaseAuth.getInstance().currentUser
+            if (firebaseUser != null) {
+                val task = firebaseUser.delete()
+                task.addOnSuccessListener {
+                    cont.resume(true)
+                }.addOnFailureListener { ex ->
+                    cont.resumeWithException(ex)
+                }
+            } else {
+                cont.resume(false)
+            }
+        } catch (e: Exception) {
+            cont.resumeWithException(e)
+        }
+    }
 }

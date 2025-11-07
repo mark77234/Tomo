@@ -136,7 +136,11 @@ fun MainScreen(onSignOut: () -> Unit) {
                         )
 
                         BottomTab.Profile -> ProfileScreen(name, email, userId, paddingValues)
-                        BottomTab.Settings -> SettingsScreen(paddingValues, onSignOut)
+                        BottomTab.Settings -> SettingsScreen(
+                            paddingValues = paddingValues,
+                            onSignOut = onSignOut,
+                            onDeleteAccount = onSignOut // 계정 삭제 후에도 로그인 화면으로 이동
+                        )
                     }
                 }
             }

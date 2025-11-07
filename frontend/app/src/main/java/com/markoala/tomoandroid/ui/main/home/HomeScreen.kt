@@ -138,6 +138,7 @@ fun HomeScreen(
         } else {
             LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 items(meetings) { meeting ->
+
                     MeetingCard(meeting)
                 }
             }

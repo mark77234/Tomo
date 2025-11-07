@@ -1,26 +1,22 @@
 package com.markoala.tomoandroid.ui.main.friends.components
 
 import android.util.Log
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Arrangement.Absolute.spacedBy
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -34,7 +30,6 @@ import androidx.compose.ui.unit.sp
 import com.markoala.tomoandroid.R
 import com.markoala.tomoandroid.auth.AuthManager.getStoredAccessToken
 import com.markoala.tomoandroid.data.api.friendsApi
-
 import com.markoala.tomoandroid.data.model.friends.FriendProfile
 import com.markoala.tomoandroid.data.model.friends.FriendSummary
 import com.markoala.tomoandroid.data.model.user.BaseResponse
@@ -66,36 +61,81 @@ fun FriendCard(
                 androidx.compose.foundation.shape.RoundedCornerShape(16.dp)
             )
     ) {
-        Column(
-            modifier = Modifier
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
+        Box(
+            modifier = Modifier.fillMaxWidth(),
+            contentAlignment = Alignment.BottomEnd
         ) {
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
+            Column(
+                modifier = Modifier.padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                ProfileImage(
-                    modifier = Modifier.padding(end = 10.dp),
-                    size = 50.dp,
-                    imageUrl = null // 기본 아이콘 표시
-                )
-                Column(
-                    modifier = Modifier.weight(1f)
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
-                    CustomText(
-                        text = friend.username,
-                        type = CustomTextType.title,
-                        color = CustomColor.black,
-                        fontSize = 16.sp
+                    ProfileImage(
+                        modifier = Modifier.padding(end = 10.dp),
+                        size = 50.dp,
+                        imageUrl = null // 기본 아이콘 표시
                     )
-                    Spacer(modifier = Modifier.height(10.dp))
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(
-                            4.dp
+                    Column(
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        CustomText(
+                            text = friend.username,
+                            type = CustomTextType.title,
+                            color = CustomColor.black,
+                            fontSize = 16.sp
                         )
+                        Spacer(modifier = Modifier.height(10.dp))
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(
+                                4.dp
+                            )
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_email),
+                                contentDescription = null,
+                                tint = CustomColor.gray200,
+                                modifier = Modifier
+                                    .padding(top = 2.dp)
+                                    .size(12.dp)
+                            )
+                            CustomText(
+                                text = friend.email,
+                                type = CustomTextType.body,
+                                color = CustomColor.gray200,
+                                fontSize = 12.sp
+                            )
+                        }
+                    }
+                    CustomText(
+                        text = "친밀도: " + friend.friendship.toString(),
+                        type = CustomTextType.body,
+                        color = CustomColor.gray200,
+                        fontSize = 12.sp
+                    )
+
+                }
+                Column(
+                    modifier = Modifier.padding(horizontal = 4.dp),
+                    verticalArrangement = spacedBy(4.dp)
+                ) {
+
+                    HorizontalDivider(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp),
+                        color = CustomColor.gray50,
+                        thickness = 1.dp
+                    )
+                    Row(
+                        horizontalArrangement = spacedBy(
+                            4.dp
+                        ),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
-                            painter = painterResource(id = R.drawable.ic_email),
+                            painter = painterResource(id = R.drawable.ic_time),
                             contentDescription = null,
                             tint = CustomColor.gray200,
                             modifier = Modifier
@@ -103,77 +143,38 @@ fun FriendCard(
                                 .size(12.dp)
                         )
                         CustomText(
-                            text = friend.email,
+                            text = "우정 기간: " + friend.createdAt,
                             type = CustomTextType.body,
                             color = CustomColor.gray200,
                             fontSize = 12.sp
                         )
                     }
+
                 }
+
+            }
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .padding(16.dp)
+                    .clickable {
+                        showDeleteDialog = true
+                    }
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_trash),
+                    contentDescription = "모임 삭제",
+                    tint = CustomColor.gray200,
+                    modifier = Modifier.size(14.dp)
+                )
+
                 CustomText(
-                    text = "친밀도: " + friend.friendship.toString(),
+                    text = "친구삭제",
                     type = CustomTextType.body,
                     color = CustomColor.gray200,
                     fontSize = 12.sp
                 )
-
-            }
-            Column(
-                modifier = Modifier.padding(horizontal = 4.dp),
-                verticalArrangement = spacedBy(4.dp)
-            ) {
-
-                HorizontalDivider(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp),
-                    color = CustomColor.gray50,
-                    thickness = 1.dp
-                )
-                Row(
-                    horizontalArrangement = spacedBy(
-                        4.dp
-                    ),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_time),
-                        contentDescription = null,
-                        tint = CustomColor.gray200,
-                        modifier = Modifier
-                            .padding(top = 2.dp)
-                            .size(12.dp)
-                    )
-                    CustomText(
-                        text = "우정 기간: " + friend.createdAt,
-                        type = CustomTextType.body,
-                        color = CustomColor.gray200,
-                        fontSize = 12.sp
-                    )
-                }
-
-                // 친구삭제 버튼
-                OutlinedButton(
-                    onClick = { showDeleteDialog = true },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 12.dp),
-                    colors = ButtonDefaults.outlinedButtonColors(
-                        containerColor = CustomColor.white,
-                        contentColor = MaterialTheme.colorScheme.onSurface
-                    ),
-                    border = BorderStroke(1.dp, CustomColor.gray100),
-                    shape = RoundedCornerShape(14.dp),
-                    contentPadding = PaddingValues(vertical = 12.dp)
-                ) {
-
-                    CustomText(
-                        text = "친구삭제",
-                        type = CustomTextType.title,
-                        fontSize = 14.sp,
-                        color = CustomColor.gray300
-                    )
-                }
             }
 
         }

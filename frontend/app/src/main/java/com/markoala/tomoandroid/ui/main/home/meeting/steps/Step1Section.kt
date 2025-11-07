@@ -15,7 +15,7 @@ import com.markoala.tomoandroid.ui.theme.CustomColor
 
 @Composable
 fun StepOneSection(
-    moimName: String,
+    title: String,
     description: String,
     onNameChange: (String) -> Unit,
     onDescriptionChange: (String) -> Unit
@@ -32,7 +32,7 @@ fun StepOneSection(
             fontSize = 14.sp
         )
         CustomTextField(
-            value = moimName,
+            value = title,
             onValueChange = onNameChange,
             modifier = Modifier.fillMaxWidth(),
             placeholder = "모임명을 입력해주세요"
