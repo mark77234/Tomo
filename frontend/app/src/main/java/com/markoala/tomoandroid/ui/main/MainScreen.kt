@@ -147,14 +147,22 @@ fun MainScreen(onSignOut: () -> Unit) {
                                 paddingValues = screenPadding,
                                 userName = name,
                                 mode = HomeScreenMode.Overview,
-                                onPlanMeetingClick = { routingCreateMeeting = true }
+                                onPlanMeetingClick = { routingCreateMeeting = true },
+                                onAddFriendsClick = { routingAddFriends = true },
+                                onAffinityTabClick = { selectedTab = BottomTab.Affinity },
+                                onSettingsClick = { selectedTab = BottomTab.Settings },
+                                onProfileClick = { showProfile = true }
                             )
 
                             BottomTab.Meetings -> HomeScreen(
                                 paddingValues = screenPadding,
                                 userName = name,
                                 mode = HomeScreenMode.Meetings,
-                                onPlanMeetingClick = { routingCreateMeeting = true }
+                                onPlanMeetingClick = { routingCreateMeeting = true },
+                                onAddFriendsClick = { routingAddFriends = true },
+                                onAffinityTabClick = { selectedTab = BottomTab.Affinity },
+                                onSettingsClick = { selectedTab = BottomTab.Settings },
+                                onProfileClick = { showProfile = true }
                             )
 
                             BottomTab.Affinity -> FriendsScreen(

@@ -1,5 +1,7 @@
 package com.markoala.tomoandroid.ui.main.friends
 
+import android.content.ClipData
+import android.content.Context
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -26,8 +28,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalClipboardManager
-import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.markoala.tomoandroid.data.model.friends.FriendSummary
@@ -55,7 +56,7 @@ fun AddFriendsScreen(
     var selectedTab by remember { mutableStateOf(AddFriendsTab.Search) }
     val friendsRepository = remember { FriendsRepository() }
     val toastManager = LocalToastManager.current
-    val clipboardManager = LocalClipboardManager.current
+    val context = LocalContext.current
 
     fun searchFriends() {
         if (searchText.isBlank()) {
@@ -137,7 +138,10 @@ fun AddFriendsScreen(
                     AddFriendsTab.Share -> {
                         ShareInviteSection(userId = userId, onCopy = {
                             val invite = generateInviteCode(userId)
-                            clipboardManager.setText(AnnotatedString(invite))
+                            // Android clipboard 사용
+                            val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
+                            val clip = ClipData.newPlainText("invite", invite)
+                            clipboard.setPrimaryClip(clip)
                             toastManager.showSuccess("초대 코드가 복사되었습니다.")
                         })
                     }
