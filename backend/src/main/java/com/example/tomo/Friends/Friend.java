@@ -39,12 +39,18 @@ public class Friend {
     private Integer m_score = 0;
     private Integer b_score = 0;
 
+    private Integer friendship = 0;
+
     private LocalDate created_at;
 
 
     @PrePersist
     public void prePersist() {
         created_at = LocalDate.now();
+    }
+
+    public void updateFriendship(Integer friendship) {
+        this.friendship = friendship;
     }
 
 }

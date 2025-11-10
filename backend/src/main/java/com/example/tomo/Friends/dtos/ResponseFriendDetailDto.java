@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
+
 
 @Getter
 @Setter
@@ -11,13 +13,12 @@ import lombok.Setter;
 @NoArgsConstructor
 public class ResponseFriendDetailDto {
 
-    private String username;
-    private String email;
-    private Double friendship;
-    private String createdAt;
 
-    public ResponseFriendDetailDto(String username, String email, Double friendship, String createdAt) {
-        this.username = username;
+    private String email;
+    private Integer friendship;
+    private LocalDate createdAt;
+
+    public ResponseFriendDetailDto( String email, Integer friendship, LocalDate createdAt) {
         this.email = email;
         this.friendship = friendship;
         this.createdAt = createdAt;

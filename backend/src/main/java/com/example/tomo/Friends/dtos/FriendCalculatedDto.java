@@ -3,7 +3,6 @@ package com.example.tomo.Friends.dtos;
 import lombok.Getter;
 
 import java.time.LocalDate;
-import java.time.Period;
 
 
 @Getter
@@ -11,17 +10,13 @@ import java.time.Period;
 public class FriendCalculatedDto {
 
     private final Long userId;
-    private final Double friendship;
-    private final String friendPeriod;
+    private final Integer friendship;
+    private final LocalDate friendPeriod;
 
-    public FriendCalculatedDto(Long userId, Integer m_score, Integer b_score, LocalDate createdAt) {
+    public FriendCalculatedDto(Long userId, LocalDate createdAt) {
         this.userId = userId;
-        this.friendship = 0.3 * m_score -0.2 * b_score;
+        this.friendship = 0;
+        this.friendPeriod = createdAt;
 
-        LocalDate startDate = createdAt != null ? createdAt : LocalDate.now(); // null이면 오늘로 대체
-        Period period = Period.between(startDate, LocalDate.now());
-        int years = period.getYears();
-        int months = period.getMonths();
-        this.friendPeriod = years + "년 " + months + "개월";
     }
 }
