@@ -8,6 +8,7 @@ import com.example.tomo.Users.dtos.RequestUserSignDto;
 import com.example.tomo.Users.dtos.ResponsePostUniformDto;
 import com.example.tomo.Users.dtos.addFriendRequestDto;
 import com.example.tomo.Users.dtos.getFriendResponseDto;
+import com.example.tomo.global.SelfFriendRequestException;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -19,7 +20,6 @@ import java.util.Optional;
 
 
 @Service
-
 public class UserService {
 
     private final UserRepository userRepository;
@@ -71,6 +71,10 @@ public class UserService {
         Optional<User> user = userRepository.findByFirebaseId(dto.getUid());
         if(user.isEmpty()){
             throw new EntityNotFoundException("친구 요청은 로그인이 선행되어야 합니다");
+        }
+
+        if (user.get().getEmail().equals(dto.getEmail())) {
+            throw new SelfFriendRequestException("자기 자신은 친구로 추가할 수 없습니다.");
         }
 
         // 이미 친구 관계
