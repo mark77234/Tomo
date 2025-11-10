@@ -1,16 +1,16 @@
 package com.example.tomo.Friends;
 
-import com.example.tomo.Friends.dtos.FriendCalculatedDto;
 import com.example.tomo.Friends.dtos.ResponseFriendDetailDto;
+import com.example.tomo.Moim_people.MoimPeopleRepository;
 import com.example.tomo.Users.User;
 import com.example.tomo.Users.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -18,47 +18,32 @@ public class FriendService {
 
     private final FriendRepository friendRepository;
     private final UserRepository userRepository;
+    private final MoimPeopleRepository moimPeopleRepository;
+    private final FriendShipPolicy friendShipPolicy;
 
+    // 매일 자정마다 실행
+    @Transactional
+    @Scheduled(cron = "0 0 0 * * *")
+    public void updateAllFriendshipScores() {
+        List<Friend> friends = friendRepository.findAll();
 
-    // 친구 상세 정보 출력하기
-    public List<ResponseFriendDetailDto> getDetailFriends(String userId) {
+        for (Friend friend : friends) {
+            long joinCount = moimPeopleRepository.countCommonMoims(
+                    friend.getUser().getId(),
+                    friend.getFriend().getId()
+            );
 
+            int score = friendShipPolicy.calculateTotalScore(
+                    friend.getCreated_at(),
+                    (int) joinCount
+            );
 
-        User user = userRepository.findByFirebaseId(userId)
-                .orElseThrow(()->new IllegalArgumentException("친구 상세 정보 출력 중 사용자 인증이 되지 않았습니다. 로그인 부탁"));
+            friend.updateFriendship(score);
+        }
 
-        // 친구 엔티티를 가져와서 점수 계산하는 로직 JPQL 작성하기
-        // 친구명 호감도 친구가 된 날
-        // 마지막 만남은.. 어케해보기 제일 최근 모임의 약속에서 현재 날짜를 빼기
-
-        List<FriendCalculatedDto> dtos = friendRepository.findFriends(user.getId());
-
-        return dtos.stream()
-                .map(dto -> {
-
-                    String friendName = userRepository.findById(dto.getUserId())
-                            .map(User::getUsername)
-                            .orElse("알수 없음");
-
-                    String email = userRepository.findById(dto.getUserId())
-                            .map(User::getEmail)
-                            .orElse("알 수 없음");
-
-                    System.out.println("friendName = " + friendName);
-
-                    return new ResponseFriendDetailDto(
-                            friendName,
-                            email,
-                            dto.getFriendship(),
-                            dto.getFriendPeriod()
-                    );
-
-                })
-                .collect(Collectors.toList());
-
-
+        // 일괄 저장
+        friendRepository.saveAll(friends);
     }
-
 
     @Transactional
     public void removeFriend(String uid, String friendEmail) {
@@ -78,4 +63,23 @@ public class FriendService {
         friendRepository.findByUserAndFriend(friend, user)
                 .ifPresent(friendRepository::delete);
     }
+
+    @Transactional
+    public ResponseFriendDetailDto getFriend(String uid, String email){
+        Friend friend = this.getFriendByUidAndEmail(uid,email);
+        return new ResponseFriendDetailDto(email, friend.getFriendship(),friend.getCreated_at());
+    }
+
+    public Friend getFriendByUidAndEmail(String uid, String email){
+        User me = userRepository.findByFirebaseId(uid)
+                .orElseThrow(()->new EntityNotFoundException("존재하지 않는 사용자 입니다"));
+        User other = userRepository.findByEmail(email)
+                .orElseThrow(()->new EntityNotFoundException("존재하지 않는 사용자 입니다"));
+
+        return friendRepository.findByUserIdAndFriendId(me.getId(),other.getId())
+                .orElseThrow(()->new EntityNotFoundException("친구 관계가 아닙니다."));
+    }
+
+
+
 }

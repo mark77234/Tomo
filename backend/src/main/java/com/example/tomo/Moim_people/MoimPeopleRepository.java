@@ -46,6 +46,18 @@ public interface MoimPeopleRepository extends JpaRepository<Moim_people, Long> {
             "WHERE mp.user.id = :userId AND mp.leader = FALSE")
     void deleteUserFromNonLeaderMoims(@Param("userId") Long userId);
 
+    @Query("""
+        SELECT COUNT(DISTINCT mp1.moim.id)
+        FROM Moim_people mp1
+        JOIN Moim_people mp2
+            ON mp1.moim.id = mp2.moim.id
+        WHERE mp1.user.id = :meId
+          AND mp2.user.id = :otherId
+    """)
+    long countCommonMoims(@Param("meId") Long meId,
+                          @Param("otherId") Long otherId);
+
+
 }
 
 
