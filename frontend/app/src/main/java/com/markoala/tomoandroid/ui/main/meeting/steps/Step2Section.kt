@@ -4,9 +4,11 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -65,9 +67,9 @@ fun StepTwoSection(
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(12.dp),
+                                    .padding(start=0.dp, top = 16.dp, bottom = 16.dp,end=12.dp),
                                 verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(12.dp)
+
                             ) {
                                 Checkbox(
                                     checked = selected,
@@ -79,7 +81,8 @@ fun StepTwoSection(
                                     )
                                 )
                                 ProfileImage(size = 48.dp)
-                                Column(modifier = Modifier.weight(1f)) {
+                                Spacer(Modifier.width(12.dp))
+                                Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp) ) {
                                     CustomText(text = friend.username, type = CustomTextType.body, color = CustomColor.textPrimary)
                                     CustomText(text = friend.email, type = CustomTextType.bodySmall, color = CustomColor.textSecondary)
                                 }
