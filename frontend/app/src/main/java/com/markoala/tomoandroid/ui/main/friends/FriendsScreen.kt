@@ -107,7 +107,7 @@ private fun Header(onAddFriendsClick: () -> Unit) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            CustomText(text = "친밀도", type = CustomTextType.headline, color = CustomColor.textPrimary)
+            CustomText(text = "친구", type = CustomTextType.headline, color = CustomColor.textPrimary)
             CustomText(text = "토모와 함께하는 친구들", type = CustomTextType.bodySmall, color = CustomColor.textSecondary)
         }
         CustomButton(
