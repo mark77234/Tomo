@@ -39,7 +39,11 @@ import com.markoala.tomoandroid.ui.components.CustomText
 import com.markoala.tomoandroid.ui.components.CustomTextField
 import com.markoala.tomoandroid.ui.components.CustomTextType
 import com.markoala.tomoandroid.ui.components.LocalToastManager
+import com.markoala.tomoandroid.ui.main.friends.add_friends.components.AddFriendsHeader
+import com.markoala.tomoandroid.ui.main.friends.add_friends.components.SearchFriendsSection
+import com.markoala.tomoandroid.ui.main.friends.add_friends.components.ShareInviteSection
 import com.markoala.tomoandroid.ui.theme.CustomColor
+import com.markoala.tomoandroid.util.generateInviteCode
 
 private enum class AddFriendsTab { Search, Share }
 
@@ -113,7 +117,7 @@ fun AddFriendsScreen(
             .padding(paddingValues)
             .padding(horizontal = 24.dp, vertical = 16.dp)
     ) {
-        Header(onBackClick)
+        AddFriendsHeader(onBackClick)
         Spacer(modifier = Modifier.height(24.dp))
 
         // 중앙 정렬 컨테이너
@@ -151,20 +155,7 @@ fun AddFriendsScreen(
     }
 }
 
-@Composable
-private fun Header(onBackClick: () -> Unit) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            CustomText(text = "친구 추가", type = CustomTextType.headline, color = CustomColor.textPrimary)
-            CustomText(text = "검색하거나 초대 코드를 공유하세요", type = CustomTextType.bodySmall, color = CustomColor.textSecondary)
-        }
-        CustomButton(text = "목록 보기", onClick = onBackClick, style = ButtonStyle.Secondary)
-    }
-}
+
 
 @Composable
 private fun TabSelector(selectedTab: AddFriendsTab, onTabSelected: (AddFriendsTab) -> Unit) {
@@ -191,122 +182,4 @@ private fun TabSelector(selectedTab: AddFriendsTab, onTabSelected: (AddFriendsTa
     }
 }
 
-@Composable
-private fun SearchFriendsSection(
-    searchText: String,
-    onSearchTextChange: (String) -> Unit,
-    isSearching: Boolean,
-    searchResults: List<FriendSummary>,
-    errorMessage: String?,
-    onSearch: () -> Unit,
-    onAddFriend: (String) -> Unit
-) {
-    Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-        CustomTextField(
-            value = searchText,
-            onValueChange = onSearchTextChange,
-            placeholder = "이메일을 입력하세요",
-            enabled = !isSearching
-        )
-        CustomButton(
-            text = if (isSearching) "검색 중..." else "친구 검색",
-            onClick = onSearch,
-            enabled = !isSearching
-        )
 
-        when {
-            errorMessage != null -> {
-                Surface(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(20.dp),
-                    color = CustomColor.danger.copy(alpha = 0.1f)
-                ) {
-                    CustomText(
-                        text = errorMessage,
-                        type = CustomTextType.bodySmall,
-                        color = CustomColor.danger,
-                        modifier = Modifier.padding(16.dp)
-                    )
-                }
-            }
-
-            searchResults.isEmpty() -> {
-                Surface(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(20.dp),
-                    color = CustomColor.surface
-                ) {
-                    CustomText(
-                        text = if (isSearching) "검색 중입니다..." else "친구의 이메일을 입력하여 새로운 친구를 추가해보세요!",
-                        type = CustomTextType.bodySmall,
-                        color = CustomColor.textSecondary,
-                        modifier = Modifier.padding(20.dp),
-                        textAlign = TextAlign.Center
-                    )
-                }
-            }
-
-            else -> {
-                LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    items(searchResults) { friend ->
-                        Surface(
-                            modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(20.dp),
-                            color = CustomColor.surface,
-                            border = BorderStroke(1.dp, CustomColor.outline)
-                        ) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(16.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Column(verticalArrangement = Arrangement.spacedBy(4.dp), modifier = Modifier.weight(1f)) {
-                                    CustomText(text = friend.username, type = CustomTextType.body, color = CustomColor.textPrimary)
-                                    CustomText(text = friend.email, type = CustomTextType.bodySmall, color = CustomColor.textSecondary)
-                                }
-                                CustomButton(text = "추가", onClick = { onAddFriend(friend.email) })
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun ShareInviteSection(userId: String, onCopy: () -> Unit) {
-    val inviteCode = generateInviteCode(userId)
-    Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-        Surface(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(24.dp),
-            color = CustomColor.surface,
-            border = BorderStroke(1.dp, CustomColor.outline)
-        ) {
-            Column(
-                modifier = Modifier.padding(24.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                CustomText(text = "초대 코드", type = CustomTextType.title, color = CustomColor.textPrimary)
-                CustomText(text = inviteCode, type = CustomTextType.display, color = CustomColor.textPrimary)
-                CustomText(
-                    text = "친구에게 코드를 공유하면 간편하게 추가할 수 있어요.",
-                    type = CustomTextType.bodySmall,
-                    color = CustomColor.textSecondary
-                )
-            }
-        }
-        CustomButton(text = "초대 코드 복사", onClick = { onCopy() }, style = ButtonStyle.Primary)
-    }
-}
-
-private fun generateInviteCode(userId: String): String {
-    return if (userId.isNotBlank() && userId.length >= 4) {
-        "TOMO-${userId.takeLast(4).uppercase()}"
-    } else {
-        "TOMO-0000"
-    }
-}
