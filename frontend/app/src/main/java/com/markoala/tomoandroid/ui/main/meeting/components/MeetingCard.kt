@@ -26,12 +26,16 @@ import com.markoala.tomoandroid.ui.theme.CustomColor
 import com.markoala.tomoandroid.util.parseIsoToKoreanDate
 
 @Composable
-fun MeetingCard(meeting: MoimList, modifier: Modifier = Modifier) {
+fun MeetingCard(
+    meeting: MoimList,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit = {}
+) {
     val homeViewModel: MeetingViewModel = viewModel()
     val createdDate = parseIsoToKoreanDate(meeting.createdAt)
 
     Surface(
-        modifier = modifier,
+        modifier = modifier.clickable { onClick() },
         shape = RoundedCornerShape(24.dp),
         color = CustomColor.surface,
         border = BorderStroke(1.dp, CustomColor.outline)
@@ -82,7 +86,7 @@ fun MeetingCard(meeting: MoimList, modifier: Modifier = Modifier) {
             ) {
                 Row(
                     modifier = Modifier
-                        .clickable { homeViewModel.deleteMeeting(meeting.title) },
+                        .clickable(onClick = { homeViewModel.deleteMeeting(meeting.title) }),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(6.dp)
                 ) {

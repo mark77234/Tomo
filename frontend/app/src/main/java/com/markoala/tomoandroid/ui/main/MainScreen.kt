@@ -68,7 +68,10 @@ enum class BottomTab(val label: String, @param:DrawableRes val iconRes: Int) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(onSignOut: () -> Unit) {
+fun MainScreen(
+    navController: androidx.navigation.NavHostController,
+    onSignOut: () -> Unit
+) {
     val firebaseAuth = remember { FirebaseAuth.getInstance() }
     val firestore = remember { FirebaseFirestore.getInstance() }
     val user = firebaseAuth.currentUser
@@ -158,7 +161,12 @@ fun MainScreen(onSignOut: () -> Unit) {
                             BottomTab.Meetings -> MeetingScreen(
                                 paddingValues = screenPadding,
                                 userName = name,
-                                onPlanMeetingClick = { routingCreateMeeting = true }
+                                onPlanMeetingClick = { routingCreateMeeting = true },
+                                onMeetingClick = { moimTitle ->
+                                    navController.navigate(
+                                        com.markoala.tomoandroid.navigation.Screen.MeetingDetail.createRoute(moimTitle)
+                                    )
+                                }
                             )
 
                             BottomTab.Affinity -> FriendsScreen(

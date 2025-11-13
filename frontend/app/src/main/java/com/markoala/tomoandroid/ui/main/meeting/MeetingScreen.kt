@@ -46,6 +46,7 @@ fun MeetingScreen(
     paddingValues: PaddingValues,
     userName: String,
     onPlanMeetingClick: () -> Unit,
+    onMeetingClick: (String) -> Unit = {},
     meetingViewModel: MeetingViewModel = viewModel()
 ) {
     val meetings by meetingViewModel.meetings.collectAsState()
@@ -119,7 +120,11 @@ fun MeetingScreen(
             else -> {
                 itemsIndexed(meetings) { index, meeting ->
                     AnimatedMeetingCard(index = index) {
-                        MeetingCard(meeting = meeting, modifier = Modifier.fillMaxWidth())
+                        MeetingCard(
+                            meeting = meeting,
+                            modifier = Modifier.fillMaxWidth(),
+                            onClick = { onMeetingClick(meeting.title) }
+                        )
                     }
                 }
             }
@@ -178,4 +183,3 @@ private fun AnimatedMeetingCard(index: Int, content: @Composable () -> Unit) {
         content()
     }
 }
-
