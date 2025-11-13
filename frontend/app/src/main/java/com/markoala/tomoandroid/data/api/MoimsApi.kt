@@ -1,6 +1,7 @@
 package com.markoala.tomoandroid.data.api
 
 import com.markoala.tomoandroid.data.model.moim.CreateMoimDTO
+import com.markoala.tomoandroid.data.model.moim.MoimDetails
 import com.markoala.tomoandroid.data.model.moim.MoimListDTO
 import com.markoala.tomoandroid.data.model.user.BaseResponse
 import retrofit2.Call
@@ -20,6 +21,11 @@ interface MoimsApi {
 
     @GET("/public/moims/list")
     fun getMoimsList(): Call<BaseResponse<List<MoimListDTO>>>
+
+    @GET("/public/moims")
+    fun getMoimDetails(
+        @Query("moimTitle") moimTitle:String
+    ): Call<BaseResponse<MoimDetails>>
 
     @POST("/public/moims")
     fun postMoim(

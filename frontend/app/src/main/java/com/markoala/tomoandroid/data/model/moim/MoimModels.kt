@@ -21,3 +21,16 @@ data class CreateMoimDTO(
     val description: String,
     val emails: List<String>
 )
+
+data class Member(
+    val username: String,
+    val email: String,
+    val leader: Boolean
+)
+
+data class MoimDetails(
+    val title: String,
+    val description: String,
+    val members: List<Member>,
+    val createdAt: String
+)

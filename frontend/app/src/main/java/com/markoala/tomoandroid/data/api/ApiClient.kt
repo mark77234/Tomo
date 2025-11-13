@@ -1,5 +1,6 @@
 package com.markoala.tomoandroid.data.api
 
+import com.markoala.tomoandroid.BuildConfig
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -17,7 +18,7 @@ object ApiClient {
         .build()
 
     private val retrofit: Retrofit = Retrofit.Builder()
-        .baseUrl("http://168.107.32.168:8080/")
+        .baseUrl(BuildConfig.BASE_URL)
         .client(okHttpClient)
         .addConverterFactory(ScalarsConverterFactory.create())
         .addConverterFactory(GsonConverterFactory.create())

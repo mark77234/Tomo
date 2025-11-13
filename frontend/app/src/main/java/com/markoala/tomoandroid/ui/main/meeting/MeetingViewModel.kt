@@ -1,4 +1,4 @@
-package com.markoala.tomoandroid.ui.main.home
+package com.markoala.tomoandroid.ui.main.meeting
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import retrofit2.awaitResponse
 
-class HomeViewModel : ViewModel() {
+class MeetingViewModel : ViewModel() {
     private val _meetings = MutableStateFlow<List<MoimList>>(emptyList())
     val meetings: StateFlow<List<MoimList>> = _meetings
 

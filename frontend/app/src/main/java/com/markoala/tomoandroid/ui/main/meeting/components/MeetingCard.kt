@@ -1,13 +1,11 @@
-package com.markoala.tomoandroid.ui.main.home.components
+package com.markoala.tomoandroid.ui.main.meeting.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -23,17 +21,21 @@ import com.markoala.tomoandroid.R
 import com.markoala.tomoandroid.data.model.moim.MoimList
 import com.markoala.tomoandroid.ui.components.CustomText
 import com.markoala.tomoandroid.ui.components.CustomTextType
-import com.markoala.tomoandroid.ui.main.home.HomeViewModel
+import com.markoala.tomoandroid.ui.main.meeting.MeetingViewModel
 import com.markoala.tomoandroid.ui.theme.CustomColor
 import com.markoala.tomoandroid.util.parseIsoToKoreanDate
 
 @Composable
-fun MeetingCard(meeting: MoimList, modifier: Modifier = Modifier) {
-    val homeViewModel: HomeViewModel = viewModel()
+fun MeetingCard(
+    meeting: MoimList,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit = {}
+) {
+    val homeViewModel: MeetingViewModel = viewModel()
     val createdDate = parseIsoToKoreanDate(meeting.createdAt)
 
     Surface(
-        modifier = modifier,
+        modifier = modifier.clickable { onClick() },
         shape = RoundedCornerShape(24.dp),
         color = CustomColor.surface,
         border = BorderStroke(1.dp, CustomColor.outline)
@@ -84,7 +86,7 @@ fun MeetingCard(meeting: MoimList, modifier: Modifier = Modifier) {
             ) {
                 Row(
                     modifier = Modifier
-                        .clickable { homeViewModel.deleteMeeting(meeting.title) },
+                        .clickable(onClick = { homeViewModel.deleteMeeting(meeting.title) }),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(6.dp)
                 ) {

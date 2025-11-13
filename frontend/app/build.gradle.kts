@@ -33,6 +33,13 @@ android {
             "DEFAULT_WEB_CLIENT_ID",
             "\"${localProperties.getProperty("default_web_client_id", "")}\""
         )
+
+        // BuildConfig에 BASE_URL 추가
+        buildConfigField(
+            "String",
+            "BASE_URL",
+            "\"${localProperties.getProperty("base_url", "https://markoala.shop/")}\""
+        )
     }
 
     buildTypes {
