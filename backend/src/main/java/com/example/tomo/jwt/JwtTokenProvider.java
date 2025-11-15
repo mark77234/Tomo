@@ -1,7 +1,7 @@
 package com.example.tomo.jwt;
 
-import com.example.tomo.global.InvalidTokenException;
-import com.example.tomo.global.TokenExpiredException;
+import com.example.tomo.global.Exception.InvalidTokenException;
+import com.example.tomo.global.Exception.TokenExpiredException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;

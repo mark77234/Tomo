@@ -5,7 +5,7 @@ import com.example.tomo.Promise.Promise;
 import jakarta.persistence.*;
 import lombok.Getter;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,11 +39,11 @@ public class Moim {
         this.description = description;
     }
 
-    private LocalDateTime createdAt;
+    private LocalDate createdAt;
 
     // DB에 저장해두고 가져와야함
     @PrePersist
     protected void onCreate() {
-        this.createdAt = LocalDateTime.now();
+        this.createdAt = LocalDate.now();
     }
 }

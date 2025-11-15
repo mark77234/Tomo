@@ -1,4 +1,4 @@
-package com.example.tomo.global;
+package com.example.tomo.global.Config;
 
 import com.example.tomo.firebase.FirebaseAuthenticationFilter;
 import com.example.tomo.jwt.JwtAuthenticationFilter;
