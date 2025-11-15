@@ -59,4 +59,13 @@ public class User {
         this.inviteCode = "TOMO-" + this.firebaseId.substring(this.firebaseId.length()-4);
     }
 
+    // 테스트용 생성자
+    public User(Long id, String firebaseId, String username, String email) {
+        this.id = id;
+        this.firebaseId = firebaseId;
+        this.username = username;
+        this.email = email;
+    }
+
+
 }

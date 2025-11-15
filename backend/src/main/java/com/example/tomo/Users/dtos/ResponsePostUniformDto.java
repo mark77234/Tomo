@@ -11,6 +11,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ResponsePostUniformDto {
-    private Boolean success;
+    private boolean success;
     private String message;
 }

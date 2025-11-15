@@ -74,7 +74,7 @@ public class UserService {
 
     }
 
-    private User getUser(String query) {
+    public User getUser(String query) {
         User email = userRepository.findByEmail(query).orElse(null);
         User invite = userRepository.findByInviteCode(query).orElse(null);
 
