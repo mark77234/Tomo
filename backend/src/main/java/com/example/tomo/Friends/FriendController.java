@@ -89,7 +89,7 @@ public class FriendController {
             }
     )
     @GetMapping("/friends/list")
-    public ResponseEntity<ApiResponse<List<ResponseFriendDetailDto>>> getFriendDetails(
+    public ResponseEntity<ApiResponse<List<ResponseGetFriendListDetailDto>>> getFriendDetails(
             @AuthenticationPrincipal String uid) {
         try {
             return ResponseEntity.ok(ApiResponse.success(friendService.getFriends(uid), "성공"));

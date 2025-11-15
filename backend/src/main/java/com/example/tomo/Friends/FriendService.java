@@ -1,6 +1,7 @@
 package com.example.tomo.Friends;
 
 import com.example.tomo.Friends.dtos.ResponseFriendDetailDto;
+import com.example.tomo.Friends.dtos.ResponseGetFriendListDetailDto;
 import com.example.tomo.Moim_people.MoimPeopleRepository;
 import com.example.tomo.Users.User;
 import com.example.tomo.Users.UserRepository;
@@ -80,13 +81,13 @@ public class FriendService {
     }
 
     @Transactional
-    public List<ResponseFriendDetailDto> getFriends(String uid){
+    public List<ResponseGetFriendListDetailDto> getFriends(String uid){
         User user = userRepository.findByFirebaseId(uid)
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 사용자입니다"));
         List<Friend> friends = friendRepository.findAllByUserId(user.getId());
 
         return friends.stream()
-                .map((friend) -> new ResponseFriendDetailDto(
+                .map((friend) -> new ResponseGetFriendListDetailDto(
                         userRepository.findById(friend.getFriend().getId())
                                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 사용자입니다"))
                                 .getEmail(),
