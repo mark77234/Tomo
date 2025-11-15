@@ -242,38 +242,38 @@ private fun MemberCard(member: Member) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 // 아바타
-                Surface(
-                    shape = CircleShape,
-                    color = if (member.leader) {
-                        CustomColor.primaryContainer
-                    } else {
-                        CustomColor.gray100
-                    },
-                    modifier = Modifier.size(48.dp)
-                ) {
-                    Box(contentAlignment = Alignment.Center) {
-                        CustomText(
-                            text = member.username.firstOrNull()?.uppercase() ?: "?",
-                            type = CustomTextType.title,
-                            color = if (member.leader) {
-                                CustomColor.primary
-                            } else {
-                                CustomColor.textSecondary
-                            }
-                        )
-                    }
-                }
+//                Surface(
+//                    shape = CircleShape,
+//                    color = if (member.leader) {
+//                        CustomColor.primaryContainer
+//                    } else {
+//                        CustomColor.gray100
+//                    },
+//                    modifier = Modifier.size(48.dp)
+//                ) {
+//                    Box(contentAlignment = Alignment.Center) {
+//                        CustomText(
+//                            text = member.username.firstOrNull()?.uppercase() ?: "?",
+//                            type = CustomTextType.title,
+//                            color = if (member.leader) {
+//                                CustomColor.primary
+//                            } else {
+//                                CustomColor.textSecondary
+//                            }
+//                        )
+//                    }
+//                }
 
                 Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(6.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        CustomText(
-                            text = member.username,
-                            type = CustomTextType.body,
-                            color = CustomColor.textPrimary
-                        )
+//                        CustomText(
+//                            text = member.username,
+//                            type = CustomTextType.body,
+//                            color = CustomColor.textPrimary
+//                        )
                         if (member.leader) {
                             Surface(
                                 shape = RoundedCornerShape(8.dp),

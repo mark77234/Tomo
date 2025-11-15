@@ -9,6 +9,7 @@ data class MoimList(
 )
 
 data class MoimListDTO(
+    val moimId: Int,
     val title: String,
     val description: String,
     val peopleCount: Int,
@@ -23,7 +24,6 @@ data class CreateMoimDTO(
 )
 
 data class Member(
-    val username: String,
     val email: String,
     val leader: Boolean
 )
