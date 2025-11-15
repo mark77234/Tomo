@@ -111,7 +111,7 @@ class FriendServiceTest {
         when(friendRepository.findAllByUserId(user.getId())).thenReturn(List.of(friendship));
         when(userRepository.findById(friendUser.getId())).thenReturn(Optional.of(friendUser));
 
-        List<ResponseGetFriendListDetailDto> list = friendService.getFriends("uid123");
+        List<ResponseFriendDetailDto> list = friendService.getFriends("uid123");
 
         assertThat(list).hasSize(1);
         assertThat(list.get(0).getEmail()).isEqualTo("friend@test.com");
