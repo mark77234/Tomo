@@ -6,7 +6,6 @@ import com.example.tomo.Moim.MoimRepository;
 import com.example.tomo.Moim_people.MoimPeopleRepository;
 import com.example.tomo.Users.dtos.RequestUserSignDto;
 import com.example.tomo.Users.dtos.ResponsePostUniformDto;
-import com.example.tomo.Users.dtos.addFriendRequestDto;
 import com.example.tomo.Users.dtos.getFriendResponseDto;
 import com.example.tomo.global.SelfFriendRequestException;
 import jakarta.persistence.EntityExistsException;
@@ -29,9 +28,9 @@ public class UserService {
     private final MoimRepository moimRepository;
 
     // 사용자 존재 시 true 반환 404
-    public User userSignUp(addFriendRequestDto dto){
+    public User userSignUp(User entity) {
 
-        Optional<User> user = userRepository.findByEmail(dto.getEmail());
+        Optional<User> user = userRepository.findByEmail(entity.getEmail());
         if(user.isEmpty()){
             throw new EntityNotFoundException("친구 요청한 사용자가 존재하지 않는 사용자 입니다");
         }
@@ -39,15 +38,7 @@ public class UserService {
     }
 
     // 이미 친구 관계이면 TRUE 404
-    public boolean alreadyFriend(addFriendRequestDto dto){
-        // 친구 추가하고자 하는 사용자 엔티티를 꺼내기
-        User user = userRepository.findByFirebaseId(dto.getUid())
-                .orElseThrow(() -> new EntityNotFoundException("로그인 사용자가 존재하지 않습니다"));
-
-        // 친구가 될 사용자
-        User friend = userRepository.findByEmail(dto.getEmail())
-                .orElseThrow(() -> new EntityNotFoundException("친구 요청한 사용자가 존재하지 않습니다"));
-
+    public boolean alreadyFriend(User user, User friend){
         // user-friend 관계 존재 여부 체크
         return friendRepository.existsByUserAndFriend(user, friend);
 
@@ -56,33 +47,54 @@ public class UserService {
     // 친구 추가하기
     // DTO  변환하기
     @Transactional
-    public ResponsePostUniformDto addFriends(addFriendRequestDto dto) {
+    public ResponsePostUniformDto addFriends(String uid, String query) {
 
-        // 액세스 토큰으로 사용자 인증하기
-        // 현재는 ID 가 1인 유저 꺼내기
-        Optional<User> user = userRepository.findByFirebaseId(dto.getUid());
-        if(user.isEmpty()){
-            throw new EntityNotFoundException("친구 요청은 로그인이 선행되어야 합니다");
-        }
+        // 친구 요청을 보내는 사용자를 먼저 조회
+        User user = userRepository.findByFirebaseId(uid)
+                .orElseThrow(() -> new EntityNotFoundException("사용자가 존재하지 않습니다. 회원가입 또는 로그인을 진행해 주세요 "));
 
-        if (user.get().getEmail().equals(dto.getEmail())) {
+        User friend = getUser(query);
+
+        if (user.getEmail().equals(friend.getEmail())) {
             throw new SelfFriendRequestException("자기 자신은 친구로 추가할 수 없습니다.");
         }
 
         // 이미 친구 관계
-        if (alreadyFriend(dto) ) {
+        if (alreadyFriend(user, friend) ) {
             throw new EntityExistsException("이미 친구 관계입니다");
         }
 
-        User friend =  userSignUp(dto);
-        Friend friends = new Friend(user.get(), friend);
-        Friend reverseFriend = new Friend(friend, user.get());
+        User realFriend =  userSignUp(friend); // 유저의 회원가입 여부를 검증
+        Friend friends = new Friend(user, realFriend);
+        Friend reverseFriend = new Friend(realFriend, user);
 
         friendRepository.save(friends);
         friendRepository.save(reverseFriend);
         return new ResponsePostUniformDto(true , "success");
 
     }
+
+    public User getUser(String query) {
+        User email = userRepository.findByEmail(query).orElse(null);
+        User invite = userRepository.findByInviteCode(query).orElse(null);
+
+        User existUser;
+
+        if (email != null && invite != null) {
+            throw new IllegalArgumentException("email과 inviteCode 중 하나만 전달해야 합니다.");
+        }
+
+        if (email != null) {
+            existUser = email;
+        } else if (invite != null) {
+            existUser = invite;
+        } else {
+            throw new IllegalArgumentException("email 또는 inviteCode 중 하나는 반드시 필요합니다.");
+        }
+        return existUser;
+    }
+
+
     /// 여기 부터
     public boolean isUserAvailable(RequestUserSignDto dto) {
         return userRepository.findByFirebaseId(dto.getUuid()).isEmpty();
@@ -105,13 +117,10 @@ public class UserService {
     }
     ///  여기까지 수정이 요구
 
-    public getFriendResponseDto getUserInfo(String email){
+    public getFriendResponseDto getUserInfo(String query){
 
-        Optional<User> user = userRepository.findByEmail(email);
-        if(user.isEmpty()){
-             throw new EntityNotFoundException("존재하지 않는 사용자입니다");
-        }
-        return new getFriendResponseDto(user.get().getUsername(), user.get().getEmail());
+        User user = getUser(query);
+        return new getFriendResponseDto(user.getUsername(), user.getEmail());
     }
 
     public void saveRefreshToken(String uid, String refreshToken){

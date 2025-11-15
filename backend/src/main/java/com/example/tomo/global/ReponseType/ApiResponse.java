@@ -1,4 +1,4 @@
-package com.example.tomo.global;
+package com.example.tomo.global.ReponseType;
 
 
 import lombok.AllArgsConstructor;

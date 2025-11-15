@@ -1,25 +1,20 @@
 package com.example.tomo.Friends.dtos;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.Data;
 
 import java.time.LocalDate;
 
-
-@Getter
-@Setter
-// 이 DTO 는 그냥 응답용으로 사용하고
-@NoArgsConstructor
+@Data
 public class ResponseFriendDetailDto {
-
-
     private String email;
+    private String username;
     private Integer friendship;
     private LocalDate createdAt;
 
-    public ResponseFriendDetailDto( String email, Integer friendship, LocalDate createdAt) {
+    public ResponseFriendDetailDto(String email, String username,
+                                   Integer friendship, LocalDate createdAt) {
         this.email = email;
+        this.username = username;
         this.friendship = friendship;
         this.createdAt = createdAt;
     }

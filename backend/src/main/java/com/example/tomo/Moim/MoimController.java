@@ -1,13 +1,12 @@
 package com.example.tomo.Moim;
 
 import com.example.tomo.Moim.dtos.addMoimRequestDto;
+import com.example.tomo.Moim.dtos.addMoimResponseDto;
 import com.example.tomo.Moim.dtos.getDetailMoimDto;
-import com.example.tomo.Moim.dtos.getMoimResponseDTO;
-import com.example.tomo.Users.dtos.ResponsePostUniformDto;
-import com.example.tomo.global.ApiResponse;
-import com.example.tomo.global.DuplicatedException;
-import com.example.tomo.global.NoDataApiResponse;
-import com.example.tomo.global.NotLeaderUserException;
+import com.example.tomo.Moim.dtos.getMoimResponseDto;
+import com.example.tomo.global.ReponseType.ApiResponse;
+import com.example.tomo.global.ReponseType.NoDataApiResponse;
+import com.example.tomo.global.Exception.NotLeaderUserException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -39,18 +38,16 @@ public class MoimController {
             }
     )
     @PostMapping("/moims")
-    public ResponseEntity<ResponsePostUniformDto> addmoim(
+    public ResponseEntity<ApiResponse<addMoimResponseDto>> addmoim(
             @RequestBody addMoimRequestDto dto,
             @AuthenticationPrincipal String uid
     ) {
         try {
-            return ResponseEntity.ok(moimService.addMoim(uid, dto));
+            return ResponseEntity.status(200)
+                    .body(ApiResponse.success(moimService.addMoim(uid, dto),"모임이 생성되었습니다."));
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                    new ResponsePostUniformDto(false ,"존재하지 않은 사용자를 친구로 추가했습니다"));
-        } catch (DuplicatedException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(
-                    new ResponsePostUniformDto(false ,"이미 존재하는 모임입니다."));
+                    ApiResponse.failure("존재하지 않는 사용자가 모임에 포함되었습니다."));
         }
     }
 
@@ -62,12 +59,12 @@ public class MoimController {
                     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "존재하지 않는 모임")
             }
     )
-    @GetMapping("/moims")
+    @GetMapping("/moims/{moim_id}")
     public ResponseEntity<ApiResponse<getDetailMoimDto>> moimGet(
-            @Parameter(description = "조회할 모임 이름", required = true)
-            @RequestParam(name = "moimTitle") String title) {
+            @PathVariable(name ="moim_id") long moimId
+            ) {
         try {
-            return ResponseEntity.ok(ApiResponse.success(moimService.getMoimDetail(title),"성공"));
+            return ResponseEntity.ok(ApiResponse.success(moimService.getMoimDetail(moimId),"성공"));
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).
                     body(ApiResponse.failure("존재하지 않는 모임입니다."));
@@ -82,7 +79,7 @@ public class MoimController {
             }
     )
     @GetMapping("/moims/list")
-    public ResponseEntity<ApiResponse<List<getMoimResponseDTO>>> getAllMoims(
+    public ResponseEntity<ApiResponse<List<getMoimResponseDto>>> getAllMoims(
             @Parameter(description = "로그인한 사용자의 UUID", required = true)
             @AuthenticationPrincipal String uid) {
         try{
@@ -94,13 +91,13 @@ public class MoimController {
 
     }
 
-    @DeleteMapping("/moims/{title}")
+    @DeleteMapping("/moims/{moim_id}")
     public ResponseEntity<NoDataApiResponse> deleteMoim(
-            @PathVariable("title") String title,
+            @PathVariable("moim_id") long moimId,
             @AuthenticationPrincipal String uid
     ){
         try{
-            moimService.deleteMoim(title,uid);
+            moimService.deleteMoim(moimId,uid);
             return ResponseEntity.noContent().build();
         }catch(EntityNotFoundException e){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(NoDataApiResponse.failure("삭제하려는 모임이 존재하지 않습니다"));

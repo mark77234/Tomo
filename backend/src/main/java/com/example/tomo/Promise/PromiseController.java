@@ -1,8 +1,8 @@
 package com.example.tomo.Promise;
 
 import com.example.tomo.Users.dtos.ResponsePostUniformDto;
-import com.example.tomo.global.ApiResponse;
-import com.example.tomo.global.DuplicatedException;
+import com.example.tomo.global.ReponseType.ApiResponse;
+import com.example.tomo.global.Exception.DuplicatedException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;

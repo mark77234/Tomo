@@ -21,11 +21,23 @@ public class User {
     @Column(name ="user_id")
     private Long id;
 
+    @Column(nullable = false)
     private String firebaseId;
+
+    @Column(nullable = false)
     private String username;
+
+    @Column(nullable = false)
     private String email;
+
+    @Column(nullable = false)
     private String phone;
+
+    @Column(nullable = false)
     private String refreshToken;
+
+    @Column(nullable = false)
+    private String inviteCode;
 
     public User(){}
 
@@ -42,6 +54,18 @@ public class User {
         this.email = email;
     }
 
+    @PrePersist
+    protected void setInviteCode() {
+        this.inviteCode = "TOMO-" + this.firebaseId.substring(this.firebaseId.length()-4);
+    }
+
+    // 테스트용 생성자
+    public User(Long id, String firebaseId, String username, String email) {
+        this.id = id;
+        this.firebaseId = firebaseId;
+        this.username = username;
+        this.email = email;
+    }
 
 
 }

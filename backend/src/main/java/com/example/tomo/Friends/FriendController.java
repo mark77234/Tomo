@@ -2,11 +2,12 @@ package com.example.tomo.Friends;
 
 
 import com.example.tomo.Friends.dtos.ResponseFriendDetailDto;
+import com.example.tomo.Friends.dtos.ResponseGetFriendListDetailDto;
 import com.example.tomo.Users.UserService;
 import com.example.tomo.Users.dtos.ResponsePostUniformDto;
-import com.example.tomo.Users.dtos.addFriendRequestDto;
-import com.example.tomo.global.ApiResponse;
-import com.example.tomo.global.NoDataApiResponse;
+import com.example.tomo.Users.dtos.getFriendResponseDto;
+import com.example.tomo.global.ReponseType.ApiResponse;
+import com.example.tomo.global.ReponseType.NoDataApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.EntityExistsException;
@@ -39,10 +40,10 @@ public class FriendController {
     @PostMapping("/friends")
     public ResponseEntity<ResponsePostUniformDto> addFriendsUsingEmail(
             @AuthenticationPrincipal String uid,
-            @RequestBody addFriendRequestDto dto) {
+            @RequestParam String query
+            ) {
         try {
-            dto.setUid(uid);
-            return ResponseEntity.status(HttpStatus.CREATED).body(userService.addFriends(dto));
+            return ResponseEntity.status(HttpStatus.CREATED).body(userService.addFriends(uid,query));
         } catch (EntityExistsException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(new ResponsePostUniformDto(false, e.getMessage()));
@@ -58,14 +59,24 @@ public class FriendController {
             }
     )
     @GetMapping("/friends")
-    public ResponseEntity<ApiResponse<ResponseFriendDetailDto>> getFriendsUsingEmail(
-            @AuthenticationPrincipal String uid,
-            @RequestParam String email) {
+    public ResponseEntity<ApiResponse<getFriendResponseDto>> getFriendsUsingEmail(@RequestParam String query) {
         try {
-            return ResponseEntity.ok(ApiResponse.success(friendService.getFriend(uid, email), "친구 조회 완료"));
+            return ResponseEntity.ok(ApiResponse.success(userService.getUserInfo(query), "친구 조회 완료"));
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponse.failure(e.getMessage()));
         }
+    }
+    @GetMapping("/friends/detail")
+    public ResponseEntity<ApiResponse<ResponseFriendDetailDto>> getFriendsDetailUsingEmail(
+            @AuthenticationPrincipal String uid,
+            @RequestParam String query
+    ) {
+       try{
+           return ResponseEntity.status(200)
+                   .body(ApiResponse.success(friendService.getFriendDetail(uid,query), "조회 성공"));
+       }catch (EntityNotFoundException e){
+           return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponse.failure(e.getMessage()));
+       }
     }
 
 
@@ -78,7 +89,7 @@ public class FriendController {
             }
     )
     @GetMapping("/friends/list")
-    public ResponseEntity<ApiResponse<List<ResponseFriendDetailDto>>> getFriendDetails(
+    public ResponseEntity<ApiResponse<List<ResponseGetFriendListDetailDto>>> getFriendDetails(
             @AuthenticationPrincipal String uid) {
         try {
             return ResponseEntity.ok(ApiResponse.success(friendService.getFriends(uid), "성공"));

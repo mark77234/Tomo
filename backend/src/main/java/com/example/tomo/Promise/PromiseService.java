@@ -3,7 +3,7 @@ package com.example.tomo.Promise;
 import com.example.tomo.Moim.Moim;
 import com.example.tomo.Moim.MoimRepository;
 import com.example.tomo.Users.dtos.ResponsePostUniformDto;
-import com.example.tomo.global.DuplicatedException;
+import com.example.tomo.global.Exception.DuplicatedException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

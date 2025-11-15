@@ -1,4 +1,4 @@
-package com.example.tomo.global;
+package com.example.tomo.global.Config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
