@@ -5,21 +5,19 @@ import com.example.tomo.Moim.MoimRepository;
 import com.example.tomo.Users.dtos.ResponsePostUniformDto;
 import com.example.tomo.global.DuplicatedException;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class PromiseService {
 
     private final PromiseRepository promiseRepository;
     private final MoimRepository moimRepository;
 
-    public PromiseService(PromiseRepository promiseRepository, MoimRepository moimRepository) {
-        this.promiseRepository = promiseRepository;
-        this.moimRepository = moimRepository;
-    }
 
     // 약속 생성하기
     // 같은 날짜 같은 시간에 약속 존재 시에도 오류 발생

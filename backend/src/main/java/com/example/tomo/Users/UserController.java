@@ -11,7 +11,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,17 +21,11 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @Tag(name = "User API", description = "사용자 회원가입, 친구 관리, 인증 API")
+@RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
     private final AuthService authService;
-
-    @Autowired
-    public UserController(UserService userService, AuthService authService) {
-        this.userService = userService;
-        this.authService = authService;
-    }
-
 
 
     @Operation(

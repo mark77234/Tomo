@@ -8,10 +8,11 @@ import com.example.tomo.Users.dtos.RequestUserSignDto;
 import com.example.tomo.Users.dtos.ResponsePostUniformDto;
 import com.example.tomo.Users.dtos.addFriendRequestDto;
 import com.example.tomo.Users.dtos.getFriendResponseDto;
+import com.example.tomo.global.SelfFriendRequestException;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,22 +20,13 @@ import java.util.Optional;
 
 
 @Service
-
+@RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
     private final FriendRepository friendRepository;
     private final MoimPeopleRepository moimPeopleRepository;
     private final MoimRepository moimRepository;
-
-    @Autowired
-    public UserService(UserRepository userRepository, FriendRepository friendRepository
-    , MoimPeopleRepository moimPeopleRepository, MoimRepository moimRepository) {
-        this.userRepository = userRepository;
-        this.friendRepository = friendRepository;
-        this.moimPeopleRepository = moimPeopleRepository;
-        this.moimRepository = moimRepository;
-    }
 
     // 사용자 존재 시 true 반환 404
     public User userSignUp(addFriendRequestDto dto){
@@ -71,6 +63,10 @@ public class UserService {
         Optional<User> user = userRepository.findByFirebaseId(dto.getUid());
         if(user.isEmpty()){
             throw new EntityNotFoundException("친구 요청은 로그인이 선행되어야 합니다");
+        }
+
+        if (user.get().getEmail().equals(dto.getEmail())) {
+            throw new SelfFriendRequestException("자기 자신은 친구로 추가할 수 없습니다.");
         }
 
         // 이미 친구 관계

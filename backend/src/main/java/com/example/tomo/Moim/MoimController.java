@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -22,13 +23,11 @@ import java.util.List;
 @Tag(name = "Moim API", description = "모임 관련 API")
 @RestController
 @RequestMapping("/public")
+@RequiredArgsConstructor
 public class MoimController {
 
     private final MoimService moimService;
 
-    public MoimController(MoimService moimService) {
-        this.moimService = moimService;
-    }
 
     @Operation(
             summary = "모임 생성",

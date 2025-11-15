@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,13 +17,10 @@ import java.util.List;
 @Tag(name = "Promise API", description = "약속 관련 API")
 @RestController
 @RequestMapping("/public")
+@RequiredArgsConstructor
 public class PromiseController {
 
     private final PromiseService promiseService;
-
-    public PromiseController(PromiseService promiseService) {
-        this.promiseService = promiseService;
-    }
 
     @Operation(
             summary = "약속 추가",

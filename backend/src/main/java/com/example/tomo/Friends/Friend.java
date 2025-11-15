@@ -4,15 +4,12 @@ package com.example.tomo.Friends;
 import com.example.tomo.Users.User;
 import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.Setter;
-
 import java.time.LocalDate;
 
 
 
 @Entity
 @Getter
-@Setter
 @Table(name = "friend")
 public class Friend {
 
@@ -36,15 +33,25 @@ public class Friend {
         this.friend = friend;
     }
 
-    private Integer m_score = 0;
-    private Integer b_score = 0;
+    private Integer m_score;
+    private Integer b_score;
+
+    private Integer friendship;
 
     private LocalDate created_at;
 
 
     @PrePersist
     public void prePersist() {
+
         created_at = LocalDate.now();
+        m_score = 0;
+        b_score = 0;
+        friendship = 0;
+    }
+
+    public void updateFriendship(Integer friendship) {
+        this.friendship = friendship;
     }
 
 }

@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class userSimpleDto {
-    private String username;
     private String email;
     private Boolean leader;
 }

@@ -7,21 +7,19 @@ import com.example.tomo.Users.UserService;
 import com.example.tomo.firebase.ResponseFirebaseLoginDto;
 import com.example.tomo.jwt.JwtTokenProvider;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 // Service
 @Service
+@RequiredArgsConstructor
 public class AuthService {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final UserRepository userRepository;
     private final UserService userService;
 
-    public AuthService(JwtTokenProvider jwtTokenProvider,UserRepository userRepository, UserService userService) {
-        this.jwtTokenProvider = jwtTokenProvider;
-        this.userRepository = userRepository;
-        this.userService = userService;
-    }
+
 
     public ResponseFirebaseLoginDto loginWithFirebase(String uid) {
         String accessToken = jwtTokenProvider.createAccessToken(uid);
