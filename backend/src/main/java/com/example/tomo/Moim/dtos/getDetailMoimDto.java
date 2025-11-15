@@ -10,6 +10,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 public class getDetailMoimDto {
+    private Long moimId;
     private String title;
     private String description;
     private List<userSimpleDto> members;
