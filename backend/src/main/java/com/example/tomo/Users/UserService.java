@@ -55,7 +55,7 @@ public class UserService {
 
         User friend = getUser(query);
 
-        if (user.get().getEmail().equals(dto.getEmail())) {
+        if (user.getEmail().equals(friend.getEmail())) {
             throw new SelfFriendRequestException("자기 자신은 친구로 추가할 수 없습니다.");
         }
 

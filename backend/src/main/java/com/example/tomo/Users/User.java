@@ -54,6 +54,9 @@ public class User {
         this.email = email;
     }
 
-
+    @PrePersist
+    protected void setInviteCode() {
+        this.inviteCode = "TOMO-" + this.firebaseId.substring(this.firebaseId.length()-4);
+    }
 
 }
