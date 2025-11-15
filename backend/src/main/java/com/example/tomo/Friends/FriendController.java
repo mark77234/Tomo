@@ -2,7 +2,6 @@ package com.example.tomo.Friends;
 
 
 import com.example.tomo.Friends.dtos.ResponseFriendDetailDto;
-import com.example.tomo.Friends.dtos.ResponseGetFriendListDetailDto;
 import com.example.tomo.Users.UserService;
 import com.example.tomo.Users.dtos.ResponsePostUniformDto;
 import com.example.tomo.Users.dtos.getFriendResponseDto;
@@ -89,7 +88,7 @@ public class FriendController {
             }
     )
     @GetMapping("/friends/list")
-    public ResponseEntity<ApiResponse<List<ResponseGetFriendListDetailDto>>> getFriendDetails(
+    public ResponseEntity<ApiResponse<List<ResponseFriendDetailDto>>> getFriendDetails(
             @AuthenticationPrincipal String uid) {
         try {
             return ResponseEntity.ok(ApiResponse.success(friendService.getFriends(uid), "성공"));
