@@ -2,7 +2,7 @@ package com.example.tomo.Friends;
 
 
 import com.example.tomo.Friends.dtos.ResponseFriendDetailDto;
-import com.example.tomo.Friends.dtos.ResponseGetFriendListDetailDto;
+
 import com.example.tomo.Users.UserService;
 import com.example.tomo.Users.dtos.ResponsePostUniformDto;
 import com.example.tomo.Users.dtos.getFriendResponseDto;

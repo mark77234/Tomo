@@ -91,11 +91,16 @@ public class FriendService {
                         userRepository.findById(friend.getFriend().getId())
                                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 사용자입니다"))
                                 .getEmail(),
+                        userRepository.findById(friend.getFriend().getId())
+                                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 사용자입니다"))
+                                .getUsername(),
                         friend.getFriendship(),
                         friend.getCreated_at()
                 ))
                 .collect(Collectors.toList());
     }
+
+
 
     public Friend getFriendByUidAndEmail(String uid, String email){
         User me = userRepository.findByFirebaseId(uid)
