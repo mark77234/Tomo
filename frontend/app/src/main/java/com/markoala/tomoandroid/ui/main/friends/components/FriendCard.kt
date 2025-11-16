@@ -34,6 +34,7 @@ import com.markoala.tomoandroid.ui.components.CustomText
 import com.markoala.tomoandroid.ui.components.CustomTextType
 import com.markoala.tomoandroid.ui.components.LocalToastManager
 import com.markoala.tomoandroid.ui.theme.CustomColor
+import com.markoala.tomoandroid.util.getFriendshipDurationText
 import com.markoala.tomoandroid.util.parseIsoToKoreanDate
 import retrofit2.Call
 import retrofit2.Callback
@@ -237,7 +238,7 @@ fun FriendCard(
                                 modifier = Modifier.size(14.dp)
                             )
                             CustomText(
-                                text = "친구 된 날짜: ${parseIsoToKoreanDate(friend.createdAt)}",
+                                text = " ${getFriendshipDurationText(friend.createdAt)} 째 친구 ",
                                 type = CustomTextType.bodySmall,
                                 color = CustomColor.textSecondary
                             )
