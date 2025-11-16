@@ -209,7 +209,7 @@ private fun MeetingDetailContent(
                 StatCard(
                     modifier = Modifier.weight(1f),
                     label = "평균 친밀도",
-                    value = String.format(Locale.getDefault(), "%.1f%%", averageFriendship),
+                    value = String.format(Locale.getDefault(), "%d점", averageFriendship.toInt()),
                     icon = R.drawable.ic_favorite
                 )
             }
