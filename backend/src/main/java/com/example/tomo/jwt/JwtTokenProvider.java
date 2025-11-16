@@ -2,12 +2,14 @@ package com.example.tomo.jwt;
 
 import com.example.tomo.global.Exception.InvalidTokenException;
 import com.example.tomo.global.Exception.TokenExpiredException;
+import com.google.api.client.util.Value;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
 
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
 
@@ -16,7 +18,11 @@ public class JwtTokenProvider {
 
     // 시크릿 키 (512bit)
     //private final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS512);
-    private final Key key = Keys.hmacShaKeyFor("0123456789012345678901234567890123456789012345678901234567890123".getBytes());
+    private final Key key;
+    public JwtTokenProvider(@Value("${jwt.secret}") String secretKey) {
+        // 주입받은 secretKey 문자열로 Key 객체를 생성
+        this.key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
+    }
 
 
     // Access 토큰 생성
