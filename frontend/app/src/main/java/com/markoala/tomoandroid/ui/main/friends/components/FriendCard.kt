@@ -34,6 +34,7 @@ import com.markoala.tomoandroid.ui.components.CustomTextType
 import com.markoala.tomoandroid.ui.components.LocalToastManager
 import com.markoala.tomoandroid.ui.components.ProfileImage
 import com.markoala.tomoandroid.ui.theme.CustomColor
+import com.markoala.tomoandroid.util.getFriendshipDurationText
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -76,7 +77,7 @@ fun FriendCard(
             }
 
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
-                MetaInfo(icon = R.drawable.ic_time, text = "우정 기간: ${friend.createdAt}")
+                MetaInfo(icon = R.drawable.ic_time, text = "우정 기간: ${getFriendshipDurationText(friend.createdAt)}")
             }
 
             Row(
@@ -90,12 +91,12 @@ fun FriendCard(
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_trash),
-                        contentDescription = "친구 삭제",
+                        contentDescription = "친구 손절",
                         tint = CustomColor.textSecondary,
                         modifier = Modifier.size(16.dp)
                     )
                     CustomText(
-                        text = "친구 삭제",
+                        text = "친구 손절",
                         type = CustomTextType.bodySmall,
                         color = CustomColor.textSecondary
                     )

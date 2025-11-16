@@ -2,8 +2,10 @@ package com.markoala.tomoandroid.util
 
 import android.util.Log
 import java.time.Instant
+import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 import java.util.Locale
 
 private const val TAG = "DateUtils"
@@ -37,3 +39,22 @@ fun parseIsoToKoreanDate(iso: String?): String {
     }
 }
 
+/**
+ * 우정 기간을 "n일", "n개월", "n년" 형식으로 반환
+ */
+fun getFriendshipDurationText(createdAt: String): String {
+    return try {
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        val startDate = LocalDate.parse(createdAt, formatter)
+        val today = LocalDate.now()
+        val days = ChronoUnit.DAYS.between(startDate, today) + 1 // 1일째부터 시작
+        when {
+            days < 30 -> "${days}일"
+            days < 365 -> "${days / 30}개월"
+            else -> "${days / 365}년"
+        }
+    } catch (e: Exception) {
+        Log.e(TAG, "getFriendshipDurationText 파싱 오류: $createdAt", e)
+        "-"
+    }
+}
