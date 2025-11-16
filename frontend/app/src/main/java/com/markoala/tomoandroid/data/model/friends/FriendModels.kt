@@ -11,7 +11,3 @@ data class FriendSummary(
     val username: String,
     val email: String
 )
-
-data class FriendSearchRequest(
-    val email: String
-)

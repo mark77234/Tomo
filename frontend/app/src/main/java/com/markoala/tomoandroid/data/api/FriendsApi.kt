@@ -1,7 +1,6 @@
 package com.markoala.tomoandroid.data.api
 
 import com.markoala.tomoandroid.data.model.friends.FriendProfile
-import com.markoala.tomoandroid.data.model.friends.FriendSearchRequest
 import com.markoala.tomoandroid.data.model.friends.FriendSummary
 import com.markoala.tomoandroid.data.model.user.BaseResponse
 import retrofit2.Call
@@ -14,12 +13,12 @@ import retrofit2.http.Query
 interface FriendsApi {
     @POST("/public/friends")
     fun postFriends(
-        @Body body: FriendSearchRequest
+        @Query("query") query: String
     ): Call<BaseResponse<FriendSummary?>>
 
     @GET("/public/friends")
     fun getFriends(
-        @Query("query") email: String
+        @Query("query") query: String
     ): Call<BaseResponse<FriendSummary>>
 
     @DELETE("/public/friends")
