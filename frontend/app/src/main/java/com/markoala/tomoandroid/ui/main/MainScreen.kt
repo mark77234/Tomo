@@ -72,7 +72,8 @@ enum class BottomTab(val label: String, @param:DrawableRes val iconRes: Int) {
 fun MainScreen(
     navController: androidx.navigation.NavHostController,
     onSignOut: () -> Unit,
-    deepLinkInviteCode: String? = null
+    deepLinkInviteCode: String? = null,
+    onInviteCodeConsumed: () -> Unit = {}
 ) {
     val firebaseAuth = remember { FirebaseAuth.getInstance() }
     val firestore = remember { FirebaseFirestore.getInstance() }
@@ -101,6 +102,7 @@ fun MainScreen(
         if (deepLinkInviteCode != null) {
             routingAddFriends = true
             selectedTab = BottomTab.Affinity
+            onInviteCodeConsumed() // 딥링크 코드 사용 후 초기화
         }
     }
 
@@ -158,7 +160,8 @@ fun MainScreen(
                         paddingValues = screenPadding,
                         userId = userId,
                         inviteCode = deepLinkInviteCode,
-                        onBackClick = { routingAddFriends = false }
+                        onBackClick = { routingAddFriends = false },
+                        onInviteCodeConsumed = onInviteCodeConsumed
                     )
                 }
 

@@ -21,7 +21,7 @@ import com.markoala.tomoandroid.ui.components.ToastProvider
 import com.markoala.tomoandroid.ui.theme.TomoAndroidTheme
 
 class MainActivity : ComponentActivity() {
-    private var deepLinkInviteCode: String? = null
+    private val deepLinkInviteCode = mutableStateOf<String?>(null)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,7 +37,10 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             TomoAndroidTheme {
-                MainScreen(deepLinkInviteCode)
+                MainScreen(
+                    inviteCode = deepLinkInviteCode.value,
+                    onInviteCodeConsumed = { deepLinkInviteCode.value = null }
+                )
             }
         }
     }
@@ -52,13 +55,13 @@ class MainActivity : ComponentActivity() {
         if (data != null && data.scheme == "tomoapp" && data.host == "invite") {
             // tomoapp://invite/{inviteCode} 형식에서 inviteCode 추출
             val inviteCode = data.pathSegments.firstOrNull()
-            deepLinkInviteCode = inviteCode
+            deepLinkInviteCode.value = inviteCode
         }
     }
 }
 
 @Composable
-fun MainScreen(inviteCode: String? = null) {
+fun MainScreen(inviteCode: String? = null, onInviteCodeConsumed: () -> Unit = {}) {
     var signedIn by remember { mutableStateOf(false) }
     val navController = rememberNavController()
 

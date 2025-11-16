@@ -45,9 +45,10 @@ fun AddFriendsScreen(
     paddingValues: PaddingValues,
     userId: String,
     inviteCode: String? = null,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    onInviteCodeConsumed: () -> Unit = {}
 ) {
-    var searchText by rememberSaveable { mutableStateOf(inviteCode ?: "") }
+    var searchText by rememberSaveable { mutableStateOf("") }
     var searchResults by remember { mutableStateOf<List<FriendSummary>>(emptyList()) }
     var isSearching by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
@@ -104,12 +105,15 @@ fun AddFriendsScreen(
         )
     }
 
-    // 초대코드가 전달되면 자동으로 검색 수행
+    // 친구 추가 페이지 진입(포커스) 시마다 searchText 초기화
+    LaunchedEffect(Unit) {
+        searchText = ""
+    }
+    // 초대코드가 전달되면 자동으로 검색 수행 (최초 진입 시 한 번만)
     LaunchedEffect(inviteCode) {
-        if (!inviteCode.isNullOrBlank()) {
-            selectedTab = AddFriendsTab.Search
-            // searchText는 이미 inviteCode로 초기화되어 있음
-            searchFriends()
+        if (inviteCode != null && inviteCode.isNotBlank()) {
+            searchText = inviteCode
+            onInviteCodeConsumed() // 초대코드 사용 후 초기화
         }
     }
 
