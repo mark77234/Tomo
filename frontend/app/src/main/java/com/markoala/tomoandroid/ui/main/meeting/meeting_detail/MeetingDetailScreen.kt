@@ -46,6 +46,7 @@ import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import java.util.Locale
 import com.google.firebase.auth.FirebaseAuth
+import com.markoala.tomoandroid.ui.components.CustomBack
 import com.markoala.tomoandroid.util.getFriendshipDurationText
 
 @Composable
@@ -128,26 +129,10 @@ private fun MeetingDetailContent(
     ) {
         // 뒤로가기 버튼
         item {
-            Surface(
+            CustomBack(
                 onClick = onBackClick,
-                modifier = Modifier
-                    .padding(bottom = 4.dp)
-                    .size(40.dp),
-                shape = CircleShape,
-                color = CustomColor.primary,
-                shadowElevation = 2.dp
-            ) {
-                Box(
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                        contentDescription = "뒤로가기",
-                        tint = CustomColor.white,
-                        modifier = Modifier.size(20.dp)
-                    )
-                }
-            }
+                modifier = Modifier.padding(bottom = 4.dp)
+            )
         }
 
         // 모임 정보 Hero 카드

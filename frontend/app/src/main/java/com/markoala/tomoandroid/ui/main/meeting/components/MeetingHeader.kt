@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.composed
 import androidx.compose.ui.unit.dp
+import com.markoala.tomoandroid.ui.components.CustomBack
 import com.markoala.tomoandroid.ui.components.CustomText
 import com.markoala.tomoandroid.ui.components.CustomTextType
 import com.markoala.tomoandroid.ui.theme.CustomColor
@@ -35,26 +36,10 @@ fun MeetingHeader(onBackClick: () -> Unit) {
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Surface(
+        CustomBack(
             onClick = onBackClick,
-            modifier = Modifier
-                .padding(bottom = 4.dp)
-                .size(40.dp),
-            shape = CircleShape,
-            color = CustomColor.primary,
-            shadowElevation = 2.dp
-        ) {
-            Box(
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                    contentDescription = "뒤로가기",
-                    tint = CustomColor.white,
-                    modifier = Modifier.size(20.dp)
-                )
-            }
-        }
+            modifier = Modifier.padding(bottom = 4.dp)
+        )
         Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
             CustomText(text = "모임 생성", type = CustomTextType.title, color = CustomColor.textPrimary)
             CustomText(text = "정보를 입력하고 초대할 친구를 선택하세요", type = CustomTextType.bodySmall, color = CustomColor.textSecondary)
