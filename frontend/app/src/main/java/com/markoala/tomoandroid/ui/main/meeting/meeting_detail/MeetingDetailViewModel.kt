@@ -92,12 +92,25 @@ class MeetingDetailViewModel : ViewModel() {
                                 )
                                 MemberWithProfile(email, isLeader, selfProfile)
                             } else {
-                                // 다른 사람일 경우 API 호출
-                                val response = friendsApi.getFriendDetails(email).execute()
-                                if (response.isSuccessful && response.body()?.success == true) {
-                                    MemberWithProfile(email, isLeader, response.body()?.data)
+                                // 친구 상세 정보 먼저 시도
+                                val detailResponse = friendsApi.getFriendDetails(email).execute()
+                                if (detailResponse.isSuccessful && detailResponse.body()?.success == true) {
+                                    MemberWithProfile(email, isLeader, detailResponse.body()?.data)
                                 } else {
-                                    MemberWithProfile(email, isLeader, null)
+                                    // 친구가 아닌 경우 getFriends로 기본 정보 가져오기
+                                    val summaryResponse = friendsApi.getFriends(email).execute()
+                                    if (summaryResponse.isSuccessful && summaryResponse.body()?.success == true) {
+                                        val summary = summaryResponse.body()?.data
+                                        val basicProfile = FriendProfile(
+                                            username = summary?.username ?: "알 수 없음",
+                                            email = summary?.email ?: email,
+                                            friendship = 0, // 친구가 아니므로 0
+                                            createdAt = "" // 친구가 아니므로 빈 값
+                                        )
+                                        MemberWithProfile(email, isLeader, basicProfile)
+                                    } else {
+                                        MemberWithProfile(email, isLeader, null)
+                                    }
                                 }
                             }
                         } catch (e: Exception) {

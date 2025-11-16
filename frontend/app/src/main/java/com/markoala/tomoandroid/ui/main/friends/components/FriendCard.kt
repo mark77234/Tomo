@@ -1,7 +1,6 @@
 package com.markoala.tomoandroid.ui.main.friends.components
 
 import android.util.Log
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -131,8 +130,8 @@ fun FriendCard(
                 }
             }
 
-            // 친밀도 정보 (본인이 아닐 때만 표시)
-            if (!isCurrentUser) {
+            // 친밀도 정보 (본인이 아니고 친구인 경우만 표시)
+            if (!isCurrentUser && friend.friendship > 0) {
                 Column(
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
