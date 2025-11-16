@@ -103,23 +103,25 @@ fun MeetingCard(
                 horizontalArrangement = Arrangement.End,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Row(
-                    modifier = Modifier
-                        .clickable(onClick = { showDeleteDialog = true }),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(6.dp)
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_trash),
-                        contentDescription = "모임 삭제",
-                        tint = CustomColor.textSecondary,
-                        modifier = Modifier.size(16.dp)
-                    )
-                    CustomText(
-                        text = "모임 삭제",
-                        type = CustomTextType.bodySmall,
-                        color = CustomColor.textSecondary
-                    )
+                if (meeting.leader) {
+                    Row(
+                        modifier = Modifier
+                            .clickable(onClick = { showDeleteDialog = true }),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_trash),
+                            contentDescription = "모임 삭제",
+                            tint = CustomColor.textSecondary,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        CustomText(
+                            text = "모임 삭제",
+                            type = CustomTextType.bodySmall,
+                            color = CustomColor.textSecondary
+                        )
+                    }
                 }
             }
             if (showDeleteDialog) {
