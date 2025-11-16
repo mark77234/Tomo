@@ -21,6 +21,11 @@ interface FriendsApi {
         @Query("query") query: String
     ): Call<BaseResponse<FriendSummary>>
 
+    @GET("/public/friends/detail")
+    fun getFriendDetails(
+        @Query("query") query: String
+    ): Call<BaseResponse<FriendProfile>>
+
     @DELETE("/public/friends")
     fun deleteFriends(
         @Query("friendEmail") email: String

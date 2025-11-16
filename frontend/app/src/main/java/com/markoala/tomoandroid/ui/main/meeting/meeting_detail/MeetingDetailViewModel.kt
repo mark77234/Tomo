@@ -4,22 +4,37 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.markoala.tomoandroid.data.api.MoimsApiService
+import com.markoala.tomoandroid.data.api.friendsApi
 import com.markoala.tomoandroid.data.model.moim.MoimDetails
+import com.markoala.tomoandroid.data.model.friends.FriendProfile
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.async
+
+data class MemberWithProfile(
+    val email: String,
+    val leader: Boolean,
+    val profile: FriendProfile?
+)
 
 class MeetingDetailViewModel : ViewModel() {
     private val _moimDetails = MutableStateFlow<MoimDetails?>(null)
     val moimDetails: StateFlow<MoimDetails?> = _moimDetails
+
+    private val _membersWithProfiles = MutableStateFlow<List<MemberWithProfile>>(emptyList())
+    val membersWithProfiles: StateFlow<List<MemberWithProfile>> = _membersWithProfiles
 
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading
 
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage: StateFlow<String?> = _errorMessage
+
+    private val firebaseAuth = FirebaseAuth.getInstance()
 
     fun fetchMoimDetails(moimId: Int) {
         viewModelScope.launch {
@@ -36,6 +51,11 @@ class MeetingDetailViewModel : ViewModel() {
                     if (body?.success == true) {
                         _moimDetails.value = body.data
                         Log.d("MeetingDetailViewModel", "모임 상세 정보 로드 성공: ${body.data}")
+
+                        // 멤버들의 프로필 정보 가져오기
+                        body.data?.let { details ->
+                            fetchMembersProfiles(details.members.map { it.email to it.leader })
+                        }
                     } else {
                         _errorMessage.value = body?.message ?: "모임 정보를 불러오지 못했습니다."
                         Log.e("MeetingDetailViewModel", "API 실패: ${body?.message}")
@@ -50,6 +70,47 @@ class MeetingDetailViewModel : ViewModel() {
             } finally {
                 _isLoading.value = false
             }
+        }
+    }
+
+    private suspend fun fetchMembersProfiles(members: List<Pair<String, Boolean>>) {
+        try {
+            val currentUserEmail = firebaseAuth.currentUser?.email
+            val currentUserName = firebaseAuth.currentUser?.displayName
+
+            val profiles = withContext(Dispatchers.IO) {
+                members.map { (email, isLeader) ->
+                    async {
+                        try {
+                            // 본인일 경우 API 호출 없이 본인 정보 사용
+                            if (email == currentUserEmail) {
+                                val selfProfile = FriendProfile(
+                                    username = currentUserName ?: "나",
+                                    email = email,
+                                    friendship = 100,
+                                    createdAt = "" // 본인은 친구 된 날짜가 없음
+                                )
+                                MemberWithProfile(email, isLeader, selfProfile)
+                            } else {
+                                // 다른 사람일 경우 API 호출
+                                val response = friendsApi.getFriendDetails(email).execute()
+                                if (response.isSuccessful && response.body()?.success == true) {
+                                    MemberWithProfile(email, isLeader, response.body()?.data)
+                                } else {
+                                    MemberWithProfile(email, isLeader, null)
+                                }
+                            }
+                        } catch (e: Exception) {
+                            Log.e("MeetingDetailViewModel", "프로필 로드 실패: $email", e)
+                            MemberWithProfile(email, isLeader, null)
+                        }
+                    }
+                }.map { it.await() }
+            }
+            _membersWithProfiles.value = profiles
+            Log.d("MeetingDetailViewModel", "멤버 프로필 로드 완료: ${profiles.size}개")
+        } catch (e: Exception) {
+            Log.e("MeetingDetailViewModel", "멤버 프로필 로드 중 오류", e)
         }
     }
 }
