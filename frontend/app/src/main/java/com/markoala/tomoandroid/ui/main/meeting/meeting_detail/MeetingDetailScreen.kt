@@ -19,8 +19,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
@@ -359,17 +357,6 @@ private fun StatCard(
                 )
             }
         }
-    }
-}
-
-private fun calculateDaysActive(createdAt: String): Long {
-    return try {
-        val formatter = DateTimeFormatter.ISO_DATE_TIME
-        val createdDate = LocalDateTime.parse(createdAt, formatter)
-        val now = LocalDateTime.now()
-        ChronoUnit.DAYS.between(createdDate, now) + 1
-    } catch (_: Exception) {
-        0L
     }
 }
 
