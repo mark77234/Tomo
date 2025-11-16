@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -23,6 +24,7 @@ import com.markoala.tomoandroid.ui.components.CustomText
 import com.markoala.tomoandroid.ui.components.CustomTextType
 import com.markoala.tomoandroid.ui.main.meeting.MeetingViewModel
 import com.markoala.tomoandroid.ui.theme.CustomColor
+import com.markoala.tomoandroid.util.getFriendshipDurationText
 import com.markoala.tomoandroid.util.parseIsoToKoreanDate
 
 @Composable
@@ -33,6 +35,7 @@ fun MeetingCard(
 ) {
     val homeViewModel: MeetingViewModel = viewModel()
     val createdDate = parseIsoToKoreanDate(meeting.createdAt)
+    val friendshipDuration = getFriendshipDurationText(meeting.createdAt ?: "")
 
     Surface(
         modifier = modifier.clickable { onClick() },
@@ -49,12 +52,13 @@ fun MeetingCard(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Column(verticalArrangement = Arrangement.spacedBy(4.dp), modifier = Modifier.weight(1f)) {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.weight(1f)) {
                     CustomText(
                         text = meeting.title,
                         type = CustomTextType.title,
                         color = CustomColor.textPrimary
                     )
+
                     CustomText(
                         text = meeting.description,
                         type = CustomTextType.bodySmall,
@@ -73,10 +77,19 @@ fun MeetingCard(
                     )
                 }
             }
+            HorizontalDivider(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 4.dp),
+                            color = CustomColor.outline,
+                            thickness = 1.dp
+                        )
 
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                MetaRow(icon = R.drawable.ic_time, text = createdDate)
-                MetaRow(icon = R.drawable.ic_people, text = "${meeting.peopleCount}명 참여")
+                MetaRow( text = "$friendshipDuration 동안 함께하고 있어요")
+                MetaRow(icon = R.drawable.ic_time,text = "최초생성일: $createdDate")
+
+                MetaRow(icon = R.drawable.ic_people, text = "${meeting.peopleCount}명 참여 중")
             }
 
             Row(
@@ -108,15 +121,17 @@ fun MeetingCard(
 }
 
 @Composable
-private fun MetaRow(icon: Int, text: String) {
+private fun MetaRow(icon: Int? = null, text: String) {
     if (text.isBlank()) return
     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        Icon(
-            painter = painterResource(id = icon),
-            contentDescription = null,
-            tint = CustomColor.textSecondary,
-            modifier = Modifier.size(14.dp)
-        )
+        if (icon != null) {
+            Icon(
+                painter = painterResource(id = icon),
+                contentDescription = null,
+                tint = CustomColor.textSecondary,
+                modifier = Modifier.size(14.dp)
+            )
+        }
         CustomText(
             text = text,
             type = CustomTextType.bodySmall,
