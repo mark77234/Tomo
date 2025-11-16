@@ -2,7 +2,7 @@ package com.markoala.tomoandroid.util
 
 fun generateInviteCode(userId: String): String {
     return if (userId.isNotBlank() && userId.length >= 4) {
-        "TOMO-${userId.takeLast(4).uppercase()}"
+        "TOMO-${userId.takeLast(4)}"
     } else {
         "TOMO-0000"
     }
