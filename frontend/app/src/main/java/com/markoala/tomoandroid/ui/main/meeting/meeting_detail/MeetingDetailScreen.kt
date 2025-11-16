@@ -46,6 +46,7 @@ import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import java.util.Locale
 import com.google.firebase.auth.FirebaseAuth
+import com.markoala.tomoandroid.util.getFriendshipDurationText
 
 @Composable
 fun MeetingDetailScreen(
@@ -116,7 +117,7 @@ private fun MeetingDetailContent(
     onBackClick: () -> Unit
 ) {
     val createdDate = parseIsoToKoreanDate(moimDetails.createdAt)
-    val daysActive = calculateDaysActive(moimDetails.createdAt)
+    val daysActive = getFriendshipDurationText(moimDetails.createdAt)
     val averageFriendship = calculateAverageFriendship(membersWithProfiles)
     val currentUserEmail = FirebaseAuth.getInstance().currentUser?.email
 
@@ -198,7 +199,7 @@ private fun MeetingDetailContent(
                         InfoRow(
                             icon = R.drawable.ic_time,
                             label = "유지 일수",
-                            value = "${daysActive}일째 진행 중"
+                            value = "${daysActive}째 진행 중"
                         )
                     }
                 }
