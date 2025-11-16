@@ -38,8 +38,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             TomoAndroidTheme {
                 MainScreen(
-                    inviteCode = deepLinkInviteCode.value,
-                    onInviteCodeConsumed = { deepLinkInviteCode.value = null }
+                    inviteCode = deepLinkInviteCode.value
                 )
             }
         }
@@ -61,7 +60,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun MainScreen(inviteCode: String? = null, onInviteCodeConsumed: () -> Unit = {}) {
+fun MainScreen(inviteCode: String? = null) {
     var signedIn by remember { mutableStateOf(false) }
     val navController = rememberNavController()
 
