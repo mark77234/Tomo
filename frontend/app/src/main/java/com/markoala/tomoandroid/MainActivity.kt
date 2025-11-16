@@ -32,6 +32,7 @@ class MainActivity : ComponentActivity() {
         AuthManager.init()
         AuthManager.initTokenManager(this)
 
+
         // 딥링크 처리
         handleDeepLink(intent)
 

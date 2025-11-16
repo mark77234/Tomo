@@ -163,9 +163,45 @@ object AuthManager { // 싱글톤 객체로 앱 전체에서 하나의 인스턴
         return tokenManager?.getAccessToken()
     }
 
-//    fun getStoredRefreshToken(): String? {
-//        return tokenManager?.getRefreshToken()
-//    }
+    fun getStoredRefreshToken(): String? {
+        return tokenManager?.getRefreshToken()
+    }
+
+    // 토큰 갱신 메서드
+    suspend fun refreshAccessToken(): Boolean {
+        return try {
+            val refreshToken = tokenManager?.getRefreshToken()
+            if (refreshToken == null) {
+                Log.e(TAG, "Refresh Token이 없습니다")
+                return false
+            }
+
+            val response = userApi.refreshToken(refreshToken)
+
+            if (response.isSuccessful) {
+                val responseBody = response.body()
+                val newAccessToken = responseBody?.data?.accessToken
+                val newRefreshToken = responseBody?.data?.refreshToken
+
+                if (newAccessToken != null && newRefreshToken != null) {
+                    val cleanAccess = newAccessToken.removePrefix("Bearer ")
+                    tokenManager?.saveTokens(cleanAccess, newRefreshToken)
+
+                    Log.d(TAG, "토큰 갱신 성공")
+                    true
+                } else {
+                    Log.e(TAG, "토큰 갱신 응답에서 토큰을 찾을 수 없습니다")
+                    false
+                }
+            } else {
+                Log.e(TAG, "토큰 갱신 실패: ${response.code()}")
+                false
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "토큰 갱신 중 오류 발생", e)
+            false
+        }
+    }
 
     fun hasValidTokens(): Boolean {
         return tokenManager?.hasValidTokens() == true
@@ -333,4 +369,6 @@ object AuthManager { // 싱글톤 객체로 앱 전체에서 하나의 인스턴
             Pair(false, e.localizedMessage)
         }
     }
+
+
 }
