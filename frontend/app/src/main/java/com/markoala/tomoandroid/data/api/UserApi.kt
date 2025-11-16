@@ -11,6 +11,11 @@ import retrofit2.http.Header
 import retrofit2.http.POST
 
 interface UserApi {
+    @POST("/api/auth/refresh")
+    suspend fun refreshToken(
+        @Header("Refresh-Token") refreshToken: String,
+        @Header("Content-Type") contentType: String = "application/json"
+    ): Response<BaseResponse<AuthTokenBundle>>
     @POST("/public/signup")
     fun signup(@Body body: UserProfile): Call<BaseResponse<Unit>>
 
