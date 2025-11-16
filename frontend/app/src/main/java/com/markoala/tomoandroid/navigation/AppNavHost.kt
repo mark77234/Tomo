@@ -19,7 +19,7 @@ sealed class Screen(val route: String) {
 }
 
 @Composable
-fun AppNavHost(navController: NavHostController, isSignedIn: Boolean) {
+fun AppNavHost(navController: NavHostController, isSignedIn: Boolean, deepLinkInviteCode: String? = null) {
     NavHost(
         navController = navController,
         startDestination = if (isSignedIn) Screen.Profile.route else Screen.Login.route
@@ -34,7 +34,8 @@ fun AppNavHost(navController: NavHostController, isSignedIn: Boolean) {
                     navController.navigate(Screen.Login.route) {
                         popUpTo(Screen.Profile.route) { inclusive = true }
                     }
-                }
+                },
+                deepLinkInviteCode = deepLinkInviteCode
             )
         }
         composable(

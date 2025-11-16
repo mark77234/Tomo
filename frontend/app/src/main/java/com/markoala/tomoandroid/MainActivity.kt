@@ -1,5 +1,7 @@
 package com.markoala.tomoandroid
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -19,6 +21,8 @@ import com.markoala.tomoandroid.ui.components.ToastProvider
 import com.markoala.tomoandroid.ui.theme.TomoAndroidTheme
 
 class MainActivity : ComponentActivity() {
+    private var deepLinkInviteCode: String? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -28,16 +32,33 @@ class MainActivity : ComponentActivity() {
         AuthManager.init()
         AuthManager.initTokenManager(this)
 
+        // 딥링크 처리
+        handleDeepLink(intent)
+
         setContent {
             TomoAndroidTheme {
-                MainScreen()
+                MainScreen(deepLinkInviteCode)
             }
+        }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        handleDeepLink(intent)
+    }
+
+    private fun handleDeepLink(intent: Intent?) {
+        val data: Uri? = intent?.data
+        if (data != null && data.scheme == "tomoapp" && data.host == "invite") {
+            // tomoapp://invite/{inviteCode} 형식에서 inviteCode 추출
+            val inviteCode = data.pathSegments.firstOrNull()
+            deepLinkInviteCode = inviteCode
         }
     }
 }
 
 @Composable
-fun MainScreen() {
+fun MainScreen(inviteCode: String? = null) {
     var signedIn by remember { mutableStateOf(false) }
     val navController = rememberNavController()
 
@@ -56,6 +77,6 @@ fun MainScreen() {
 
     ToastProvider {
         // 로그인/로그아웃 시 signedIn 상태 변경
-        AppNavHost(navController = navController, isSignedIn = signedIn)
+        AppNavHost(navController = navController, isSignedIn = signedIn, deepLinkInviteCode = inviteCode)
     }
 }

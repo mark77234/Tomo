@@ -70,7 +70,8 @@ enum class BottomTab(val label: String, @param:DrawableRes val iconRes: Int) {
 @Composable
 fun MainScreen(
     navController: androidx.navigation.NavHostController,
-    onSignOut: () -> Unit
+    onSignOut: () -> Unit,
+    deepLinkInviteCode: String? = null
 ) {
     val firebaseAuth = remember { FirebaseAuth.getInstance() }
     val firestore = remember { FirebaseFirestore.getInstance() }
@@ -91,6 +92,14 @@ fun MainScreen(
                     email = doc.getString("email") ?: ""
                     userId = doc.getString("uid") ?: ""
                 }
+        }
+    }
+
+    // 딥링크로 초대코드를 받았을 때 친구 추가 화면으로 이동
+    LaunchedEffect(deepLinkInviteCode) {
+        if (deepLinkInviteCode != null) {
+            routingAddFriends = true
+            selectedTab = BottomTab.Affinity
         }
     }
 
