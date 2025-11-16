@@ -46,7 +46,7 @@ fun MeetingScreen(
     paddingValues: PaddingValues,
     userName: String,
     onPlanMeetingClick: () -> Unit,
-    onMeetingClick: (String) -> Unit = {},
+    onMeetingClick: (Int) -> Unit = {},
     meetingViewModel: MeetingViewModel = viewModel()
 ) {
     val meetings by meetingViewModel.meetings.collectAsState()
@@ -123,7 +123,7 @@ fun MeetingScreen(
                         MeetingCard(
                             meeting = meeting,
                             modifier = Modifier.fillMaxWidth(),
-                            onClick = { onMeetingClick(meeting.title) }
+                            onClick = { onMeetingClick(meeting.moimId) }
                         )
                     }
                 }

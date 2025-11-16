@@ -10,31 +10,25 @@ import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
-import retrofit2.http.Query
 
 interface MoimsApi {
 
-    @GET("/public/moims")
-    fun getMoims(
-        @Query("moimName") moimName: String
-    ): Call<BaseResponse<MoimListDTO>>
+    @GET("/public/moims/{moim_id}")
+    fun getMoimDetails(
+        @Path("moim_id") moimId: Int
+    ): Call<BaseResponse<MoimDetails>>
 
     @GET("/public/moims/list")
     fun getMoimsList(): Call<BaseResponse<List<MoimListDTO>>>
-
-    @GET("/public/moims")
-    fun getMoimDetails(
-        @Query("moimTitle") moimTitle:String
-    ): Call<BaseResponse<MoimDetails>>
 
     @POST("/public/moims")
     fun postMoim(
         @Body body: CreateMoimDTO
     ): Call<BaseResponse<Unit>>
 
-    @DELETE("/public/moims/{title}")
+    @DELETE("/public/moims/{moim_id}")
     fun deleteMoim(
-        @Path("title") title: String
+        @Path("moim_id") moimId: Int
     ): Call<BaseResponse<Unit>>
 }
 

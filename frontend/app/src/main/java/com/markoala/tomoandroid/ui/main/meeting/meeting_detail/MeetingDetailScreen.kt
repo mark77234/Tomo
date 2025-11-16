@@ -42,7 +42,7 @@ import com.markoala.tomoandroid.util.parseIsoToKoreanDate
 
 @Composable
 fun MeetingDetailScreen(
-    moimTitle: String,
+    moimId: Int,
     onBackClick: () -> Unit,
     viewModel: MeetingDetailViewModel = viewModel()
 ) {
@@ -50,8 +50,8 @@ fun MeetingDetailScreen(
     val isLoading by viewModel.isLoading.collectAsState()
     val errorMessage by viewModel.errorMessage.collectAsState()
 
-    LaunchedEffect(moimTitle) {
-        viewModel.fetchMoimDetails(moimTitle)
+    LaunchedEffect(moimId) {
+        viewModel.fetchMoimDetails(moimId)
     }
 
     Box(

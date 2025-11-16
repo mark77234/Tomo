@@ -86,7 +86,7 @@ fun MeetingCard(
             ) {
                 Row(
                     modifier = Modifier
-                        .clickable(onClick = { homeViewModel.deleteMeeting(meeting.title) }),
+                        .clickable(onClick = { homeViewModel.deleteMeeting(meeting.moimId) }),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(6.dp)
                 ) {

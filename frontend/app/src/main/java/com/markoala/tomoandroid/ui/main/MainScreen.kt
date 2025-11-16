@@ -44,9 +44,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavDestination.Companion.createRoute
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.markoala.tomoandroid.R
+import com.markoala.tomoandroid.navigation.Screen.MeetingDetail.createRoute
 import com.markoala.tomoandroid.ui.components.BottomNavigationBar
 import com.markoala.tomoandroid.ui.components.CustomText
 import com.markoala.tomoandroid.ui.components.CustomTextType
@@ -171,9 +173,9 @@ fun MainScreen(
                                 paddingValues = screenPadding,
                                 userName = name,
                                 onPlanMeetingClick = { routingCreateMeeting = true },
-                                onMeetingClick = { moimTitle ->
+                                onMeetingClick = { moimId ->
                                     navController.navigate(
-                                        com.markoala.tomoandroid.navigation.Screen.MeetingDetail.createRoute(moimTitle)
+                                        createRoute(moimId)
                                     )
                                 }
                             )

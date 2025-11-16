@@ -21,14 +21,14 @@ class MeetingDetailViewModel : ViewModel() {
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage: StateFlow<String?> = _errorMessage
 
-    fun fetchMoimDetails(moimTitle: String) {
+    fun fetchMoimDetails(moimId: Int) {
         viewModelScope.launch {
             _isLoading.value = true
             _errorMessage.value = null
 
             try {
                 val response = withContext(Dispatchers.IO) {
-                    MoimsApiService.getMoimDetails(moimTitle).execute()
+                    MoimsApiService.getMoimDetails(moimId).execute()
                 }
 
                 if (response.isSuccessful) {

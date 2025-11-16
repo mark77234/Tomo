@@ -29,9 +29,10 @@ class MeetingViewModel : ViewModel() {
                 val response = MoimsApiService.getMoimsList().awaitResponse()
                 if (response.isSuccessful) {
                     val body: BaseResponse<List<MoimListDTO>>? = response.body()
-                    val moims = body?.data ?: emptyList()
-                    _meetings.value = moims.map {
+                    val meetings = body?.data ?: emptyList()
+                    _meetings.value = meetings.map {
                         MoimList(
+                            moimId = it.moimId, // 추가
                             title = it.title,
                             description = it.description,
                             peopleCount = it.peopleCount,
@@ -48,11 +49,11 @@ class MeetingViewModel : ViewModel() {
         }
     }
 
-    fun deleteMeeting(title: String) {
+    fun deleteMeeting(moimId: Int) {
         viewModelScope.launch {
             _isLoading.value = true
             try {
-                val response = MoimsApiService.deleteMoim(title).awaitResponse()
+                val response = MoimsApiService.deleteMoim(moimId).awaitResponse()
                 if (response.isSuccessful) {
                     // 삭제 성공 시 리스트 갱신
                     fetchMeetings()

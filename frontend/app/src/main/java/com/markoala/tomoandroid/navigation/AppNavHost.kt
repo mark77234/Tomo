@@ -13,8 +13,8 @@ import com.markoala.tomoandroid.ui.main.meeting.meeting_detail.MeetingDetailScre
 sealed class Screen(val route: String) {
     object Login : Screen("login")
     object Profile : Screen("main")
-    object MeetingDetail : Screen("meeting_detail/{moimTitle}") {
-        fun createRoute(moimTitle: String) = "meeting_detail/$moimTitle"
+    object MeetingDetail : Screen("meeting_detail/{moim_id}") {
+        fun createRoute(moim_id: Int) = "meeting_detail/$moim_id"
     }
 }
 
@@ -40,11 +40,11 @@ fun AppNavHost(navController: NavHostController, isSignedIn: Boolean, deepLinkIn
         }
         composable(
             route = Screen.MeetingDetail.route,
-            arguments = listOf(navArgument("moimTitle") { type = NavType.StringType })
+            arguments = listOf(navArgument("moim_id") { type = NavType.IntType }) // moimId로 변경
         ) { backStackEntry ->
-            val moimTitle = backStackEntry.arguments?.getString("moimTitle") ?: ""
+            val moimId = backStackEntry.arguments?.getInt("moim_id") ?: 0
             MeetingDetailScreen(
-                moimTitle = moimTitle,
+                moimId = moimId, // moimId로 변경
                 onBackClick = { navController.popBackStack() }
             )
         }
