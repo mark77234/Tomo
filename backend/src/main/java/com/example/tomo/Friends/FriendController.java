@@ -55,7 +55,8 @@ public class FriendController {
             description = "이메일로 친구 정보를 조회합니다.",
             responses = {
                     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "친구 조회 완료"),
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "친구를 찾을 수 없음")
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "친구를 찾을 수 없음"),
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "정확한 이메일, 초대코드 입력")
             }
     )
     @GetMapping("/friends")
@@ -64,6 +65,8 @@ public class FriendController {
             return ResponseEntity.ok(ApiResponse.success(userService.getUserInfo(query), "친구 조회 완료"));
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponse.failure(e.getMessage()));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.failure(e.getMessage()));
         }
     }
     @GetMapping("/friends/detail")
