@@ -25,11 +25,11 @@ class FriendsViewModel(application: Application) : AndroidViewModel(application)
     private val _error = MutableStateFlow<String?>(null) // 에러 메시지 저장용 flow
     val error: StateFlow<String?> = _error.asStateFlow() // 외부 노출용
 
-    init {
-        loadFriends()
-    }
+    // 가장 최근 요청만 반영하기 위한 토큰
+    private var lastRequestId = 0L
 
     fun loadFriends() {
+        val requestId = ++lastRequestId
         viewModelScope.launch {
             _isLoading.value = true
             _error.value = null
@@ -40,6 +40,9 @@ class FriendsViewModel(application: Application) : AndroidViewModel(application)
                         call: Call<BaseResponse<List<FriendProfile>>>,
                         response: Response<BaseResponse<List<FriendProfile>>>
                     ) {
+                        // 이미 더 새로운 요청이 진행 중이면 무시
+                        if (requestId != lastRequestId) return
+
                         _isLoading.value = false
                         if (response.isSuccessful) {
                             response.body()?.let { friendListResponse ->
@@ -76,6 +79,7 @@ class FriendsViewModel(application: Application) : AndroidViewModel(application)
                         call: Call<BaseResponse<List<FriendProfile>>>,
                         t: Throwable
                     ) {
+                        if (requestId != lastRequestId) return
                         _isLoading.value = false
                         val errorMessage = when {
                             t is java.net.UnknownHostException -> "인터넷 연결을 확인해주세요."

@@ -26,11 +26,13 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.markoala.tomoandroid.data.model.friends.FriendProfile
 import com.markoala.tomoandroid.ui.components.ButtonStyle
 import com.markoala.tomoandroid.ui.components.CustomButton
 import com.markoala.tomoandroid.ui.components.CustomText
@@ -85,8 +87,11 @@ fun FriendsScreen(
 
             else -> {
                 LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    itemsIndexed(friends) { index, friend ->
-                        AnimatedFriendCard(index = index) {
+                    itemsIndexed(
+                        items = friends,
+                        key = { _, friend -> friend.email }   // 고유값을 key로 지정
+                    ) { index, friend ->
+                        AnimatedFriendCard(index, friend) {
                             FriendCard(
                                 friend = friend,
                                 onFriendDeleted = { viewModel.refreshFriends() }
@@ -94,6 +99,7 @@ fun FriendsScreen(
                         }
                     }
                 }
+
             }
         }
     }
@@ -141,15 +147,22 @@ private fun EmptyState(message: String, actionText: String, onAction: () -> Unit
 }
 
 @Composable
-private fun AnimatedFriendCard(index: Int, content: @Composable () -> Unit) {
-    var visible by remember { mutableStateOf(false) }
-    LaunchedEffect(index) {
+private fun AnimatedFriendCard(
+    index: Int,
+    friend: FriendProfile,
+    content: @Composable () -> Unit
+) {
+    var visible by rememberSaveable(friend.email) { mutableStateOf(false) }
+
+
+    LaunchedEffect(friend.email) {
         delay(index * 40L)
         visible = true
     }
+
     AnimatedVisibility(
         visible = visible,
-        enter = fadeIn(animationSpec = tween(250)) + slideInVertically(initialOffsetY = { it / 4 }, animationSpec = tween(250))
+        enter = fadeIn(tween(250)) + slideInVertically(initialOffsetY = { it / 4 }, animationSpec = tween(250))
     ) {
         content()
     }
