@@ -135,7 +135,7 @@ fun FriendCard(
                                 }
                             }
                             // 친구 아님 뱃지 (본인이 아니고 친밀도가 0인 경우)
-                            if (!isCurrentUser && friend.friendship == 0) {
+                            if (!isCurrentUser && friend.createdAt.isEmpty()) {
                                 Surface(
                                     shape = RoundedCornerShape(8.dp),
                                     color = CustomColor.textSecondary.copy(alpha = 0.2f)
@@ -159,7 +159,7 @@ fun FriendCard(
             }
 
             // 친밀도 정보 (본인이 아니고 친구인 경우만 표시)
-            if (!isCurrentUser && friend.friendship > 0) {
+            if (!isCurrentUser && friend.friendship > -1 && friend.createdAt.isNotEmpty()) {
                 Column(
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
