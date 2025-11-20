@@ -185,7 +185,7 @@ private fun MeetingDetailContent(
 
                         // 유지 일수
                         InfoRow(
-                            icon = R.drawable.ic_time,
+                            icon = R.drawable.ic_timeline,
                             label = "유지 일수",
                             value = "${daysActive}째 진행 중"
                         )
