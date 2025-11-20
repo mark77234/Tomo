@@ -30,6 +30,7 @@ import com.markoala.tomoandroid.data.api.friendsApi
 import com.markoala.tomoandroid.data.model.friends.FriendProfile
 import com.markoala.tomoandroid.data.model.friends.FriendSummary
 import com.markoala.tomoandroid.data.model.user.BaseResponse
+import com.markoala.tomoandroid.data.repository.friends.FriendsRepository
 import com.markoala.tomoandroid.ui.components.CustomText
 import com.markoala.tomoandroid.ui.components.CustomTextType
 import com.markoala.tomoandroid.ui.components.LocalToastManager
@@ -45,10 +46,27 @@ fun FriendCard(
     isLeader: Boolean = false,
     showDeleteButton: Boolean = true,
     isCurrentUser: Boolean = false,
-    onFriendDeleted: (() -> Unit)? = null
+    onFriendDeleted: (() -> Unit)? = null,
+    onFriendAdded: (() -> Unit)? = null // 추가
 ) {
     var showDeleteDialog by remember { mutableStateOf(false) }
     val toastManager = LocalToastManager.current
+
+    val friendsRepository = remember { FriendsRepository() }
+
+    fun addFriend(email: String) {
+        friendsRepository.postFriends(
+            email = email,
+            onLoading = { loading -> loading },
+            onSuccess = {
+                toastManager.showSuccess("친구가 성공적으로 추가되었습니다!")
+                onFriendAdded?.invoke() // 성공 시 refetch 콜백 실행
+            },
+            onError = { error ->
+                toastManager.showWarning(error)
+            }
+        )
+    }
 
     Surface(
         modifier = Modifier.shadow(
@@ -124,7 +142,7 @@ fun FriendCard(
                             if (isCurrentUser) {
                                 Surface(
                                     shape = RoundedCornerShape(8.dp),
-                                    color = CustomColor.primary
+                                    color = CustomColor.primary.copy(alpha = 0.5f)
                                 ) {
                                     CustomText(
                                         text = "본인",
@@ -147,6 +165,7 @@ fun FriendCard(
                                         modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
                                     )
                                 }
+
                             }
                         }
                         CustomText(
@@ -271,6 +290,28 @@ fun FriendCard(
                     }
                 }
             }
+            if (!isCurrentUser && friend.createdAt.isEmpty()) {
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    Surface(
+                        shape = RoundedCornerShape(8.dp),
+                        color = CustomColor.primary.copy(alpha = 0.8f),
+                        modifier = Modifier.clickable { addFriend(friend.email) }
+                    ) {
+                        CustomText(
+                            text = "친구추가",
+                            type = CustomTextType.bodySmall,
+                            color = CustomColor.white,
+                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
+                        )
+
+                    }
+                }
+            }
+
         }
     }
 
@@ -316,23 +357,23 @@ fun FriendCard(
 // 친밀도 점수에 따른 레벨 반환
 private fun getFriendshipLevel(score: Int): String {
     return when {
-        score >= 1000 -> "최고의 친구"
-        score >= 500 -> "절친"
-        score >= 200 -> "좋은 친구"
-        score >= 100 -> "친구"
-        score >= 50 -> "아는 사이"
-        else -> "새로운 친구"
+        score >= 100 -> "최고의 친구"
+        score >= 50 -> "절친"
+        score >= 20 -> "좋은 친구"
+        score >= 10 -> "친구"
+        score >= 5 -> "아는 사이"
+        else -> "어색한 친구"
     }
 }
 
 // 친밀도 레벨에 따른 색상 반환
 private fun getFriendshipLevelColor(score: Int): Color {
     return when {
-        score >= 1000 -> Color(0xFFFF6B6B) // 빨강
-        score >= 500 -> Color(0xFFFF8C42) // 주황
-        score >= 200 -> Color(0xFFFFC837) // 노랑
-        score >= 100 -> Color(0xFF4ECDC4) // 청록
-        score >= 50 -> Color(0xFF95E1D3) // 연한 청록
-        else -> Color(0xFFB8B8B8) // 회색
+        score >= 100 -> Color(0xFFD97A7A) // 따뜻한 로즈 (최고의 친구)
+        score >= 50 -> Color(0xFFE89A67) // 피치 코랄 (절친)
+        score >= 20 -> Color(0xFFD9B559) // 허니 머스터드 (좋은 친구)
+        score >= 10 -> Color(0xFFA6C48A) // 소프트 올리브 그린 (친구)
+        score >= 5 -> Color(0xFF9FBFAD) // 세이지 미스트 (아는 사이)
+        else -> Color(0xFFC9C5C1) // 웜 라이트 그레이 (새로운 친구)
     }
 }

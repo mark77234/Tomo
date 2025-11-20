@@ -34,7 +34,7 @@ fun HeroCard(userName: String, onPlanMeetingClick: () -> Unit) {
                 color = CustomColor.primary
             )
             CustomText(
-                text = "모임을 만들고 친구들에게 초대장을 보내보세요.",
+                text = "친구들과 모임을 계획하고 특별한 순간을 함께하세요.",
                 type = CustomTextType.bodySmall,
                 color = CustomColor.primaryDim
             )

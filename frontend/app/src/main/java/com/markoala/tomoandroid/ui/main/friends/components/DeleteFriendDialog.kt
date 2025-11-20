@@ -10,9 +10,9 @@ fun DeleteFriendDialog(
     onDismiss: () -> Unit
 ) {
     DangerDialog(
-        title = "친구 삭제",
-        message = "${friendName}님을 친구 목록에서 삭제하시겠어요?\n이 작업은 되돌릴 수 없습니다.",
-        confirmText = "삭제",
+        title = "친구 손절",
+        message = "${friendName}과 손절하시겠어요?\n우리 좋았잖아...",
+        confirmText = "안녕",
         dismissText = "취소",
         onConfirm = onConfirm,
         onDismiss = onDismiss

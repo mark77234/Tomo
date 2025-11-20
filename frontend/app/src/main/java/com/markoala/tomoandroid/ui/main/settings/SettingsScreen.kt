@@ -52,8 +52,8 @@ fun SettingsScreen(
 
     if (showDeleteDialog) {
         DangerDialog(
-            title = "계정 삭제",
-            message = "정말로 계정을 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.",
+            title = "토모와의 이별",
+            message = "정말로 계정을 삭제하시겠습니까?\n토모는 언제든지 기다리고 있을게요.\n우린 토모니까.",
             confirmText = "삭제",
             dismissText = "취소",
             isLoading = isDeleting,

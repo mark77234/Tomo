@@ -55,6 +55,10 @@ fun MeetingDetailScreen(
     val isLoading by viewModel.isLoading.collectAsState()
     val errorMessage by viewModel.errorMessage.collectAsState()
 
+    fun refetchMembers() {
+        viewModel.fetchMoimDetails(moimId)
+    }
+
     LaunchedEffect(moimId) {
         viewModel.fetchMoimDetails(moimId)
     }
@@ -64,7 +68,7 @@ fun MeetingDetailScreen(
             .fillMaxSize()
             .background(CustomColor.background)
             .windowInsetsPadding(WindowInsets.statusBars)
-            .padding(bottom = 30.dp) // 최하단 바텀 여백 추가
+            .padding(bottom = 30.dp)
     ) {
         when {
             isLoading -> {
@@ -100,7 +104,8 @@ fun MeetingDetailScreen(
                 MeetingDetailContent(
                     moimDetails = moimDetails!!,
                     membersWithProfiles = membersWithProfiles,
-                    onBackClick = onBackClick
+                    onBackClick = onBackClick,
+                    onRefetchMembers = ::refetchMembers // 추가
                 )
             }
 
@@ -112,7 +117,8 @@ fun MeetingDetailScreen(
 private fun MeetingDetailContent(
     moimDetails: com.markoala.tomoandroid.data.model.moim.MoimDetails,
     membersWithProfiles: List<MemberWithProfile>,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    onRefetchMembers: () -> Unit // 추가
 ) {
     val createdDate = parseIsoToKoreanDate(moimDetails.createdAt)
     val daysActive = getFriendshipDurationText(moimDetails.createdAt)
@@ -179,7 +185,7 @@ private fun MeetingDetailContent(
 
                         // 유지 일수
                         InfoRow(
-                            icon = R.drawable.ic_time,
+                            icon = R.drawable.ic_timeline,
                             label = "유지 일수",
                             value = "${daysActive}째 진행 중"
                         )
@@ -247,7 +253,8 @@ private fun MeetingDetailContent(
                     ),
                     isLeader = memberWithProfile.leader,
                     showDeleteButton = false,
-                    isCurrentUser = isCurrentUser
+                    isCurrentUser = isCurrentUser,
+                    onFriendAdded = onRefetchMembers // 연결
                 )
             }
         }

@@ -22,8 +22,8 @@ android {
         applicationId = "com.markoala.tomoandroid"
         minSdk = 33
         targetSdk = 36
-        versionCode = 7
-        versionName = "1.0.5"
+        versionCode = 8
+        versionName = "1.0.6"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
