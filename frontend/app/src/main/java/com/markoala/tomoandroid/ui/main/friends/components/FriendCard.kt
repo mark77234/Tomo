@@ -357,11 +357,11 @@ fun FriendCard(
 // 친밀도 점수에 따른 레벨 반환
 private fun getFriendshipLevel(score: Int): String {
     return when {
-        score >= 200 -> "최고의 친구"
-        score >= 100 -> "절친"
-        score >= 30 -> "좋은 친구"
-        score >= 20 -> "친구"
-        score >= 10 -> "아는 사이"
+        score >= 100 -> "최고의 친구"
+        score >= 50 -> "절친"
+        score >= 20 -> "좋은 친구"
+        score >= 10 -> "친구"
+        score >= 5 -> "아는 사이"
         else -> "어색한 친구"
     }
 }
