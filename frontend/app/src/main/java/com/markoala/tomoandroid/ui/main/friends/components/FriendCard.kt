@@ -46,7 +46,8 @@ fun FriendCard(
     isLeader: Boolean = false,
     showDeleteButton: Boolean = true,
     isCurrentUser: Boolean = false,
-    onFriendDeleted: (() -> Unit)? = null
+    onFriendDeleted: (() -> Unit)? = null,
+    onFriendAdded: (() -> Unit)? = null // 추가
 ) {
     var showDeleteDialog by remember { mutableStateOf(false) }
     val toastManager = LocalToastManager.current
@@ -59,6 +60,7 @@ fun FriendCard(
             onLoading = { loading -> loading },
             onSuccess = {
                 toastManager.showSuccess("친구가 성공적으로 추가되었습니다!")
+                onFriendAdded?.invoke() // 성공 시 refetch 콜백 실행
             },
             onError = { error ->
                 toastManager.showWarning(error)
