@@ -147,6 +147,17 @@ fun FriendCard(
                                         modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
                                     )
                                 }
+                                Surface(
+                                    shape = RoundedCornerShape(8.dp),
+                                    color = CustomColor.textSecondary.copy(alpha = 0.2f)
+                                ) {
+                                    CustomText(
+                                        text = "친구추가",
+                                        type = CustomTextType.bodySmall,
+                                        color = CustomColor.textSecondary,
+                                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
+                                    )
+                                }
                             }
                         }
                         CustomText(
@@ -316,23 +327,23 @@ fun FriendCard(
 // 친밀도 점수에 따른 레벨 반환
 private fun getFriendshipLevel(score: Int): String {
     return when {
-        score >= 1000 -> "최고의 친구"
-        score >= 500 -> "절친"
-        score >= 200 -> "좋은 친구"
-        score >= 100 -> "친구"
-        score >= 50 -> "아는 사이"
-        else -> "새로운 친구"
+        score >= 200 -> "최고의 친구"
+        score >= 100 -> "절친"
+        score >= 30 -> "좋은 친구"
+        score >= 20 -> "친구"
+        score >= 10 -> "아는 사이"
+        else -> "어색한 친구"
     }
 }
 
 // 친밀도 레벨에 따른 색상 반환
 private fun getFriendshipLevelColor(score: Int): Color {
     return when {
-        score >= 1000 -> Color(0xFFFF6B6B) // 빨강
-        score >= 500 -> Color(0xFFFF8C42) // 주황
-        score >= 200 -> Color(0xFFFFC837) // 노랑
-        score >= 100 -> Color(0xFF4ECDC4) // 청록
-        score >= 50 -> Color(0xFF95E1D3) // 연한 청록
-        else -> Color(0xFFB8B8B8) // 회색
+        score >= 200 -> Color(0xFFD97A7A) // 따뜻한 로즈 (최고의 친구)
+        score >= 100 -> Color(0xFFE89A67) // 피치 코랄 (절친)
+        score >= 30 -> Color(0xFFD9B559) // 허니 머스터드 (좋은 친구)
+        score >= 20 -> Color(0xFFA6C48A) // 소프트 올리브 그린 (친구)
+        score >= 10 -> Color(0xFF9FBFAD) // 세이지 미스트 (아는 사이)
+        else -> Color(0xFFC9C5C1) // 웜 라이트 그레이 (새로운 친구)
     }
 }

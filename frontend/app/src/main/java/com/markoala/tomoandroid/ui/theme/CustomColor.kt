@@ -28,6 +28,7 @@ object CustomColor {
     val white = Color(0xFFFFFFFF)
     val black = gray900
     val charcoal = gray700
+    val deepBrown = Color(0xFF4A3F36)
 
     // Themed helpers
     val background = gray50
