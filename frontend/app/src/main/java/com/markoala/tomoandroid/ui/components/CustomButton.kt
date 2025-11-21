@@ -21,7 +21,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Icon
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.painter.Painter
 import com.markoala.tomoandroid.ui.theme.CustomColor
 
 enum class ButtonStyle {
@@ -37,8 +40,8 @@ fun CustomButton(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     style: ButtonStyle = ButtonStyle.Primary,
-    leadingIcon: (@Composable (() -> Unit))? = null,
-    trailingIcon: (@Composable (() -> Unit))? = null,
+    leadingIcon: Painter? = null,
+    trailingIcon: Painter? = null,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
@@ -68,13 +71,25 @@ fun CustomButton(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                leadingIcon?.invoke()
+                leadingIcon?.let { painter ->
+                    Icon(
+                        painter = painter,
+                        contentDescription = null,
+                        modifier = Modifier.size(16.dp)
+                    )
+                }
                 CustomText(
                     text = text,
                     type = CustomTextType.button,
                     color = LocalContentColor.current
                 )
-                trailingIcon?.invoke()
+                trailingIcon?.let { painter ->
+                    Icon(
+                        painter = painter,
+                        contentDescription = null,
+                        modifier = Modifier.size(16.dp)
+                    )
+                }
             }
         }
     }
