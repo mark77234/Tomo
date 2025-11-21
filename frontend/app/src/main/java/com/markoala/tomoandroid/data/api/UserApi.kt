@@ -28,6 +28,9 @@ interface UserApi {
 
     @DELETE("/public/users")
     fun deleteUser(): Call<BaseResponse<Unit>>
+
+    @DELETE("/public/logout")
+    fun logout(): Call<BaseResponse<Unit>>
 }
 
 val userApi: UserApi by lazy {

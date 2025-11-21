@@ -12,6 +12,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.rememberNavController
 import com.google.firebase.FirebaseApp
 import com.markoala.tomoandroid.auth.AuthManager
@@ -64,6 +65,7 @@ class MainActivity : ComponentActivity() {
 fun MainScreen(inviteCode: String? = null) {
     var signedIn by remember { mutableStateOf(false) }
     val navController = rememberNavController()
+    val context = LocalContext.current
 
     // 앱 시작 시 저장된 토큰 확인
     LaunchedEffect(Unit) {
@@ -80,6 +82,11 @@ fun MainScreen(inviteCode: String? = null) {
 
     ToastProvider {
         // 로그인/로그아웃 시 signedIn 상태 변경
-        AppNavHost(navController = navController, isSignedIn = signedIn, deepLinkInviteCode = inviteCode)
+        AppNavHost(
+            navController = navController,
+            isSignedIn = signedIn,
+            deepLinkInviteCode = inviteCode,
+            context = context
+        )
     }
 }
