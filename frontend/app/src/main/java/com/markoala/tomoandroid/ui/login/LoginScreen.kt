@@ -34,7 +34,7 @@ fun LoginScreen(navController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(CustomColor.background)
+            .background(CustomColor.white)
             .padding(horizontal = 24.dp, vertical = 32.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
@@ -56,7 +56,7 @@ fun LoginScreen(navController: NavController) {
         Surface(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(32.dp),
-            color = CustomColor.surface
+            color = CustomColor.white
         ) {
             Column(
                 modifier = Modifier.padding(24.dp),
@@ -85,8 +85,10 @@ fun LoginScreen(navController: NavController) {
                 CustomButton(
                     text = "이메일로 로그인 (준비중)",
                     onClick = {},
-                    style = ButtonStyle.Secondary,
-                    enabled = false
+                    style = ButtonStyle.Primary,
+                    enabled = false,
+                    modifier = Modifier.fillMaxWidth().height(50.dp),
+                    leadingIcon = painterResource(R.drawable.ic_email)
                 )
             }
         }

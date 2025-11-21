@@ -1,5 +1,6 @@
 package com.markoala.tomoandroid.navigation
 
+import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -8,6 +9,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.markoala.tomoandroid.ui.login.LoginScreen
 import com.markoala.tomoandroid.ui.main.MainScreen
+import com.markoala.tomoandroid.ui.main.handleSignOut
 import com.markoala.tomoandroid.ui.main.meeting.meeting_detail.MeetingDetailScreen
 
 sealed class Screen(val route: String) {
@@ -19,7 +21,12 @@ sealed class Screen(val route: String) {
 }
 
 @Composable
-fun AppNavHost(navController: NavHostController, isSignedIn: Boolean, deepLinkInviteCode: String? = null) {
+fun AppNavHost(
+    navController: NavHostController,
+    isSignedIn: Boolean,
+    deepLinkInviteCode: String? = null,
+    context: Context
+) {
     NavHost(
         navController = navController,
         startDestination = if (isSignedIn) Screen.Profile.route else Screen.Login.route
@@ -31,8 +38,10 @@ fun AppNavHost(navController: NavHostController, isSignedIn: Boolean, deepLinkIn
             MainScreen(
                 navController = navController,
                 onSignOut = {
-                    navController.navigate(Screen.Login.route) {
-                        popUpTo(Screen.Profile.route) { inclusive = true }
+                    handleSignOut(context) {
+                        navController.navigate(Screen.Login.route) {
+                            popUpTo(Screen.Profile.route) { inclusive = true }
+                        }
                     }
                 },
                 deepLinkInviteCode = deepLinkInviteCode
@@ -40,11 +49,11 @@ fun AppNavHost(navController: NavHostController, isSignedIn: Boolean, deepLinkIn
         }
         composable(
             route = Screen.MeetingDetail.route,
-            arguments = listOf(navArgument("moim_id") { type = NavType.IntType }) // moimId로 변경
+            arguments = listOf(navArgument("moim_id") { type = NavType.IntType })
         ) { backStackEntry ->
             val moimId = backStackEntry.arguments?.getInt("moim_id") ?: 0
             MeetingDetailScreen(
-                moimId = moimId, // moimId로 변경
+                moimId = moimId,
                 onBackClick = { navController.popBackStack() }
             )
         }
