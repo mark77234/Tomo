@@ -46,7 +46,7 @@ fun CalendarScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(backgroundBeige)
+            .background(CustomColor.white)
             .padding(paddingValues)
             .padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally
