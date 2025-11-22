@@ -2,15 +2,18 @@ package com.markoala.tomoandroid.navigation
 
 import android.content.Context
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.markoala.tomoandroid.auth.AuthManager
 import com.markoala.tomoandroid.ui.login.LoginScreen
 import com.markoala.tomoandroid.ui.main.MainScreen
-import com.markoala.tomoandroid.ui.main.handleSignOut
+
 import com.markoala.tomoandroid.ui.main.meeting.meeting_detail.MeetingDetailScreen
+import kotlinx.coroutines.launch
 
 sealed class Screen(val route: String) {
     object Login : Screen("login")
@@ -27,6 +30,7 @@ fun AppNavHost(
     deepLinkInviteCode: String? = null,
     context: Context
 ) {
+    val scope = rememberCoroutineScope()
     NavHost(
         navController = navController,
         startDestination = if (isSignedIn) Screen.Profile.route else Screen.Login.route
@@ -38,7 +42,9 @@ fun AppNavHost(
             MainScreen(
                 navController = navController,
                 onSignOut = {
-                    handleSignOut(context) {
+                    scope.launch {
+                        AuthManager.signOut(context)
+
                         navController.navigate(Screen.Login.route) {
                             popUpTo(Screen.Profile.route) { inclusive = true }
                         }

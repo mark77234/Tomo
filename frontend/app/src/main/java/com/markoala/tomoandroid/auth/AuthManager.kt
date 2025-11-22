@@ -16,7 +16,11 @@ import com.google.firebase.ktx.Firebase
 import com.markoala.tomoandroid.data.api.userApi
 import com.markoala.tomoandroid.data.repository.AuthRepository
 import com.markoala.tomoandroid.utils.auth.TokenManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 
 object AuthManager { // 싱글톤 객체로 앱 전체에서 하나의 인스턴스만 사용
     private const val TAG = "AuthManager"
@@ -199,24 +203,68 @@ object AuthManager { // 싱글톤 객체로 앱 전체에서 하나의 인스턴
         tokenManager?.clearTokens()
     }
 
-    suspend fun signOutSuspend(context: Context): Pair<Boolean, String?> {
-        return try {
-            // 저장된 토큰 삭제
-            tokenManager?.clearTokens()
+    suspend fun signOut(context: Context): Boolean = withContext(Dispatchers.IO) {
+        try {
+            initTokenManager(context)
 
-            if (::auth.isInitialized) auth.signOut()
-            val credentialManager = CredentialManager.create(context)
-            val clearRequest = ClearCredentialStateRequest()
-            credentialManager.clearCredentialState(clearRequest)
-            Pair(true, null)
-        } catch (e: ClearCredentialException) {
-            Log.w(TAG, "CredentialManager clear failed: ${e.localizedMessage}")
-            Pair(true, e.localizedMessage)
+            val accessBefore = tokenManager?.getAccessToken()
+            val refreshBefore = tokenManager?.getRefreshToken()
+            Log.i(TAG, "로그아웃 요청 시작. accessToken=$accessBefore, refreshToken=$refreshBefore")
+
+            // 1) 서버 로그아웃 API
+            try {
+                Log.i(TAG, "로그아웃 API 요청 시작")
+                val response = userApi.logout().execute()
+                Log.i(
+                    TAG,
+                    "서버 응답 코드: ${response.code()}, 메시지: ${response.message()}, body: ${response.body()}"
+                )
+                Log.i(TAG, "에러바디: ${response.errorBody()?.string()}")
+
+                if (!response.isSuccessful) {
+                    Log.e(TAG, "서버 로그아웃 실패: ${response.code()}")
+                } else {
+                    Log.i(TAG, "서버 로그아웃 성공")
+                }
+
+            } catch (e: Exception) {
+                Log.e(TAG, "서버 로그아웃 API 예외 발생", e)
+                // 서버 로그아웃은 실패해도 계속 진행
+            }
+
+            // 2) 로컬 토큰 삭제
+            tokenManager?.clearTokens()
+            Log.i(TAG, "토큰 삭제 완료")
+
+            val accessAfter = tokenManager?.getAccessToken()
+            val refreshAfter = tokenManager?.getRefreshToken()
+            Log.i(TAG, "삭제 후 토큰: access=$accessAfter, refresh=$refreshAfter")
+
+            // 3) Firebase Auth 로그아웃
+            if (::auth.isInitialized) {
+                auth.signOut()
+                Log.i(TAG, "Firebase Auth 로그아웃 완료")
+            }
+
+            // 4) CredentialManager 로그인 기록 삭제
+            try {
+                val credentialManager = CredentialManager.create(context)
+                val clearRequest = ClearCredentialStateRequest()
+                credentialManager.clearCredentialState(clearRequest)
+                Log.i(TAG, "CredentialManager 삭제 완료")
+            } catch (e: Exception) {
+                Log.w(TAG, "CredentialManager 삭제 실패: ${e.localizedMessage}")
+            }
+
+            Log.i(TAG, "로그아웃 전체 프로세스 완료")
+            true
+
         } catch (e: Exception) {
-            Log.e(TAG, "SignOut failed", e)
-            Pair(false, e.localizedMessage)
+            Log.e(TAG, "로그아웃 처리 중 오류 발생", e)
+            false
         }
     }
+
 
     // 401 에러 발생 시 자동 로그아웃을 위한 콜백
     private var onUnauthorizedCallback: (() -> Unit)? = null
@@ -233,7 +281,7 @@ object AuthManager { // 싱글톤 객체로 앱 전체에서 하나의 인스턴
 
     suspend fun handleUnauthorized(context: Context) {
         Log.w(TAG, "401 Unauthorized - 자동 로그아웃 처리")
-        signOutSuspend(context)
+        signOut(context)
         onUnauthorizedCallback?.invoke()
     }
 
@@ -368,22 +416,6 @@ object AuthManager { // 싱글톤 객체로 앱 전체에서 하나의 인스턴
         }
     }
 
-    // ========== 테스트용 메서드 ==========
 
-    // 401 테스트: Access Token만 잘못된 값으로 설정
-    fun testInvalidAccessToken() {
-        val validRefreshToken = tokenManager?.getRefreshToken()
-        if (validRefreshToken != null) {
-            tokenManager?.saveTokens("invalid_access_token_for_test", validRefreshToken)
-            Log.d(TAG, "🧪 [테스트] Access Token을 잘못된 값으로 설정 완료")
-        } else {
-            Log.w(TAG, "🧪 [테스트] Refresh Token이 없어서 테스트 불가")
-        }
-    }
 
-    // 419 테스트: Access Token과 Refresh Token 모두 잘못된 값으로 설정
-    fun testInvalidBothTokens() {
-        tokenManager?.saveTokens("invalid_access_token", "invalid_refresh_token")
-        Log.d(TAG, "🧪 [테스트] Access Token과 Refresh Token을 잘못된 값으로 설정 완료")
-    }
 }
