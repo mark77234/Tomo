@@ -156,7 +156,7 @@ fun ProfileScreen(
                         // 초대코드를 강조하는 배지 스타일
                         Surface(
                             shape = RoundedCornerShape(16.dp),
-                            color = CustomColor.primary.copy(alpha = 0.15f),
+                            color = CustomColor.primary50,
                             modifier = Modifier.clickable { onCopyInviteCode() }
                         ) {
                             CustomText(

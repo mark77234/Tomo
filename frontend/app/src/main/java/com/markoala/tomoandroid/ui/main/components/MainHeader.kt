@@ -3,6 +3,7 @@ package com.markoala.tomoandroid.ui.main.components
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
@@ -77,6 +78,11 @@ fun MainHeader(
                             scaleX = scale
                             scaleY = scale
                         }
+                        .border(
+                            width = 1.dp,
+                            color = CustomColor.gray200, // ← 원하는 색상
+                            shape = CircleShape
+                        )
                         .clip(CircleShape)
                         .clickable(
                             interactionSource = interactionSource,
