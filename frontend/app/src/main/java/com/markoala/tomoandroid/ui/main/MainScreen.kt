@@ -24,7 +24,6 @@ enum class BottomTab(val label: String, @param:DrawableRes val iconRes: Int) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(
-    navController: NavHostController,
     onSignOut: () -> Unit,
     deepLinkInviteCode: String? = null,
     onInviteCodeConsumed: () -> Unit = {}

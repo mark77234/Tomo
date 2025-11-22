@@ -87,7 +87,6 @@ fun MainScreenRenderer(
             name = userInfo.name,
             email = userInfo.email,
             userId = userInfo.userId,
-            paddingValues = padding,
             onClose = { navigator.pop() }
         )
     }

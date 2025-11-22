@@ -53,7 +53,6 @@ fun ProfileScreen(
     name: String,
     email: String,
     userId: String,
-    paddingValues: PaddingValues,
     modifier: Modifier = Modifier,
     onClose: () -> Unit = {}
 ) {

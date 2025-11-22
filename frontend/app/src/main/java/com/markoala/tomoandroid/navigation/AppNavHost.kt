@@ -51,7 +51,6 @@ fun AppNavHost(
         }
         composable(Screen.Profile.route) {
             MainScreen(
-                navController = navController,
                 onSignOut = {
                     scope.launch {
                         isLoggingOut = true
