@@ -47,6 +47,7 @@ import com.markoala.tomoandroid.R
 import com.markoala.tomoandroid.ui.components.BottomNavigationBar
 import com.markoala.tomoandroid.ui.components.CustomText
 import com.markoala.tomoandroid.ui.components.CustomTextType
+import com.markoala.tomoandroid.ui.main.components.MainHeader
 import com.markoala.tomoandroid.ui.main.friends.AddFriendsScreen
 import com.markoala.tomoandroid.ui.main.friends.FriendsScreen
 import com.markoala.tomoandroid.ui.main.home.HomeScreen
@@ -143,7 +144,7 @@ fun MainScreen(
         contentWindowInsets = ScaffoldDefaults.contentWindowInsets,
         topBar = {
             if (showChrome) {
-                MainTopBar(
+                MainHeader(
                     subtitle = if (name.isNotBlank()) "${name}님, 토모와 함께해요" else "친구와의 순간을 기록해요",
                     onProfileClick = { push(MainStackEntry.Profile) }
                 )
@@ -239,67 +240,3 @@ private sealed interface MainStackEntry {
     object Profile : MainStackEntry
 }
 
-@Composable
-private fun MainTopBar(
-    subtitle: String,
-    onProfileClick: () -> Unit,
-) {
-    val interactionSource = remember { MutableInteractionSource() }
-    val isPressed by interactionSource.collectIsPressedAsState()
-    val scale by animateFloatAsState(
-        targetValue = if (isPressed) 0.96f else 1f,
-        animationSpec = tween(durationMillis = 100),
-        label = "profile-press"
-    )
-
-    Surface(color = CustomColor.background) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(130.dp)
-                .statusBarsPadding()
-                .padding(horizontal = 24.dp, vertical = 16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Image(
-                    painter = painterResource(id = R.drawable.logo_tomo),
-                    contentDescription = "Tomo Logo",
-                    Modifier.width(60.dp)
-                )
-                CustomText(
-                    text = subtitle,
-                    type = CustomTextType.bodySmall,
-                    color = CustomColor.textSecondary,
-                    modifier = Modifier.padding(start = 5.dp)
-                )
-            }
-
-            Surface(
-                modifier = Modifier
-                    .graphicsLayer {
-                        scaleX = scale
-                        scaleY = scale
-                    }
-                    .clip(CircleShape)
-                    .clickable(
-                        interactionSource = interactionSource,
-                        indication = null
-                    ) { onProfileClick() },
-                shape = CircleShape,
-                color = CustomColor.white,
-                shadowElevation = 6.dp
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_profile),
-                    contentDescription = "프로필 열기",
-                    tint = CustomColor.primary,
-                    modifier = Modifier
-                        .padding(10.dp)
-                        .size(24.dp)
-                )
-            }
-        }
-    }
-}
