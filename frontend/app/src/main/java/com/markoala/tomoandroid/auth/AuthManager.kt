@@ -112,9 +112,7 @@ object AuthManager { // 싱글톤 객체로 앱 전체에서 하나의 인스턴
         return tokenManager?.getAccessToken()
     }
 
-    fun getStoredRefreshToken(): String? {
-        return tokenManager?.getRefreshToken()
-    }
+
 
     // 토큰 갱신 메서드 - 새 accessToken을 반환
     suspend fun refreshAccessToken(): String? {
