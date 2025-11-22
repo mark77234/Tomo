@@ -171,7 +171,7 @@ fun SettingsScreen(
                     text = "로그아웃",
                     onClick = {
                         onSignOut()
-                        toastManager.showInfo("로그아웃 되었습니다.")
+
                     },
                     style = ButtonStyle.Secondary,
                     modifier = Modifier.fillMaxWidth()

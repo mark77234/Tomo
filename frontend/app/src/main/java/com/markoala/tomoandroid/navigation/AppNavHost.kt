@@ -9,6 +9,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.markoala.tomoandroid.auth.AuthManager
+import com.markoala.tomoandroid.ui.components.LocalToastManager
 import com.markoala.tomoandroid.ui.login.LoginScreen
 import com.markoala.tomoandroid.ui.main.MainScreen
 
@@ -31,6 +32,7 @@ fun AppNavHost(
     context: Context
 ) {
     val scope = rememberCoroutineScope()
+    val toastManager = LocalToastManager.current
     NavHost(
         navController = navController,
         startDestination = if (isSignedIn) Screen.Profile.route else Screen.Login.route
@@ -44,9 +46,9 @@ fun AppNavHost(
                 onSignOut = {
                     scope.launch {
                         AuthManager.signOut(context)
-
                         navController.navigate(Screen.Login.route) {
                             popUpTo(Screen.Profile.route) { inclusive = true }
+                            toastManager.showInfo("로그아웃 되었습니다.")
                         }
                     }
                 },
