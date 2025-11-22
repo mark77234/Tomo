@@ -33,9 +33,9 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.markoala.tomoandroid.ui.components.CustomText
 import com.markoala.tomoandroid.ui.components.CustomTextType
-import com.markoala.tomoandroid.ui.main.meeting.components.MeetingHeader
-import com.markoala.tomoandroid.ui.main.meeting.components.NavigationBottomButtons
-import com.markoala.tomoandroid.ui.main.meeting.components.StepIndicator
+import com.markoala.tomoandroid.ui.main.meeting.create_meeting.components.MeetingHeader
+import com.markoala.tomoandroid.ui.main.meeting.create_meeting.components.NavigationBottomButtons
+import com.markoala.tomoandroid.ui.main.meeting.create_meeting.components.StepIndicator
 import com.markoala.tomoandroid.ui.main.meeting.create_meeting.steps.StepOneSection
 import com.markoala.tomoandroid.ui.main.meeting.create_meeting.steps.StepThreeSection
 import com.markoala.tomoandroid.ui.main.meeting.create_meeting.steps.StepTwoSection

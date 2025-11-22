@@ -1,4 +1,4 @@
-package com.markoala.tomoandroid.ui.main.meeting.components
+package com.markoala.tomoandroid.ui.main.meeting.create_meeting.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
