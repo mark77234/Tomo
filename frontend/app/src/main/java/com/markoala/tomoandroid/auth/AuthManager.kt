@@ -1,5 +1,6 @@
 package com.markoala.tomoandroid.auth
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
 import androidx.credentials.ClearCredentialStateRequest
@@ -105,48 +106,7 @@ object AuthManager { // 싱글톤 객체로 앱 전체에서 하나의 인스턴
         }
     }
 
-    private suspend fun exchangeFirebaseTokenForServerTokens( // Firebase IdToken -> 서버 Access, Refresh Token 교환
-        firebaseToken: String,
-        context: Context
-    ): Boolean {
-        return try {
-            if (tokenManager == null) { // 토큰매니저가 null이면 초기화
-                initTokenManager(context)
-            }
 
-            val response =
-                userApi.getTokensWithFirebaseToken("Bearer $firebaseToken") // 서버에 요청
-
-            if (response.isSuccessful) {
-                val responseBody = response.body()
-
-                val accessToken = responseBody?.data?.accessToken
-                val refreshToken = responseBody?.data?.refreshToken
-
-                if (accessToken != null && refreshToken != null) {
-                    // "Bearer " 제거
-                    val cleanAccessToken = accessToken.removePrefix("Bearer ") // Bearer 부분 제거
-
-                    // 토큰 저장
-                    tokenManager?.saveTokens(
-                        cleanAccessToken,
-                        refreshToken
-                    ) // access, refresh token 저장
-                    Log.d(TAG, "토큰이 성공적으로 저장되었습니다")
-                    true
-                } else {
-                    Log.e(TAG, "응답 헤더에서 토큰을 찾을 수 없습니다")
-                    false
-                }
-            } else {
-                Log.e(TAG, "서버 토큰 교환 실패: ${response.code()}")
-                false
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "토큰 교환 중 오류 발생", e)
-            false
-        }
-    }
 
     fun getStoredAccessToken(): String? {
         return tokenManager?.getAccessToken()
@@ -286,6 +246,7 @@ object AuthManager { // 싱글톤 객체로 앱 전체에서 하나의 인스턴
     /**
      * 재인증을 수행합니다 (Google 로그인)
      */
+    @SuppressLint("DiscouragedApi")
     private suspend fun reauthenticateUser(context: Context): Boolean {
         return try {
             val firebaseUser = auth.currentUser ?: return false
