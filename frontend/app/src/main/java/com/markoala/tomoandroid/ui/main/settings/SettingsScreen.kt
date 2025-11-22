@@ -1,6 +1,7 @@
 package com.markoala.tomoandroid.ui.main.settings
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -11,7 +12,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.Icon
@@ -78,9 +81,10 @@ fun SettingsScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(CustomColor.background)
+            .background(CustomColor.white)
             .padding(paddingValues)
-            .padding(horizontal = 24.dp, vertical = 16.dp),
+            .padding(horizontal = 24.dp, vertical = 16.dp)
+            .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         CustomText(text = "설정", type = CustomTextType.headline, color = CustomColor.textPrimary)
@@ -130,7 +134,11 @@ fun SettingsScreen(
 
         // 로그아웃 카드
         Surface(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().border(
+                width = 1.dp,
+                color = CustomColor.gray200,
+                shape = RoundedCornerShape(24.dp)
+            ),
             shape = RoundedCornerShape(28.dp),
             color = CustomColor.white
         ) {
@@ -219,9 +227,9 @@ fun SettingsScreen(
                 }
 
                 CustomButton(
-                    text = "계정 영구 삭제",
+                    text = "계정 삭제",
                     onClick = { showDeleteDialog = true },
-                    style = ButtonStyle.Primary,
+                    style = ButtonStyle.Danger,
                     modifier = Modifier.fillMaxWidth()
                 )
             }

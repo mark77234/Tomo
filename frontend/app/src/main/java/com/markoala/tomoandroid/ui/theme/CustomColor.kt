@@ -3,7 +3,14 @@ package com.markoala.tomoandroid.ui.theme
 import androidx.compose.ui.graphics.Color
 
 object CustomColor {
-    // Brand colors
+    val primary50 = Color(0xFFF9F3EE)
+
+    val primary100 = Color(0xFFF3E8DF)
+    val primary200 = Color(0xFFE4D2C4)
+    val primary300 = Color(0xFFD1B89F)
+    val primary400 = Color(0xFFBE9E7B)
+    val primary500 = Color(0xFFB08564)
+        // Brand colors
     val primary = Color(0xFFA17353)
     val primaryDim = Color(0xFF80583F)
     val primaryContainer = Color(0xFFF4E6DB)

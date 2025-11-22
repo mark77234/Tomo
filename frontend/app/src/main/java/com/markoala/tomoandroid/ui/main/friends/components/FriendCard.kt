@@ -1,6 +1,7 @@
 package com.markoala.tomoandroid.ui.main.friends.components
 
 import android.util.Log
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -69,11 +70,17 @@ fun FriendCard(
     }
 
     Surface(
-        modifier = Modifier.shadow(
-            elevation = 1.dp,
-            shape = RoundedCornerShape(24.dp),
-            spotColor = CustomColor.gray900.copy(alpha = 0.05f)
-        ),
+        modifier = Modifier
+            .shadow(
+                elevation = 1.dp,
+                shape = RoundedCornerShape(24.dp),
+                spotColor = CustomColor.gray900.copy(alpha = 0.05f)
+            )
+            .border(
+                width = 1.dp,
+                color = CustomColor.gray100,
+                shape = RoundedCornerShape(24.dp)
+            ),
         shape = RoundedCornerShape(24.dp),
         color = CustomColor.white
     ) {

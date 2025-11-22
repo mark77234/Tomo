@@ -57,7 +57,7 @@ fun FriendsScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(CustomColor.background)
+            .background(CustomColor.white)
             .padding(paddingValues)
             .padding(horizontal = 24.dp, vertical = 16.dp)
     ) {

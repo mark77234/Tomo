@@ -1,5 +1,6 @@
 package com.markoala.tomoandroid.ui.main.home.components
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -103,9 +104,14 @@ private fun ActionCard(action: OverviewAction, modifier: Modifier = Modifier) {
     Surface(
         modifier = modifier
             .heightIn(min = 140.dp)
+            .border(
+                width = 1.dp,
+                color = CustomColor.gray200,
+                shape = RoundedCornerShape(24.dp)
+            )
             .clickable { action.onClick() },
         shape = RoundedCornerShape(24.dp),
-        color = CustomColor.surface,
+        color = CustomColor.primary50,
         tonalElevation = 0.dp
     ) {
         Column(

@@ -65,7 +65,7 @@ fun MeetingScreen(
 
     val modifier = Modifier
         .fillMaxSize()
-        .background(CustomColor.background)
+        .background(CustomColor.white)
         .padding(paddingValues)
 
     LazyColumn(

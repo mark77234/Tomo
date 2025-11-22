@@ -46,7 +46,7 @@ fun MeetingCard(
     Surface(
         modifier = modifier.clickable { onClick() },
         shape = RoundedCornerShape(24.dp),
-        color = CustomColor.surface,
+        color = CustomColor.primary50,
         border = BorderStroke(1.dp, CustomColor.outline)
     ) {
         Column(

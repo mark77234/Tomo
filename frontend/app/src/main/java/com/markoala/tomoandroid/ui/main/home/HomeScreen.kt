@@ -26,7 +26,7 @@ fun HomeScreen(
 ) {
     val baseModifier = Modifier
         .fillMaxSize()
-        .background(CustomColor.background)
+        .background(CustomColor.white)
         .padding(paddingValues)
 
     HomeOverviewContent(
