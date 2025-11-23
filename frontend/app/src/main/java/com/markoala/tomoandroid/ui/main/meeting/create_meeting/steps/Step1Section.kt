@@ -1,5 +1,6 @@
 package com.markoala.tomoandroid.ui.main.meeting.create_meeting.steps
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -9,6 +10,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.markoala.tomoandroid.ui.components.CustomText
 import com.markoala.tomoandroid.ui.components.CustomTextField
 import com.markoala.tomoandroid.ui.components.CustomTextType
@@ -22,16 +24,18 @@ fun StepOneSection(
     onDescriptionChange: (String) -> Unit
 ) {
     Surface(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth()
+            .background(CustomColor.white),
         shape = RoundedCornerShape(24.dp),
-        color = CustomColor.surface
+        color = CustomColor.primary50
     ) {
         Column(
             modifier = Modifier.padding(20.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                CustomText(text = "모임 제목", type = CustomTextType.bodySmall, color = CustomColor.textSecondary)
+                CustomText(text = "모임 제목", type = CustomTextType.title, color = CustomColor.primary, fontSize = 16.sp
+                )
                 CustomTextField(
                     value = title,
                     onValueChange = onNameChange,
@@ -39,11 +43,11 @@ fun StepOneSection(
                 )
             }
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                CustomText(text = "모임 설명", type = CustomTextType.bodySmall, color = CustomColor.textSecondary)
+                CustomText(text = "모임 설명", type = CustomTextType.title, color = CustomColor.primary, fontSize = 16.sp)
                 CustomTextField(
                     value = description,
                     onValueChange = onDescriptionChange,
-                    placeholder = "모임 설명을 적어주세요"
+                    placeholder = "모임 설명을 적어주세요",
                 )
             }
         }

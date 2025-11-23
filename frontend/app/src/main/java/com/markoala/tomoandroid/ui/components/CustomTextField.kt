@@ -2,6 +2,7 @@ package com.markoala.tomoandroid.ui.components
 
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -28,7 +29,7 @@ fun CustomTextField(
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
-        modifier = modifier.defaultMinSize(minHeight = 56.dp),
+        modifier = modifier.defaultMinSize(minHeight = 56.dp).fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         textStyle = MaterialTheme.typography.bodyLarge,
         enabled = enabled,
@@ -39,8 +40,8 @@ fun CustomTextField(
             focusedBorderColor = CustomColor.primary,
             unfocusedBorderColor = CustomColor.outline,
             disabledBorderColor = CustomColor.outline,
-            focusedContainerColor = CustomColor.surface,
-            unfocusedContainerColor = CustomColor.surface,
+            focusedContainerColor = CustomColor.gray100,
+            unfocusedContainerColor = CustomColor.white,
             disabledContainerColor = CustomColor.surface,
             cursorColor = CustomColor.primary,
             focusedTextColor = CustomColor.textBody,

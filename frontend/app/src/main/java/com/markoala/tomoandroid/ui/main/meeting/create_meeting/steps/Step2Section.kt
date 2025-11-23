@@ -1,6 +1,7 @@
 package com.markoala.tomoandroid.ui.main.meeting.create_meeting.steps
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -20,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.markoala.tomoandroid.data.model.friends.FriendProfile
 import com.markoala.tomoandroid.ui.components.CustomText
 import com.markoala.tomoandroid.ui.components.CustomTextType
@@ -33,20 +35,20 @@ fun StepTwoSection(
     onToggleEmail: (String) -> Unit
 ) {
     Surface(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().background(CustomColor.white),
         shape = RoundedCornerShape(24.dp),
-        color = CustomColor.surface
+        color = CustomColor.primary50
     ) {
         Column(
             modifier = Modifier.padding(20.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            CustomText(text = "초대할 친구를 선택하세요", type = CustomTextType.body, color = CustomColor.textPrimary)
+            CustomText(text = "초대할 친구를 선택하세요", type = CustomTextType.title, color = CustomColor.primary, fontSize = 16.sp)
             if (friends.isEmpty()) {
                 Surface(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().background(CustomColor.white),
                     shape = RoundedCornerShape(16.dp),
-                    color = CustomColor.background
+                    color = CustomColor.white
                 ) {
                     CustomText(
                         text = "초대할 친구가 없습니다.",
@@ -63,9 +65,9 @@ fun StepTwoSection(
                     items(friends, key = { it.email }) { friend ->
                         val selected = selectedEmails.contains(friend.email)
                         Surface(
-                            modifier = Modifier.fillMaxWidth(),
+                            modifier = Modifier.fillMaxWidth().background(CustomColor.primary50),
                             shape = RoundedCornerShape(18.dp),
-                            color = if (selected) CustomColor.primary.copy(alpha = 0.08f) else CustomColor.background,
+                            color = if (selected) CustomColor.primary200 else CustomColor.white,
                             border = BorderStroke(1.dp, CustomColor.outline)
                         ) {
                             Row(
@@ -87,8 +89,8 @@ fun StepTwoSection(
                                 ProfileImage(size = 48.dp)
                                 Spacer(Modifier.width(12.dp))
                                 Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp) ) {
-                                    CustomText(text = friend.username, type = CustomTextType.body, color = CustomColor.textPrimary)
-                                    CustomText(text = friend.email, type = CustomTextType.bodySmall, color = CustomColor.textSecondary)
+                                    CustomText(text = friend.username, type = CustomTextType.body, color = if (selected) CustomColor.primaryDim else CustomColor.black,)
+                                    CustomText(text = friend.email, type = CustomTextType.bodySmall, color = if (selected) CustomColor.primaryDim else CustomColor.gray500,)
                                 }
                             }
                         }

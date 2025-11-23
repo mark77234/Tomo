@@ -38,7 +38,7 @@ fun ProfileImage(
             modifier = Modifier
                 .fillMaxSize()
                 .background(
-                    color = CustomColor.surface,
+                    color = CustomColor.gray100,
                     shape = CircleShape
                 ),
             contentAlignment = Alignment.Center
@@ -51,7 +51,7 @@ fun ProfileImage(
                         .fillMaxSize()
                         .clip(CircleShape)
                         .background(
-                            color = CustomColor.surface,
+                            color = CustomColor.white,
                             shape = CircleShape
                         )
                 )

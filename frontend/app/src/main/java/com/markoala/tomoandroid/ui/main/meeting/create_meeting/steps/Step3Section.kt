@@ -1,5 +1,6 @@
 package com.markoala.tomoandroid.ui.main.meeting.create_meeting.steps
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -21,15 +22,15 @@ fun StepThreeSection(
     selectedFriends: List<FriendProfile>
 ) {
     Surface(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().background(CustomColor.white),
         shape = RoundedCornerShape(24.dp),
-        color = CustomColor.surface
+        color = CustomColor.primary50
     ) {
         Column(
             modifier = Modifier.padding(20.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            CustomText(text = "입력한 내용을 확인하세요", type = CustomTextType.body, color = CustomColor.textPrimary)
+            CustomText(text = "입력한 내용을 확인하세요", type = CustomTextType.body, color = CustomColor.primaryDim)
             SummaryRow(label = "제목", value = title)
             SummaryRow(label = "설명", value = description)
             SummaryRow(label = "인원 수", value = selectedFriends.size.toString())
@@ -46,7 +47,7 @@ fun StepThreeSection(
 @Composable
 private fun SummaryRow(label: String, value: String) {
     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-        CustomText(text = label, type = CustomTextType.bodySmall, color = CustomColor.textSecondary)
-        CustomText(text = value, type = CustomTextType.body, color = CustomColor.textPrimary)
+        CustomText(text = label, type = CustomTextType.bodySmall, color = CustomColor.black)
+        CustomText(text = value, type = CustomTextType.body, color = CustomColor.gray500)
     }
 }

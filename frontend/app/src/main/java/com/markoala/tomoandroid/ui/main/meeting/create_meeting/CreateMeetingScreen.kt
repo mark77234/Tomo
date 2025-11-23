@@ -86,7 +86,7 @@ fun CreateMeetingScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(CustomColor.background)
+            .background(CustomColor.white)
             .padding(paddingValues)
     ) {
         Column(
