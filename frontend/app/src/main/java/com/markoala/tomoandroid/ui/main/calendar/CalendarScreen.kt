@@ -2,6 +2,7 @@ package com.markoala.tomoandroid.ui.main.calendar
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
@@ -33,11 +34,14 @@ fun CalendarScreen(
     paddingValues: PaddingValues,
     onEventClick: (Int) -> Unit = {}
 ) {
-    val backgroundBeige = Color(0xFFF7F1EC)
     val cardIvory = Color(0xFFFAF7F4)
     val primaryBrown = Color(0xFF9A775A)
+
     val espressoText = CustomColor.textPrimary
     val secondaryText = Color(0xFF8F8A85)
+
+    val primary200 = CustomColor.primary200
+    val primary400 = CustomColor.primary400
 
     val today = LocalDate.now()
     var currentMonth by remember { mutableStateOf(YearMonth.from(today)) }
@@ -54,10 +58,10 @@ fun CalendarScreen(
         Surface(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 12.dp),
+                .padding(top = 12.dp)
+                .border(1.dp, CustomColor.primary100, RoundedCornerShape(20.dp)),
             color = cardIvory,
             shape = RoundedCornerShape(20.dp),
-            shadowElevation = 4.dp
         ) {
             Column(modifier = Modifier.padding(20.dp)) {
 
@@ -83,6 +87,8 @@ fun CalendarScreen(
                     currentMonth = currentMonth,
                     selectedDate = selectedDate,
                     primaryBrown = primaryBrown,
+                    primary200 = primary200,
+                    primary400 = primary400,
                     espressoText = espressoText,
                     secondaryText = secondaryText,
                     onDateSelected = { selectedDate = it }
@@ -92,14 +98,13 @@ fun CalendarScreen(
 
         Spacer(Modifier.height(20.dp))
 
-        // ⭐ 하단 약속 기능 추가 예정 박스
         Surface(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(80.dp),
+                .height(80.dp)
+                .border(1.dp, CustomColor.primary100, RoundedCornerShape(20.dp)),
             shape = RoundedCornerShape(20.dp),
             color = cardIvory,
-            shadowElevation = 2.dp
         ) {
             Box(
                 modifier = Modifier.fillMaxSize(),
@@ -108,7 +113,7 @@ fun CalendarScreen(
                 CustomText(
                     text = "조금만 기다려 주세요, \n약속 기능이 곧 열릴 거예요!",
                     type = CustomTextType.body,
-                    color = espressoText,
+                    color = CustomColor.primary400,
                     textAlign = TextAlign.Center
                 )
             }
@@ -142,7 +147,6 @@ private fun MonthHeader(
     }
 }
 
-// 왼쪽 이동
 @Composable
 private fun HeaderIconLeft(color: Color, onClick: () -> Unit) {
     Surface(
@@ -155,7 +159,6 @@ private fun HeaderIconLeft(color: Color, onClick: () -> Unit) {
     }
 }
 
-// 오른쪽 이동 (⭐ 올바른 아이콘 적용)
 @Composable
 private fun HeaderIconRight(color: Color, onClick: () -> Unit) {
     Surface(
@@ -174,7 +177,9 @@ private fun WeekdayHeader(secondaryText: Color, primaryBrown: Color) {
 
     Row(modifier = Modifier.fillMaxWidth()) {
         weekdays.forEachIndexed { index, day ->
-            val color = if (index == 0) primaryBrown else secondaryText
+            val color =
+                if (index == 0 || index == 6) primaryBrown   // 일·토 → 브라운 강조
+                else secondaryText
 
             Box(
                 modifier = Modifier.weight(1f),
@@ -195,24 +200,33 @@ private fun MonthlyCalendarGrid(
     currentMonth: YearMonth,
     selectedDate: LocalDate,
     primaryBrown: Color,
+    primary200: Color,
+    primary400: Color,
     espressoText: Color,
     secondaryText: Color,
     onDateSelected: (LocalDate) -> Unit
 ) {
+    val today = LocalDate.now()
     val weeks = remember(currentMonth) { generateCalendarMatrix(currentMonth) }
 
     Column(Modifier.fillMaxWidth()) {
         weeks.forEach { week ->
             Row(Modifier.fillMaxWidth()) {
-                week.forEach { date ->
+                week.forEachIndexed { index, date ->
                     val inMonth = date.month == currentMonth.month
                     val selected = date == selectedDate
+                    val isToday = date == today
+                    val isWeekend = index == 0 || index == 6     // 일=0, 토=6
 
                     CalendarDayCell(
                         date = date,
                         isCurrentMonth = inMonth,
                         isSelected = selected,
+                        isToday = isToday,
+                        isWeekend = isWeekend,
                         primaryBrown = primaryBrown,
+                        primary200 = primary200,
+                        primary400 = primary400,
                         espressoText = espressoText,
                         secondaryText = secondaryText,
                         onClick = { if (inMonth) onDateSelected(date) }
@@ -228,7 +242,11 @@ private fun RowScope.CalendarDayCell(
     date: LocalDate,
     isCurrentMonth: Boolean,
     isSelected: Boolean,
+    isToday: Boolean,
+    isWeekend: Boolean,
     primaryBrown: Color,
+    primary200: Color,
+    primary400: Color,
     espressoText: Color,
     secondaryText: Color,
     onClick: () -> Unit
@@ -245,7 +263,16 @@ private fun RowScope.CalendarDayCell(
         when {
             isSelected -> Color.White
             !isCurrentMonth -> secondaryText.copy(alpha = 0.35f)
+            isToday -> CustomColor.primary
+            isWeekend -> primary400     // 토/일 → 강조색
             else -> espressoText
+        }
+
+    val backgroundModifier =
+        when {
+            isSelected -> Modifier.size(36.dp).background(primaryBrown, CircleShape)
+            isToday -> Modifier.size(36.dp).background(primary200, CircleShape)
+            else -> Modifier
         }
 
     Box(
@@ -267,17 +294,8 @@ private fun RowScope.CalendarDayCell(
                 ),
             contentAlignment = Alignment.Center
         ) {
-
-            // 선택된 날짜 동그라미
             Box(
-                modifier = Modifier
-                    .then(
-                        if (isSelected)
-                            Modifier
-                                .size(36.dp)
-                                .background(primaryBrown, CircleShape)
-                        else Modifier
-                    ),
+                modifier = backgroundModifier,
                 contentAlignment = Alignment.Center
             ) {
                 CustomText(
