@@ -3,6 +3,7 @@ package com.markoala.tomoandroid.ui.main.friends
 import android.content.ClipData
 import android.content.Context
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -133,7 +134,7 @@ fun AddFriendsScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(CustomColor.background)
+            .background(CustomColor.white)
             .padding(paddingValues)
             .padding(horizontal = 24.dp, vertical = 16.dp)
     ) {
@@ -182,9 +183,10 @@ private fun TabSelector(selectedTab: AddFriendsTab, onTabSelected: (AddFriendsTa
                     .height(56.dp)
                     .clickable { onTabSelected(tab) },
                 shape = RoundedCornerShape(28.dp),
-                color = if (isSelected) CustomColor.primary else CustomColor.white
+                color = if (isSelected) CustomColor.primary else CustomColor.gray100
             ) {
-                Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
+                Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()
+                    .border(1.dp,CustomColor.gray300, RoundedCornerShape(28.dp))) {
                     CustomText(
                         text = if (tab == AddFriendsTab.Search) "검색" else "공유",
                         type = CustomTextType.body,
