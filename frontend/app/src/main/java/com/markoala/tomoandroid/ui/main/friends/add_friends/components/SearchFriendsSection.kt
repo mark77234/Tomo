@@ -1,6 +1,7 @@
 package com.markoala.tomoandroid.ui.main.friends.add_friends.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -42,7 +43,8 @@ fun SearchFriendsSection(
     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
         // 검색 입력 카드
         Surface(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth()
+                .border(1.dp,CustomColor.gray300, RoundedCornerShape(28.dp)),
             shape = RoundedCornerShape(28.dp),
             color = CustomColor.white
         ) {
@@ -148,7 +150,8 @@ fun SearchFriendsSection(
                 LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     items(searchResults) { friend ->
                         Surface(
-                            modifier = Modifier.fillMaxWidth(),
+                            modifier = Modifier.fillMaxWidth()
+                                .border(1.dp,CustomColor.gray300, RoundedCornerShape(28.dp)),
                             shape = RoundedCornerShape(24.dp),
                             color = CustomColor.white
                         ) {

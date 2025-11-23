@@ -4,6 +4,7 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -82,15 +83,15 @@ fun ProfileScreen(
     Scaffold(
         modifier = modifier
             .fillMaxSize()
-            .background(CustomColor.background),
-        containerColor = CustomColor.background,
+            .background(CustomColor.white),
+        containerColor = CustomColor.white,
         contentWindowInsets = WindowInsets.safeDrawing,
         bottomBar = {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(CustomColor.background)
-                    .padding(top = 0.dp, bottom = 16.dp,
+                    .padding(top = 16.dp, bottom = 16.dp,
                         start = 24.dp,
                         end = 24.dp,
                     )
@@ -129,7 +130,9 @@ fun ProfileScreen(
 
             // 프로필 카드 - 그라데이션 배경 추가
             Surface(
-                modifier = Modifier.fillMaxWidth().background(CustomColor.white, shape = RoundedCornerShape(28.dp)),
+                modifier = Modifier.fillMaxWidth()
+                    .border(1.dp, CustomColor.gray200, shape = RoundedCornerShape(28.dp))
+                    .background(CustomColor.white, shape = RoundedCornerShape(28.dp)),
                 shape = RoundedCornerShape(28.dp),
                 color = CustomColor.white,    // 🔥 Surface 자체에 배경색 적용
 
@@ -172,14 +175,15 @@ fun ProfileScreen(
 
             // 정보 필드 - 색상 강조
             Surface(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth()
+                    .border(1.dp, CustomColor.gray200, shape = RoundedCornerShape(28.dp)),
                 shape = RoundedCornerShape(28.dp),
                 color = CustomColor.white
             ) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(20.dp),
+                        .padding(32.dp),
                     verticalArrangement = Arrangement.spacedBy(20.dp)
                 ) {
                     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
