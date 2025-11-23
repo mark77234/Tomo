@@ -17,7 +17,7 @@ import com.markoala.tomoandroid.ui.main.components.MainScreenRenderer
 enum class BottomTab(val label: String, @param:DrawableRes val iconRes: Int) {
     Home("홈", R.drawable.ic_home),
     Meetings("모임", R.drawable.ic_friends),
-    Calendar("캘린더", R.drawable.ic_timeline),
+    Calendar("캘린더", R.drawable.ic_calendar),
     Affinity("친구", R.drawable.ic_profile),
     Settings("설정", R.drawable.ic_setting)
 }
