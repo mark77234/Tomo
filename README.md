@@ -14,7 +14,7 @@
 ---
 ## 비공개 테스트 진행 중 ~12/3
 
-<img width="1406" height="763" alt="스크린샷 2025-11-21 오후 10 14 33" src="https://github.com/user-attachments/assets/06c6047b-e9d0-4052-9526-262bae442fd7" />
+<img width="1471" height="763" alt="스크린샷 2025-11-24 오후 4 35 01" src="https://github.com/user-attachments/assets/38ec3d07-bccb-4cfb-8cf3-57e41231eb1d" />
 
 ---
 
