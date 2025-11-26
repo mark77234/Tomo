@@ -40,7 +40,7 @@ fun MainScreenRenderer(
                 onAddFriendsClick = { navigator.push(MainStackEntry.AddFriends()) },
                 onAffinityTabClick = { navigator.openTab(BottomTab.Affinity) },
                 onMeetingClick = { navigator.openTab(BottomTab.Meetings) },
-                onProfileClick = { navigator.push(MainStackEntry.Profile) }
+                onCalendarClick = { navigator.openTab(BottomTab.Calendar) }
             )
 
             BottomTab.Meetings -> MeetingScreen(
@@ -51,8 +51,8 @@ fun MainScreenRenderer(
             )
             BottomTab.Calendar -> CalendarScreen(
                 paddingValues = padding,
-                onEventClick = { eventId ->
-                    navigator.push(MainStackEntry.CalendarDetail(eventId))
+                onEventClick = { moimId ->
+                    navigator.push(MainStackEntry.MeetingDetail(moimId))
                 }
             )
 
