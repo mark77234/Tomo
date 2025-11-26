@@ -40,7 +40,7 @@ fun LoginScreen(navController: NavController) {
         verticalArrangement = Arrangement.Center
     ) {
         Image(
-            painter = painterResource(id = R.drawable.logo_tomo),
+            painter = painterResource(id = R.drawable.tomo_logo),
             contentDescription = "Tomo Logo",
             modifier = Modifier.width(120.dp)
         )
