@@ -24,6 +24,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.markoala.tomoandroid.R
 import com.markoala.tomoandroid.ui.components.CustomText
 import com.markoala.tomoandroid.ui.components.CustomTextType
 import com.markoala.tomoandroid.ui.theme.CustomColor
@@ -40,13 +41,13 @@ fun NavigationSection(
     onAddFriendsClick: () -> Unit,
     onAffinityTabClick: () -> Unit,
     onMeetingClick: () -> Unit,
-    onProfileClick: () -> Unit,
+    onCalendarClick: () -> Unit,
 ) {
     val actions = listOf(
         OverviewAction(
             title = "친구 추가",
             description = "코드 공유나 검색으로 친구를 초대해요",
-            icon = painterResource(id =com.markoala.tomoandroid.R.drawable.ic_addfriend),
+            icon = painterResource(id = R.drawable.ic_addfriend),
             onClick = onAddFriendsClick
         ),
         OverviewAction(
@@ -58,14 +59,14 @@ fun NavigationSection(
         OverviewAction(
             title = "모임",
             description = "모임을 만들고 친구들과 함께해요",
-            icon = painterResource(id =com.markoala.tomoandroid.R.drawable.ic_friends),
+            icon = painterResource(id =R.drawable.ic_friends),
             onClick = onMeetingClick
         ),
         OverviewAction(
-            title = "내 정보",
-            description = "프로필과 기본 정보를 확인해요",
-            icon = Icons.Filled.Person,
-            onClick = onProfileClick
+            title = "달력",
+            description = "한눈에 일정과 모임을 확인해요",
+            icon = painterResource(id = R.drawable.ic_calendar),
+            onClick = onCalendarClick
         )
     )
 
