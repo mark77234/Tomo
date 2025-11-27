@@ -1,95 +1,118 @@
 package com.markoala.tomoandroid.ui.main.calendar.components
 
-import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.*
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.KeyboardArrowLeft
 import androidx.compose.material.icons.rounded.KeyboardArrowRight
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Surface
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.sp
+import com.markoala.tomoandroid.data.model.moim.MoimListDTO
+import com.markoala.tomoandroid.ui.theme.CustomColor
 import com.markoala.tomoandroid.ui.components.CustomText
 import com.markoala.tomoandroid.ui.components.CustomTextType
-import com.markoala.tomoandroid.ui.theme.CustomColor
 import com.markoala.tomoandroid.util.generateCalendarMatrix
 import java.time.LocalDate
 import java.time.YearMonth
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun TomoCalendar(
+    events: Map<LocalDate, List<MoimListDTO>>,
     currentMonth: YearMonth,
     selectedDate: LocalDate,
-    primaryBrown: Color,
-    espressoText: Color,
-    secondaryText: Color,
-    primary200: Color,
-    primary400: Color,
-    cardIvory: Color,
     onPreviousMonth: () -> Unit,
     onNextMonth: () -> Unit,
-    onDateSelected: (LocalDate) -> Unit
-){
+    onDateSelected: (LocalDate) -> Unit,
+    onDayClick: (LocalDate, List<MoimListDTO>) -> Unit
+) {
+    var monthOffset by remember { mutableStateOf(0) }
+
     Surface(
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = 12.dp)
             .border(1.dp, CustomColor.primary100, RoundedCornerShape(20.dp)),
-        color = cardIvory,
         shape = RoundedCornerShape(20.dp),
+        color = Color(0xFFFAF7F4)
     ) {
-        Column(modifier = Modifier.padding(20.dp)) {
-
+        Column(
+            modifier = Modifier
+                .padding(20.dp)
+        ) {
 
             MonthHeader(
                 currentMonth = currentMonth,
-                primaryBrown = primaryBrown,
-                espressoText = espressoText,
-                onPreviousMonth = onPreviousMonth,
-                onNextMonth = onNextMonth
+                onPreviousMonth = {
+                    monthOffset = -1
+                    onPreviousMonth()
+                },
+                onNextMonth = {
+                    monthOffset = 1
+                    onNextMonth()
+                }
             )
 
             Spacer(Modifier.height(16.dp))
-            WeekdayHeader(secondaryText = secondaryText, primaryBrown = primaryBrown)
+            WeekdayHeader()
+
             Spacer(Modifier.height(12.dp))
 
+            // -----------------------------------
+            // 1) 슬라이드 애니메이션 적용
+            // -----------------------------------
+            AnimatedContent(
+                targetState = currentMonth,
+                transitionSpec = {
+                    slideInHorizontally(initialOffsetX = { fullWidth ->
+                        if (monthOffset == 1) fullWidth else -fullWidth
+                    }) + fadeIn() togetherWith
+                            slideOutHorizontally(targetOffsetX = { fullWidth ->
+                                if (monthOffset == 1) -fullWidth else fullWidth
+                            }) + fadeOut()
+                }
+            ) { animatedMonth ->
 
-            MonthlyCalendarGrid(
-                currentMonth = currentMonth,
-                selectedDate = selectedDate,
-                primaryBrown = primaryBrown,
-                primary200 = primary200,
-                primary400 = primary400,
-                espressoText = espressoText,
-                secondaryText = secondaryText,
-                onDateSelected = onDateSelected
-            )
+                CalendarContentGrid(
+                    currentMonth = animatedMonth,
+                    selectedDate = selectedDate,
+                    events = events,
+                    onDateSelected = onDateSelected,
+                    onDayClick = onDayClick,
+                    onPreviousMonth = {
+                        monthOffset = -1
+                        onPreviousMonth()
+                    },
+                    onNextMonth = {
+                        monthOffset = 1
+                        onNextMonth()
+                    }
+                )
+            }
         }
     }
 }
@@ -97,8 +120,6 @@ fun TomoCalendar(
 @Composable
 private fun MonthHeader(
     currentMonth: YearMonth,
-    primaryBrown: Color,
-    espressoText: Color,
     onPreviousMonth: () -> Unit,
     onNextMonth: () -> Unit
 ) {
@@ -109,58 +130,34 @@ private fun MonthHeader(
         CustomText(
             text = "${currentMonth.year}년 ${currentMonth.monthValue}월",
             type = CustomTextType.headline,
-            color = espressoText
+            color = CustomColor.primaryDim
         )
 
         Spacer(Modifier.weight(1f))
 
-        HeaderIconLeft(primaryBrown, onPreviousMonth)
-        Spacer(Modifier.width(8.dp))
-        HeaderIconRight(primaryBrown, onNextMonth)
-    }
-}
-
-@Composable
-private fun HeaderIconLeft(color: Color, onClick: () -> Unit) {
-    Surface(
-        shape = CircleShape,
-        color = color.copy(alpha = 0.07f)
-    ) {
-        IconButton(onClick = onClick) {
-            Icon(Icons.Rounded.KeyboardArrowLeft, null, tint = color)
+        IconButton(onClick = onPreviousMonth) {
+            Icon(Icons.Rounded.KeyboardArrowLeft, contentDescription = null)
+        }
+        Spacer(Modifier.width(4.dp))
+        IconButton(onClick = onNextMonth) {
+            Icon(Icons.Rounded.KeyboardArrowRight, contentDescription = null)
         }
     }
 }
 
 @Composable
-private fun HeaderIconRight(color: Color, onClick: () -> Unit) {
-    Surface(
-        shape = CircleShape,
-        color = color.copy(alpha = 0.07f)
-    ) {
-        IconButton(onClick = onClick) {
-            Icon(Icons.Rounded.KeyboardArrowRight, null, tint = color)
-        }
-    }
-}
-
-@Composable
-private fun WeekdayHeader(secondaryText: Color, primaryBrown: Color) {
+private fun WeekdayHeader() {
     val weekdays = listOf("일", "월", "화", "수", "목", "금", "토")
 
-    Row(modifier = Modifier.fillMaxWidth()) {
-        weekdays.forEachIndexed { index, day ->
-            val color =
-                if (index == 0 || index == 6) primaryBrown   // 일·토 → 브라운 강조
-                else secondaryText
-
+    Row(Modifier.fillMaxWidth()) {
+        weekdays.forEachIndexed { idx, day ->
             Box(
                 modifier = Modifier.weight(1f),
                 contentAlignment = Alignment.Center
             ) {
                 CustomText(
                     text = day,
-                    color = color,
+                    color = if (idx == 0 || idx == 6) CustomColor.primaryDim else CustomColor.gray300,
                     textAlign = TextAlign.Center
                 )
             }
@@ -169,40 +166,78 @@ private fun WeekdayHeader(secondaryText: Color, primaryBrown: Color) {
 }
 
 @Composable
-private fun MonthlyCalendarGrid(
+private fun CalendarContentGrid(
     currentMonth: YearMonth,
     selectedDate: LocalDate,
-    primaryBrown: Color,
-    primary200: Color,
-    primary400: Color,
-    espressoText: Color,
-    secondaryText: Color,
-    onDateSelected: (LocalDate) -> Unit
+    events: Map<LocalDate, List<MoimListDTO>>,
+    onDateSelected: (LocalDate) -> Unit,
+    onDayClick: (LocalDate, List<MoimListDTO>) -> Unit,
+    onPreviousMonth: () -> Unit,
+    onNextMonth: () -> Unit,
 ) {
-    val today = LocalDate.now()
-    val weeks = remember(currentMonth) { generateCalendarMatrix(currentMonth) }
+    var totalDragX by remember { mutableStateOf(0f) }
 
-    Column(Modifier.fillMaxWidth()) {
+    // -----------------------------------
+    // 2) 스와이프 제스처 적용
+    // -----------------------------------
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .pointerInput(Unit) {
+                detectHorizontalDragGestures(
+                    onDragEnd = {
+                        // 스와이프 종료 후 방향 기반으로 월 이동 결정
+                        if (totalDragX < -60) {
+                            onNextMonth()
+                        } else if (totalDragX > 60) {
+                            onPreviousMonth()
+                        }
+
+                        totalDragX = 0f  // 초기화
+                    },
+                    onHorizontalDrag = { _, dragAmount ->
+                        totalDragX += dragAmount
+                    }
+                )
+            }
+
+    ) {
+        val today = LocalDate.now()
+        val weeks = remember(currentMonth) { generateCalendarMatrix(currentMonth) }
+
         weeks.forEach { week ->
-            Row(Modifier.fillMaxWidth()) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(100.dp)
+                    .padding(vertical = 6.dp)
+            ) {
                 week.forEachIndexed { index, date ->
+
                     val inMonth = date.month == currentMonth.month
-                    val selected = date == selectedDate
-                    val isToday = date == today
-                    val isWeekend = index == 0 || index == 6     // 일=0, 토=6
+                    val isToday = today == date
+                    val isWeekend = index == 0 || index == 6
 
                     CalendarDayCell(
                         date = date,
                         isCurrentMonth = inMonth,
-                        isSelected = selected,
                         isToday = isToday,
                         isWeekend = isWeekend,
-                        primaryBrown = primaryBrown,
-                        primary200 = primary200,
-                        primary400 = primary400,
-                        espressoText = espressoText,
-                        secondaryText = secondaryText,
-                        onClick = { if (inMonth) onDateSelected(date) }
+                        events = events[date],
+                        onClick = {
+                            when {
+                                inMonth -> {
+                                    onDateSelected(date)
+                                    onDayClick(date, events[date] ?: emptyList())
+                                }
+                                date.isBefore(currentMonth.atDay(1)) -> {
+                                    onPreviousMonth()
+                                }
+                                date.isAfter(currentMonth.atEndOfMonth()) -> {
+                                    onNextMonth()
+                                }
+                            }
+                        }
                     )
                 }
             }
@@ -214,72 +249,75 @@ private fun MonthlyCalendarGrid(
 private fun RowScope.CalendarDayCell(
     date: LocalDate,
     isCurrentMonth: Boolean,
-    isSelected: Boolean,
     isToday: Boolean,
     isWeekend: Boolean,
-    primaryBrown: Color,
-    primary200: Color,
-    primary400: Color,
-    espressoText: Color,
-    secondaryText: Color,
+    events: List<MoimListDTO>?,
     onClick: () -> Unit
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
 
     val scale by animateFloatAsState(
-        targetValue = if (isPressed && isCurrentMonth) 1.05f else 1f,
-        label = "scale"
+        if (isPressed) 1.05f else 1f,
+        label = ""
     )
 
-    val textColor =
-        when {
-            isSelected -> Color.White
-            !isCurrentMonth -> secondaryText.copy(alpha = 0.35f)
-            isToday -> CustomColor.primary
-            isWeekend -> primary400     // 토/일 → 강조색
-            else -> espressoText
-        }
+    val alpha = if (isCurrentMonth) 1f else 0.3f
 
-    val backgroundModifier =
-        when {
-            isSelected -> Modifier.size(36.dp).background(primaryBrown, CircleShape)
-            isToday -> Modifier.size(36.dp).background(primary200, CircleShape)
-            else -> Modifier
-        }
-
-    Box(
+    Column(
         modifier = Modifier
             .weight(1f)
-            .aspectRatio(1f)
-            .padding(6.dp),
-        contentAlignment = Alignment.Center
+            .graphicsLayer(
+                scaleX = scale,
+                scaleY = scale,
+                alpha = alpha
+            )
+            .clickable(
+                interactionSource = interactionSource,
+                indication = null,
+                onClick = onClick
+            ),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
+
+        // 날짜 원
         Box(
             modifier = Modifier
-                .fillMaxSize()
-                .graphicsLayer(scaleX = scale, scaleY = scale)
-                .clickable(
-                    enabled = isCurrentMonth,
-                    interactionSource = interactionSource,
-                    indication = null,
-                    onClick = onClick
+                .size(28.dp)
+                .background(
+                    if (isToday) CustomColor.primary300 else Color.Transparent,
+                    CircleShape
                 ),
             contentAlignment = Alignment.Center
         ) {
+            CustomText(
+                text = "${date.dayOfMonth}",
+                type = CustomTextType.body,
+                color = when {
+                    isToday -> CustomColor.white
+                    isWeekend -> CustomColor.primary400
+                    else -> CustomColor.textPrimary
+                }
+            )
+        }
+
+        // 뱃지 3개까지
+        events?.take(3)?.forEach { item ->
+            Spacer(Modifier.height(3.dp))
             Box(
-                modifier = backgroundModifier,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 3.dp)
+                    .background(CustomColor.primary100, RoundedCornerShape(3.dp)),
                 contentAlignment = Alignment.Center
             ) {
                 CustomText(
-                    text = "${date.dayOfMonth}",
-                    type = CustomTextType.body,
-                    color = textColor,
-                    textAlign = TextAlign.Center
+                    text = item.title.take(4),
+                    color = CustomColor.primary400,
+                    fontSize = 10.sp,
+                    modifier = Modifier.padding(vertical = 2.dp)
                 )
             }
         }
     }
 }
-
-

@@ -22,7 +22,7 @@ fun HomeScreen(
     onAddFriendsClick: () -> Unit,
     onAffinityTabClick: () -> Unit,
     onMeetingClick: () -> Unit,
-    onProfileClick: () -> Unit,
+    onCalendarClick: () -> Unit,
 ) {
     val baseModifier = Modifier
         .fillMaxSize()
@@ -36,7 +36,7 @@ fun HomeScreen(
         onAddFriendsClick = onAddFriendsClick,
         onAffinityTabClick = onAffinityTabClick,
         onMeetingClick = onMeetingClick,
-        onProfileClick = onProfileClick
+        onCalendarClick = onCalendarClick
     )
 }
 
@@ -48,7 +48,7 @@ private fun HomeOverviewContent(
     onAddFriendsClick: () -> Unit,
     onAffinityTabClick: () -> Unit,
     onMeetingClick: () -> Unit,
-    onProfileClick: () -> Unit,
+    onCalendarClick: () -> Unit
 ) {
     LazyColumn(
         modifier = modifier,
@@ -62,7 +62,7 @@ private fun HomeOverviewContent(
                 onAddFriendsClick = onAddFriendsClick,
                 onAffinityTabClick = onAffinityTabClick,
                 onMeetingClick = onMeetingClick,
-                onProfileClick = onProfileClick
+                onCalendarClick = onCalendarClick
             )
         }
     }

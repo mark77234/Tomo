@@ -60,9 +60,9 @@ fun MainHeader(
             ) {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Image(
-                        painter = painterResource(id = R.drawable.logo_tomo),
+                        painter = painterResource(id = R.drawable.tomo_logo),
                         contentDescription = "Tomo Logo",
-                        Modifier.width(60.dp)
+                        Modifier.width(100.dp)
                     )
                     CustomText(
                         text = subtitle,
