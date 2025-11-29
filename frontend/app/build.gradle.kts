@@ -83,6 +83,8 @@ dependencies {
     // Firebase Authentication (버전 명시 X → BoM이 관리)
     implementation(libs.firebase.auth)
     implementation(libs.play.services.auth)
+    implementation(libs.firebase.messaging)
+
 
     // Android Credential Manager
     implementation(libs.androidx.credentials)
@@ -100,12 +102,11 @@ dependencies {
     implementation(libs.coil.compose)
 
     // Security Crypto for encrypted shared preferences
-    implementation("androidx.security:security-crypto:1.1.0-alpha06")
-    implementation("com.squareup.retrofit2:converter-scalars:2.9.0")
+    implementation(libs.androidx.security.crypto)
+    implementation(libs.retrofit2.converter.scalars)
+    implementation(libs.okhttp)
+    implementation(libs.okhttp.logging)
 
-    // OkHttp for HTTP client
-    implementation("com.squareup.okhttp3:okhttp:4.12.0")
-    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
