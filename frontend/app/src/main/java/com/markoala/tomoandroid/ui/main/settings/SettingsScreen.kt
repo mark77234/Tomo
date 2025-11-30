@@ -1,5 +1,9 @@
 package com.markoala.tomoandroid.ui.main.settings
 
+import android.Manifest
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -20,6 +24,8 @@ import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,6 +36,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.markoala.tomoandroid.R
 import com.markoala.tomoandroid.auth.AuthManager
 import com.markoala.tomoandroid.ui.components.ButtonStyle
@@ -38,7 +47,9 @@ import com.markoala.tomoandroid.ui.components.CustomText
 import com.markoala.tomoandroid.ui.components.CustomTextType
 import com.markoala.tomoandroid.ui.components.LocalToastManager
 import com.markoala.tomoandroid.ui.components.DangerDialog
+import com.markoala.tomoandroid.ui.main.settings.components.SettingsToggle
 import com.markoala.tomoandroid.ui.theme.CustomColor
+import com.markoala.tomoandroid.utils.NotificationPermissionHelper
 import kotlinx.coroutines.launch
 
 @Composable
@@ -52,6 +63,51 @@ fun SettingsScreen(
     val toastManager = LocalToastManager.current
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
+    var notificationsEnabled by remember { mutableStateOf(false) } // 알림 활성화 상태
+    val lifecycleOwner = LocalLifecycleOwner.current
+    var pendingEnableViaSettings by remember { mutableStateOf(false) }
+    var requestPermissionAfterSettings by remember { mutableStateOf(false) }
+    val notificationPermissionLauncher = rememberLauncherForActivityResult( // 알림 권한 요청 런처
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        NotificationPermissionHelper.markPermissionRequested(context)
+        notificationsEnabled = NotificationPermissionHelper.areNotificationsEnabled(context)
+        if (!isGranted) { // isGranted가 false면 설정 앱으로 보내고, 나중에 돌아오면 다시 체크하도록 플래그 저장
+            toastManager.showInfo("시스템 설정에서 알림설정을 허용할 수 있어요.")
+            pendingEnableViaSettings = true
+            requestPermissionAfterSettings = true
+            NotificationPermissionHelper.openNotificationSettings(context)
+        } else {
+            toastManager.showInfo("푸시 알림이 켜졌어요.")
+            pendingEnableViaSettings = false
+            requestPermissionAfterSettings = false
+        }
+    }
+
+    LaunchedEffect(Unit) { // areNotificationsEnabled() 함수로 현재 알림이 가능한 상태인지 확인
+        notificationsEnabled = NotificationPermissionHelper.areNotificationsEnabled(context)
+    }
+
+    DisposableEffect(lifecycleOwner) { // 라이프사이클 옵저버로 포그라운드 복귀 시 알림 권한 상태 재확인
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                notificationsEnabled = NotificationPermissionHelper.areNotificationsEnabled(context) // 알림이 OS에서 설정되어있는지 확인
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && requestPermissionAfterSettings) {
+                    requestPermissionAfterSettings = false
+                    if (!NotificationPermissionHelper.isPermissionGranted(context)) {
+                        notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                        return@LifecycleEventObserver
+                    }
+                }
+                if (pendingEnableViaSettings && notificationsEnabled) {
+                    toastManager.showInfo("푸시 알림이 켜졌어요.")
+                    pendingEnableViaSettings = false
+                }
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
 
     if (showDeleteDialog) {
         DangerDialog(
@@ -89,6 +145,77 @@ fun SettingsScreen(
     ) {
         CustomText(text = "설정", type = CustomTextType.headline, color = CustomColor.textPrimary)
         CustomText(text = "로그인 상태를 관리할 수 있어요", type = CustomTextType.bodySmall, color = CustomColor.textSecondary)
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Surface(
+            modifier = Modifier
+                .fillMaxWidth()
+                .border(
+                    width = 1.dp,
+                    color = CustomColor.gray200,
+                    shape = RoundedCornerShape(24.dp)
+                ),
+            shape = RoundedCornerShape(28.dp),
+            color = CustomColor.white
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(20.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                SettingsToggle(
+                    title = "푸시 알림",
+                    description = "모임과 친구 소식을 알림으로 받아요",
+                    checked = notificationsEnabled,
+                    onCheckedChange = { enable ->
+                        notificationsEnabled = enable
+                        if (enable) {
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                                val permissionGranted = NotificationPermissionHelper.isPermissionGranted(context) // 앱 내 권한 설정 여부
+                                val notificationsAllowed = NotificationPermissionHelper.areNotificationsEnabled(context) // 시스템 설정에서 알림 허용 여부
+                                when {
+                                    !permissionGranted -> {
+                                        NotificationPermissionHelper.markPermissionRequested(context)
+                                        pendingEnableViaSettings = true
+                                        notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                                    }
+                                    !notificationsAllowed -> {
+                                        pendingEnableViaSettings = true
+                                        requestPermissionAfterSettings = true
+                                        NotificationPermissionHelper.openNotificationSettings(context)
+                                        toastManager.showInfo("설정에서 알림을 켜주세요.")
+                                    }
+                                    else -> toastManager.showInfo("푸시 알림이 켜졌어요.")
+                                }
+                            } else {
+                                if (!NotificationPermissionHelper.areNotificationsEnabled(context)) {
+                                    pendingEnableViaSettings = true
+                                    requestPermissionAfterSettings = false
+                                    NotificationPermissionHelper.openNotificationSettings(context)
+                                    toastManager.showInfo("설정에서 알림을 켜주세요.")
+                                } else {
+                                    toastManager.showInfo("푸시 알림이 켜졌어요.")
+                                }
+                            }
+                        } else {
+                            NotificationPermissionHelper.resetPermissionRequested(context)
+                            NotificationPermissionHelper.openNotificationSettings(context)
+                            toastManager.showInfo("설정에서 토모 알림을 끌 수 있어요.")
+                            pendingEnableViaSettings = false
+                            requestPermissionAfterSettings = false
+                        }
+                    },
+                    icon = R.drawable.ic_notification
+                )
+                CustomText(
+                    text = "알림 권한은 기기 설정에서 관리돼요.",
+                    type = CustomTextType.bodySmall,
+                    color = CustomColor.textSecondary
+                )
+            }
+        }
 
         Spacer(modifier = Modifier.height(8.dp))
 

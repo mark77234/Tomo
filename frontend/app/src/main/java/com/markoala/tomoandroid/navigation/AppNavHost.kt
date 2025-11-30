@@ -32,7 +32,9 @@ fun AppNavHost(
     navController: NavHostController,
     isSignedIn: Boolean,
     deepLinkInviteCode: String? = null,
-    context: Context
+    context: Context,
+    onLoginSuccess: () -> Unit,
+    onLogout: () -> Unit
 ) {
     val scope = rememberCoroutineScope()
     val toastManager = LocalToastManager.current
@@ -47,7 +49,12 @@ fun AppNavHost(
         startDestination = if (isSignedIn) Screen.Profile.route else Screen.Login.route
     ) {
         composable(Screen.Login.route) {
-            LoginScreen(navController)
+            LoginScreen(
+                navController = navController,
+                onSignedIn = {
+                    onLoginSuccess()
+                }
+            )
         }
         composable(Screen.Profile.route) {
             MainScreen(
@@ -56,6 +63,7 @@ fun AppNavHost(
                         isLoggingOut = true
                         AuthManager.signOut(context)
                         isLoggingOut = false
+                        onLogout()
                         navController.navigate(Screen.Login.route) {
                             popUpTo(Screen.Profile.route) { inclusive = true }
                         }

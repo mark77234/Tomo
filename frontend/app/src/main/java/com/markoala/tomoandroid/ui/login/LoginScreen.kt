@@ -30,7 +30,10 @@ import com.markoala.tomoandroid.ui.login.components.GoogleSignUpButton
 import com.markoala.tomoandroid.ui.theme.CustomColor
 
 @Composable
-fun LoginScreen(navController: NavController) {
+fun LoginScreen(
+    navController: NavController,
+    onSignedIn: () -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -76,6 +79,7 @@ fun LoginScreen(navController: NavController) {
                 )
                 GoogleSignUpButton(
                     onSignedIn = {
+                        onSignedIn()
                         navController.navigate("main") {
                             popUpTo("login") { inclusive = true }
                         }
@@ -104,5 +108,5 @@ fun LoginScreen(navController: NavController) {
 
 @Composable
 fun LoginScreenPreview() {
-    LoginScreen(navController = rememberNavController())
+    LoginScreen(navController = rememberNavController(), onSignedIn = {})
 }

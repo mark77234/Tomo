@@ -11,6 +11,7 @@ import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.markoala.tomoandroid.MainActivity
 import com.markoala.tomoandroid.R
+import com.markoala.tomoandroid.utils.NotificationPermissionHelper
 
 class TomoFirebaseMessagingService : FirebaseMessagingService() {
 
@@ -45,6 +46,11 @@ class TomoFirebaseMessagingService : FirebaseMessagingService() {
     }
 
     private fun sendNotification(title: String, messageBody: String) {
+        if (!NotificationPermissionHelper.areNotificationsEnabled(this)) {
+            Log.d(TAG, "Notifications are disabled. Skipping push message.")
+            return
+        }
+
         val intent = Intent(this, MainActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         val pendingIntent = PendingIntent.getActivity(
