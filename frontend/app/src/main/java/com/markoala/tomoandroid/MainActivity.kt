@@ -5,7 +5,6 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.ContentValues.TAG
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -20,8 +19,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.ui.platform.LocalContext
-import androidx.core.content.ContextCompat
 import androidx.navigation.compose.rememberNavController
 import com.google.firebase.FirebaseApp
 import com.google.firebase.messaging.FirebaseMessaging
@@ -30,18 +29,10 @@ import com.markoala.tomoandroid.navigation.AppNavHost
 import com.markoala.tomoandroid.navigation.Screen
 import com.markoala.tomoandroid.ui.components.ToastProvider
 import com.markoala.tomoandroid.ui.theme.TomoAndroidTheme
+import com.markoala.tomoandroid.utils.NotificationPermissionHelper
 
 class MainActivity : ComponentActivity() {
     private val deepLinkInviteCode = mutableStateOf<String?>(null)
-
-    private val requestPermissionLauncher =
-        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
-            if (isGranted) {
-                // 권한 허용됨 → 알림 사용 가능
-            } else {
-                // 권한 거부됨 → 알림 비활성 안내 필요
-            }
-        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,8 +54,6 @@ class MainActivity : ComponentActivity() {
             val manager = getSystemService(NotificationManager::class.java)
             manager.createNotificationChannel(channel)
         }
-
-        askNotificationPermission()
 
         FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
             if (!task.isSuccessful) {
@@ -115,27 +104,6 @@ class MainActivity : ComponentActivity() {
             deepLinkInviteCode.value = inviteCode
         }
     }
-    private fun askNotificationPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            when {
-                ContextCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.POST_NOTIFICATIONS
-                ) == PackageManager.PERMISSION_GRANTED -> {
-                    // 이미 권한 허용됨
-                }
-
-                shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS) -> {
-                    // 👉 사용자에게 설명 UI 제공 (원한다면 구현)
-                }
-
-                else -> {
-                    // 권한 요청
-                    requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-                }
-            }
-        }
-        }
 }
 
 @Composable
@@ -143,6 +111,11 @@ fun RouteScreen(inviteCode: String? = null) {
     var signedIn by remember { mutableStateOf(false) }
     val navController = rememberNavController()
     val context = LocalContext.current
+    val notificationPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) {
+        NotificationPermissionHelper.markPermissionRequested(context)
+    }
 
     // 앱 시작 시 저장된 토큰 확인
     LaunchedEffect(Unit) {
@@ -156,6 +129,12 @@ fun RouteScreen(inviteCode: String? = null) {
             }
         }
     }
+    LaunchedEffect(signedIn) {
+        if (signedIn && NotificationPermissionHelper.shouldShowInitialPrompt(context)) {
+            NotificationPermissionHelper.markPermissionRequested(context)
+            notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
+    }
 
     ToastProvider {
         // 로그인/로그아웃 시 signedIn 상태 변경
@@ -163,7 +142,9 @@ fun RouteScreen(inviteCode: String? = null) {
             navController = navController,
             isSignedIn = signedIn,
             deepLinkInviteCode = inviteCode,
-            context = context
+            context = context,
+            onLoginSuccess = { signedIn = true },
+            onLogout = { signedIn = false }
         )
     }
 }
