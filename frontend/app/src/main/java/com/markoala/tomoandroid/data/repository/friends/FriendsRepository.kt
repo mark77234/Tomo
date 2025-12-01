@@ -1,16 +1,20 @@
 package com.markoala.tomoandroid.data.repository.friends
 
 import android.util.Log
+import com.google.firebase.firestore.FirebaseFirestore
+import com.markoala.tomoandroid.data.fcm.FcmPushSender
 import com.markoala.tomoandroid.data.api.friendsApi
 
 import com.markoala.tomoandroid.data.model.friends.FriendSummary
 import com.markoala.tomoandroid.data.model.user.BaseResponse
+import com.markoala.tomoandroid.data.repository.AuthRepository
 import com.markoala.tomoandroid.utils.ErrorHandler
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
 class FriendsRepository {
+    private val firestore = FirebaseFirestore.getInstance()
 
     // 친구 검색 함수 (GET)
     fun getFriends(
@@ -124,6 +128,7 @@ class FriendsRepository {
                             "친구 추가 성공 - message: ${result.message}"
                         )
 
+                        notifyFriendAdded(result.data, email)
                         onSuccess()
                     } else {
                         Log.w(
@@ -160,5 +165,118 @@ class FriendsRepository {
 
             }
         })
+    }
+
+    private fun fetchFriendFcmTokenByEmail(
+        email: String,
+        onFoundToken: (String) -> Unit,
+        onMissing: (() -> Unit)? = null
+    ) {
+        firestore.collection("users")
+            .whereEqualTo("email", email)
+            .limit(1)
+            .get()
+            .addOnSuccessListener { snapshots ->
+                val doc = snapshots.documents.firstOrNull()
+                val fcmToken = doc?.getString("fcmToken")
+                val targetUid = doc?.id
+                if (fcmToken.isNullOrBlank()) {
+                    Log.w(
+                        "FriendsRepository",
+                        "상대방 FCM 토큰이 없어 푸시 알림을 건너뜁니다 (email=$email, uid=$targetUid)"
+                    )
+                    onMissing?.invoke()
+                    return@addOnSuccessListener
+                }
+                onFoundToken(fcmToken)
+            }
+            .addOnFailureListener { e ->
+                Log.e("FriendsRepository", "상대방 FCM 토큰 조회 실패 (email=$email)", e)
+                onMissing?.invoke()
+            }
+    }
+
+    private fun fetchFriendFcmTokenByUid(
+        uid: String,
+        onFoundToken: (String) -> Unit,
+        onMissing: (() -> Unit)? = null
+    ) {
+        firestore.collection("users").document(uid).get()
+            .addOnSuccessListener { snapshot ->
+                val fcmToken = snapshot.getString("fcmToken")
+                if (fcmToken.isNullOrBlank()) {
+                    Log.w("FriendsRepository", "상대방 FCM 토큰이 없어 푸시 알림을 건너뜁니다 (uid=$uid)")
+                    onMissing?.invoke()
+                    return@addOnSuccessListener
+                }
+                onFoundToken(fcmToken)
+            }
+            .addOnFailureListener { e ->
+                Log.e("FriendsRepository", "상대방 FCM 토큰 조회 실패 (uid=$uid)", e)
+                onMissing?.invoke()
+            }
+    }
+
+    private fun logTokenNotFound(requestEmail: String) {
+        Log.w(
+            "FriendsRepository",
+            "친구 uid/email로 FCM 토큰을 찾지 못해 푸시 알림을 건너뜁니다 (requestEmail=$requestEmail)"
+        )
+    }
+
+    private fun notifyFriendAdded(friendSummary: FriendSummary?, fallbackEmail: String) {
+        if (friendSummary == null) {
+            Log.w("FriendsRepository", "친구 정보가 없어 응답 없이 이메일로 토큰 조회를 시도합니다")
+        }
+
+        val currentUserName = AuthRepository.getCurrentUserProfile()?.username
+            ?.takeIf { it.isNotBlank() } ?: "친구"
+
+        val friendUid = friendSummary?.uuid
+        val friendEmailFromResponse = friendSummary?.email?.takeIf { it.isNotBlank() }
+        val emailFromRequest = fallbackEmail.trim()
+        val onFoundToken: (String) -> Unit = { token ->
+            FcmPushSender.sendNotification(
+                targetToken = token,
+                title = "토모 친구 추가",
+                body = "$currentUserName 님이 친구로 추가했어요."
+            )
+        }
+
+        val fallbackLookup: () -> Unit = {
+            when {
+                !friendUid.isNullOrBlank() -> {
+                    fetchFriendFcmTokenByUid(friendUid, onFoundToken) {
+                        if (!friendEmailFromResponse.isNullOrBlank()) {
+                            fetchFriendFcmTokenByEmail(friendEmailFromResponse, onFoundToken) {
+                                logTokenNotFound(emailFromRequest)
+                            }
+                        } else {
+                            logTokenNotFound(emailFromRequest)
+                        }
+                    }
+                }
+
+                !friendEmailFromResponse.isNullOrBlank() -> {
+                    fetchFriendFcmTokenByEmail(friendEmailFromResponse, onFoundToken) {
+                        logTokenNotFound(emailFromRequest)
+                    }
+                }
+
+                else -> {
+                    Log.w(
+                        "FriendsRepository",
+                        "친구 uid와 이메일이 없어 푸시 알림을 보낼 수 없습니다 (requestEmail=$emailFromRequest)"
+                    )
+                    Unit
+                }
+            }
+        }
+
+        if (emailFromRequest.isNotBlank()) {
+            fetchFriendFcmTokenByEmail(emailFromRequest, onFoundToken, fallbackLookup)
+        } else {
+            fallbackLookup()
+        }
     }
 }

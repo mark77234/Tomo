@@ -3,14 +3,17 @@ package com.markoala.tomoandroid.utils.auth
 import android.content.Context
 import android.content.Intent
 import android.util.Log
+import com.google.firebase.messaging.FirebaseMessaging
 import com.markoala.tomoandroid.auth.AuthManager
 import com.markoala.tomoandroid.auth.AuthManager.FirebaseSignInResult
 import com.markoala.tomoandroid.auth.AuthManager.ServerLoginResult
+import com.markoala.tomoandroid.data.model.user.UserProfile
 import com.markoala.tomoandroid.data.repository.AuthRepository
 import com.markoala.tomoandroid.data.repository.UserRepository
 import com.markoala.tomoandroid.ui.components.ToastManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 object GoogleSignInCoordinator {
     private const val TAG = "GoogleSignInCoordinator"
@@ -76,8 +79,10 @@ object GoogleSignInCoordinator {
             when (val firebaseResult = AuthManager.signInWithGoogleIdToken(googleIdToken)) {
                 is FirebaseSignInResult.Success -> {
                     val firebaseToken = firebaseResult.firebaseIdToken
+                    val userProfile = AuthRepository.getCurrentUserProfile()
                     when (val serverResult = AuthManager.loginWithFirebaseToken(firebaseToken, context)) {
                         ServerLoginResult.Success -> {
+                            userProfile?.let { syncUserProfileWithFcmToken(it) }
                             toastManager.showSuccess("로그인 성공")
                             onSignedIn()
                         }
@@ -85,6 +90,7 @@ object GoogleSignInCoordinator {
                         ServerLoginResult.NeedsSignup -> {
                             handleServerSignupAndRetry(
                                 firebaseToken = firebaseToken,
+                                userProfile = userProfile,
                                 context = context,
                                 toastManager = toastManager,
                                 onSignedIn = onSignedIn
@@ -112,20 +118,21 @@ object GoogleSignInCoordinator {
 
     private suspend fun handleServerSignupAndRetry(
         firebaseToken: String,
+        userProfile: UserProfile?,
         context: Context,
         toastManager: ToastManager,
         onSignedIn: () -> Unit
     ) {
-        val userProfile = AuthRepository.getCurrentUserProfile()
-        if (userProfile == null) {
+        val profile = userProfile ?: AuthRepository.getCurrentUserProfile()
+        if (profile == null) {
             toastManager.showError("사용자 프로필을 가져올 수 없습니다")
             return
         }
 
         try {
-            val signupResponse = AuthRepository.signUp(userProfile)
+            val signupResponse = AuthRepository.signUp(profile)
             if (signupResponse.isSuccessful) {
-                UserRepository.saveUserToFirestore(userProfile)
+                syncUserProfileWithFcmToken(profile)
                 val retryResult = AuthManager.loginWithFirebaseToken(firebaseToken, context)
                 if (retryResult is ServerLoginResult.Success) {
                     toastManager.showSuccess("회원가입 성공")
@@ -139,6 +146,24 @@ object GoogleSignInCoordinator {
         } catch (e: Exception) {
             Log.e(TAG, "회원가입 처리 실패", e)
             toastManager.showError("회원가입 처리 실패: ${e.localizedMessage}")
+        }
+    }
+
+    private suspend fun syncUserProfileWithFcmToken(userProfile: UserProfile) {
+        try {
+            val fcmToken = try {
+                FirebaseMessaging.getInstance().token.await()
+            } catch (e: Exception) {
+                Log.w(TAG, "FCM 토큰 가져오기 실패", e)
+                null
+            }
+
+            UserRepository.saveUserToFirestore(userProfile, fcmToken)
+            if (fcmToken != null) {
+                Log.d(TAG, "FCM 토큰 Firestore 저장 완료")
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Firestore에 사용자/FCM 토큰 저장 실패", e)
         }
     }
 }
