@@ -32,6 +32,7 @@ import com.markoala.tomoandroid.data.model.friends.FriendProfile
 import com.markoala.tomoandroid.data.model.friends.FriendSummary
 import com.markoala.tomoandroid.data.model.user.BaseResponse
 import com.markoala.tomoandroid.data.repository.friends.FriendsRepository
+import com.markoala.tomoandroid.ui.components.CustomDialog
 import com.markoala.tomoandroid.ui.components.CustomText
 import com.markoala.tomoandroid.ui.components.CustomTextType
 import com.markoala.tomoandroid.ui.components.LocalToastManager
@@ -51,6 +52,7 @@ fun FriendCard(
     onFriendAdded: (() -> Unit)? = null // 추가
 ) {
     var showDeleteDialog by remember { mutableStateOf(false) }
+    var showReportDialog by remember { mutableStateOf(false) }
     val toastManager = LocalToastManager.current
 
     val friendsRepository = remember { FriendsRepository() }
@@ -180,6 +182,24 @@ fun FriendCard(
                             type = CustomTextType.bodySmall,
                             color = CustomColor.textSecondary
                         )
+                    }
+                }
+                if (!isCurrentUser) {
+                    Surface(
+                        shape = RoundedCornerShape(12.dp),
+                        color = CustomColor.white,
+                        modifier = Modifier
+                            .size(36.dp)
+                            .clickable { showReportDialog = true }
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_notification),
+                                contentDescription = "신고하기",
+                                tint = CustomColor.danger,
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
                     }
                 }
             }
@@ -320,6 +340,20 @@ fun FriendCard(
             }
 
         }
+    }
+
+    if (showReportDialog) {
+        CustomDialog(
+            title = "신고하기",
+            message = "${friend.username}님을 신고하시겠어요?\n부적절한 활동을 알려주세요.",
+            confirmText = "신고하기",
+            dismissText = "취소",
+            onConfirm = {
+                toastManager.showSuccess("신고되었습니다.")
+                showReportDialog = false
+            },
+            onDismiss = { showReportDialog = false }
+        )
     }
 
     if (showDeleteDialog) {
