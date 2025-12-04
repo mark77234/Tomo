@@ -28,6 +28,7 @@ securityCrypto = "1.1.0-alpha06"
 retrofitScalars = "2.9.0"
 
 okhttp = "4.12.0"
+googleAuth = "1.24.0"
 
 
 [libraries]
@@ -76,6 +77,7 @@ androidx-security-crypto = { group = "androidx.security", name = "security-crypt
 # OkHttp
 okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
 okhttp-logging = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp" }
+google-auth-oauth2-http = { group = "com.google.auth", name = "google-auth-library-oauth2-http", version.ref = "googleAuth" }
 
 # 테스트 라이브러리
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -88,4 +90,3 @@ android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 google-gms-google-services = { id = "com.google.gms.google-services", version.ref = "googleGmsGoogleServices" }
-

@@ -9,5 +9,6 @@ data class FriendProfile(
 
 data class FriendSummary(
     val username: String,
-    val email: String
+    val email: String,
+    val uuid: String? = null
 )

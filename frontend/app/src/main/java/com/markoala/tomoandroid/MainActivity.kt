@@ -21,15 +21,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.rememberNavController
 import com.google.firebase.FirebaseApp
 import com.google.firebase.messaging.FirebaseMessaging
 import com.markoala.tomoandroid.auth.AuthManager
+import com.markoala.tomoandroid.data.repository.AuthRepository
+import com.markoala.tomoandroid.data.repository.UserRepository
 import com.markoala.tomoandroid.navigation.AppNavHost
 import com.markoala.tomoandroid.navigation.Screen
 import com.markoala.tomoandroid.ui.components.ToastProvider
 import com.markoala.tomoandroid.ui.theme.TomoAndroidTheme
 import com.markoala.tomoandroid.utils.NotificationPermissionHelper
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     private val deepLinkInviteCode = mutableStateOf<String?>(null)
@@ -67,8 +71,17 @@ class MainActivity : ComponentActivity() {
             Log.d(TAG, msg)
 //            Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
 
-            // 필요하다면 서버로 토큰 전송
-            // AuthManager.sendFcmTokenToServer(token)
+            lifecycleScope.launch {
+                try {
+                    val profile = AuthRepository.getCurrentUserProfile()
+                    if (profile != null) {
+                        UserRepository.updateFcmToken(profile.uuid, token)
+                        Log.d(TAG, "앱 시작 시 Firestore에 FCM 토큰 동기화 완료")
+                    }
+                } catch (e: Exception) {
+                    Log.w(TAG, "Firestore FCM 토큰 업데이트 실패", e)
+                }
+            }
         }
 
 

@@ -22,8 +22,8 @@ android {
         applicationId = "com.markoala.tomoandroid"
         minSdk = 33
         targetSdk = 36
-        versionCode = 15
-        versionName = "1.1.5"
+        versionCode = 16
+        versionName = "1.1.6"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -39,6 +39,33 @@ android {
             "String",
             "BASE_URL",
             "\"${localProperties.getProperty("base_url", "https://markoala.shop/")}\""
+        )
+
+        // FCM HTTP v1 - Service Account 기반 설정 (local.properties에서 주입)
+        buildConfigField(
+            "String",
+            "FCM_PROJECT_ID",
+            "\"${localProperties.getProperty("fcm_project_id", localProperties.getProperty("project_id", "tomo-4171d"))}\""
+        )
+        buildConfigField(
+            "String",
+            "FCM_CLIENT_EMAIL",
+            "\"${localProperties.getProperty("fcm_client_email", "")}\""
+        )
+        buildConfigField(
+            "String",
+            "FCM_PRIVATE_KEY",
+            "\"${localProperties.getProperty("fcm_private_key", "").replace("\\", "\\\\").replace("\n", "\\n")}\""
+        )
+        buildConfigField(
+            "String",
+            "FCM_PRIVATE_KEY_ID",
+            "\"${localProperties.getProperty("fcm_private_key_id", "")}\""
+        )
+        buildConfigField(
+            "String",
+            "FCM_CLIENT_ID",
+            "\"${localProperties.getProperty("fcm_client_id", "")}\""
         )
     }
 
@@ -58,6 +85,13 @@ android {
     buildFeatures {
         compose = true
         buildConfig = true // BuildConfig 활성화
+    }
+
+    packaging {
+        resources {
+            excludes += "META-INF/INDEX.LIST"
+            excludes += "META-INF/DEPENDENCIES"
+        }
     }
 }
 
@@ -106,6 +140,7 @@ dependencies {
     implementation(libs.retrofit2.converter.scalars)
     implementation(libs.okhttp)
     implementation(libs.okhttp.logging)
+    implementation(libs.google.auth.oauth2.http)
 
 
     testImplementation(libs.junit)
