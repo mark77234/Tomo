@@ -18,8 +18,8 @@ dependencyResolutionManagement {
         google()
         mavenCentral()
 
-        // ⭐️ Naver Maps SDK 저장소 추가
-        maven("https://repository.map.naver.com/archive/maven")
+        // Kakao Map SDK 저장소
+        maven("https://devrepo.kakao.com/nexus/repository/kakaomap-releases/")
     }
 }
 

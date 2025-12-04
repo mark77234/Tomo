@@ -69,15 +69,14 @@ android {
         )
         buildConfigField(
             "String",
-            "NAVER_MAP_CLIENT_ID",
-            "\"${localProperties.getProperty("naver_map_client_id", "")}\""
+            "KAKAO_MAP_NATIVE_APP_KEY",
+            "\"${localProperties.getProperty("kakao_map_native_app_key", "")}\""
         )
         buildConfigField(
             "String",
-            "NAVER_MAP_CLIENT_SECRET",
-            "\"${localProperties.getProperty("naver_map_client_secret", "")}\""
+            "KAKAO_REST_API_KEY",
+            "\"${localProperties.getProperty("kakao_rest_api_key", "")}\""
         )
-        manifestPlaceholders["NAVER_MAP_CLIENT_ID"] = localProperties.getProperty("naver_map_client_id", "")
     }
 
     buildTypes {
@@ -113,6 +112,7 @@ kotlin {
 dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.activity.compose)
 
     // Compose BoM
@@ -164,10 +164,8 @@ dependencies {
 
     implementation(libs.firebase.firestore)
 
-    // ⭐️ Naver Maps SDK
-    implementation("com.naver.maps:map-sdk:3.23.0")
-    implementation("io.github.fornewid:naver-map-compose:1.9.0")  // 혹은 최신 stable 버전
-
 // 위치 권한 + GPS 기반 현재위치 얻기 위해
     implementation("com.google.android.gms:play-services-location:21.0.1")
+    // Kakao Map SDK
+    implementation("com.kakao.maps.open:android:2.13.0")
 }

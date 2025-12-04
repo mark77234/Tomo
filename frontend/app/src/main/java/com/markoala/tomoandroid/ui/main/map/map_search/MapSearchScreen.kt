@@ -23,9 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.markoala.tomoandroid.BuildConfig
 import com.markoala.tomoandroid.data.api.GeocodeAddress
-import com.markoala.tomoandroid.data.api.GeocodeResponse
-import com.markoala.tomoandroid.data.api.NaverLocalSearchClient
-import com.markoala.tomoandroid.data.api.NaverMapGeocodeClient
+import com.markoala.tomoandroid.data.api.KakaoLocalClient
 import com.markoala.tomoandroid.ui.components.ButtonStyle
 import com.markoala.tomoandroid.ui.components.CustomBack
 import com.markoala.tomoandroid.ui.components.CustomButton
@@ -50,8 +48,7 @@ fun MapSearchScreen(
     var searchQuery by remember { mutableStateOf(initialQuery.orEmpty()) }
     var isSearching by remember { mutableStateOf(false) }
     var results by remember { mutableStateOf<List<GeocodeAddress>>(emptyList()) }
-    val geocodeAvailable = BuildConfig.NAVER_MAP_CLIENT_ID.isNotBlank() &&
-        BuildConfig.NAVER_MAP_CLIENT_SECRET.isNotBlank()
+    val geocodeAvailable = BuildConfig.KAKAO_REST_API_KEY.isNotBlank()
 
     LaunchedEffect(initialQuery) {
         if (!initialQuery.isNullOrBlank() && geocodeAvailable) {
@@ -98,7 +95,7 @@ fun MapSearchScreen(
             text = if (isSearching) "검색 중..." else "주소 검색",
             onClick = {
                 if (!geocodeAvailable) {
-                    toastManager.showInfo("지오코딩 키가 설정되지 않았어요.")
+                    toastManager.showInfo("카카오 로컬 API 키가 설정되지 않았어요.")
                     return@CustomButton
                 }
                 if (searchQuery.isBlank()) {
@@ -245,67 +242,22 @@ private suspend fun searchPlaces(
     val collected = mutableListOf<GeocodeAddress>()
 
     runCatching {
-        NaverLocalSearchClient.api.searchPlaces(
-            clientId = BuildConfig.NAVER_MAP_CLIENT_ID,
-            clientSecret = BuildConfig.NAVER_MAP_CLIENT_SECRET,
+        KakaoLocalClient.api.searchKeyword(
             query = query,
-            display = 10
+            size = 15
         )
     }.onSuccess { response ->
-        response.items.orEmpty().forEach { item ->
-            val baseAddress = item.toGeocodeAddress()
-            val enriched = (item.roadAddress ?: item.address)?.let { addr ->
-                geocodeSingle(addr)
-            }
-            collected += baseAddress.copy(
-                x = enriched?.x ?: baseAddress.x,
-                y = enriched?.y ?: baseAddress.y,
-                roadAddress = baseAddress.roadAddress ?: enriched?.roadAddress,
-                jibunAddress = baseAddress.jibunAddress ?: enriched?.jibunAddress,
-                englishAddress = baseAddress.englishAddress ?: enriched?.englishAddress,
-                addressElements = baseAddress.addressElements ?: enriched?.addressElements
-            )
-        }
+        collected += response.documents.orEmpty().map { it.toGeocodeAddress() }
     }
 
     runCatching {
-        NaverMapGeocodeClient.api.localSearch(
+        KakaoLocalClient.api.searchAddress(
             query = query,
-            language = "ko",
-            page = 1,
-            count = 15
+            size = 15
         )
     }.onSuccess { response ->
-        if (response.status == "OK") {
-            collected += response.places.orEmpty().map { it.toGeocodeAddress() }
-        }
-    }
-
-    runCatching {
-        NaverMapGeocodeClient.api.geocode(
-            query = query,
-            language = "kor",
-            page = 1,
-            count = 15
-        )
-    }.onSuccess { response: GeocodeResponse ->
-        if (response.status == "OK") {
-            collected += response.addresses.orEmpty()
-        }
+        collected += response.documents.orEmpty().map { it.toGeocodeAddress() }
     }
 
     collected.distinctBy { "${it.x}|${it.y}|${it.roadAddress}|${it.jibunAddress}|${it.name}" }
-}
-
-private suspend fun geocodeSingle(query: String): GeocodeAddress? {
-    return runCatching {
-        NaverMapGeocodeClient.api.geocode(
-            query = query,
-            language = "kor",
-            page = 1,
-            count = 1
-        )
-    }.getOrNull()
-        ?.addresses
-        ?.firstOrNull()
 }

@@ -11,6 +11,7 @@
 
 
     <application
+        android:name=".TomoApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -20,10 +21,6 @@
         android:roundIcon="@mipmap/ic_tomo_new2_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.TomoAndroid">
-
-        <meta-data
-            android:name="com.naver.maps.map.NCP_KEY_ID"
-            android:value="${NAVER_MAP_CLIENT_ID}" />
 
         <service
             android:name=".data.fcm.TomoFirebaseMessagingService"

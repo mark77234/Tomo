@@ -17,43 +17,49 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
-import com.markoala.tomoandroid.data.api.GeocodeAddress
-import com.markoala.tomoandroid.BuildConfig
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.google.android.gms.tasks.CancellationTokenSource
+import com.kakao.vectormap.KakaoMap
+import com.kakao.vectormap.KakaoMapReadyCallback
+import com.kakao.vectormap.LatLng
+import com.kakao.vectormap.MapAuthException
+import com.kakao.vectormap.MapLifeCycleCallback
+import com.kakao.vectormap.MapView
+import com.kakao.vectormap.camera.CameraUpdateFactory
+import com.kakao.vectormap.label.Label
+import com.kakao.vectormap.label.LabelLayer
+import com.kakao.vectormap.label.LabelOptions
+import com.kakao.vectormap.label.LabelStyle
+import com.kakao.vectormap.label.LabelTextBuilder
+import com.markoala.tomoandroid.R
+import com.markoala.tomoandroid.data.api.GeocodeAddress
 import com.markoala.tomoandroid.ui.components.ButtonStyle
 import com.markoala.tomoandroid.ui.components.CustomButton
 import com.markoala.tomoandroid.ui.components.CustomText
 import com.markoala.tomoandroid.ui.components.CustomTextType
 import com.markoala.tomoandroid.ui.components.LocalToastManager
 import com.markoala.tomoandroid.ui.theme.CustomColor
-import com.naver.maps.geometry.LatLng
-import com.naver.maps.map.CameraPosition
-import com.naver.maps.map.CameraUpdate
-import com.naver.maps.map.NaverMapSdk
-import com.naver.maps.map.compose.ExperimentalNaverMapApi
-import com.naver.maps.map.compose.MapProperties
-import com.naver.maps.map.compose.MapUiSettings
-import com.naver.maps.map.compose.NaverMap
-import com.naver.maps.map.compose.Marker
-import com.naver.maps.map.compose.rememberMarkerState
-import com.naver.maps.map.compose.rememberCameraPositionState
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
-@OptIn(ExperimentalNaverMapApi::class)
 @Composable
 fun MapScreen(
     paddingValues: PaddingValues,
@@ -63,14 +69,13 @@ fun MapScreen(
 ) {
     val context = LocalContext.current
     val appContext = context.applicationContext
+    val lifecycleOwner = LocalLifecycleOwner.current
     val fusedClient = remember { LocationServices.getFusedLocationProviderClient(context) }
     val scope = rememberCoroutineScope()
     val toastManager = LocalToastManager.current
 
-    val defaultPos = LatLng(37.5666102, 126.9783881)
-    val cameraState = rememberCameraPositionState {
-        position = CameraPosition(defaultPos, 14.0)
-    }
+    val defaultPos = LatLng.from(37.5666102, 126.9783881)
+    val selectedAddressState = rememberUpdatedState(selectedAddress)
 
     var hasLocationPermission by remember { mutableStateOf(checkLocationPermission(context)) }
     val permissionLauncher = rememberLauncherForActivityResult(
@@ -92,22 +97,74 @@ fun MapScreen(
                 )
             )
         }
+    }
 
-        val clientId = BuildConfig.NAVER_MAP_CLIENT_ID
-        Log.d("MapScreen", "Naver Map Client ID: $clientId")
-        if (clientId.isNotBlank()) {
-            @Suppress("DEPRECATION")
-            NaverMapSdk.getInstance(appContext).client =
-                NaverMapSdk.NcpKeyClient(clientId)
-        } else {
-            toastManager.showInfo("네이버 지도 클라이언트 ID가 설정되지 않았어요.")
+    val mapView = remember { MapView(appContext) }
+    var kakaoMap by remember { mutableStateOf<KakaoMap?>(null) }
+    var marker by remember { mutableStateOf<Label?>(null) }
+
+    DisposableEffect(lifecycleOwner, mapView) {
+        val mapLifeCycle = object : MapLifeCycleCallback() {
+            override fun onMapDestroy() {
+                marker?.remove()
+                marker = null
+            }
+
+            override fun onMapError(error: Exception) {
+                val message = if (error is MapAuthException) {
+                    "카카오맵 인증에 실패했어요. 키 설정을 확인해주세요."
+                } else {
+                    "지도 초기화 중 오류가 발생했어요."
+                }
+                toastManager.showInfo(message)
+                Log.e("MapScreen", "Kakao map error", error)
+            }
+        }
+
+        val readyCallback = object : KakaoMapReadyCallback() {
+            override fun onMapReady(map: KakaoMap) {
+                kakaoMap = map
+                val target = selectedAddressState.value?.toLatLng() ?: defaultPos
+                map.moveCamera(CameraUpdateFactory.newCenterPosition(target, 14))
+                selectedAddressState.value?.let { address ->
+                    marker = placeMarker(map, marker, target, address.displayTitle(), context)
+                }
+            }
+        }
+
+        mapView.start(mapLifeCycle, readyCallback)
+
+        val lifecycle = lifecycleOwner.lifecycle
+        val observer = LifecycleEventObserver { _, event ->
+            when (event) {
+                Lifecycle.Event.ON_RESUME -> mapView.resume()
+                Lifecycle.Event.ON_PAUSE -> mapView.pause()
+                Lifecycle.Event.ON_DESTROY -> mapView.finish()
+                else -> {}
+            }
+        }
+        lifecycle.addObserver(observer)
+
+        if (lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
+            mapView.resume()
+        }
+
+        onDispose {
+            lifecycle.removeObserver(observer)
+            mapView.finish()
         }
     }
 
-    LaunchedEffect(selectedAddress?.x, selectedAddress?.y) {
-        val target = selectedAddress?.toLatLng() ?: return@LaunchedEffect
-        cameraState.animate(CameraUpdate.scrollTo(target))
-        cameraState.animate(CameraUpdate.zoomTo(16.0))
+    LaunchedEffect(kakaoMap, selectedAddress?.x, selectedAddress?.y) {
+        val map = kakaoMap ?: return@LaunchedEffect
+        val target = selectedAddress?.toLatLng()
+        if (target != null) {
+            map.moveCamera(CameraUpdateFactory.newCenterPosition(target, 16))
+            marker = placeMarker(map, marker, target, selectedAddress.displayTitle(), context)
+        } else {
+            marker?.remove()
+            marker = null
+        }
     }
 
     Box(
@@ -116,19 +173,10 @@ fun MapScreen(
             .background(CustomColor.white)
             .padding(paddingValues)
     ) {
-        NaverMap(
+        AndroidView(
             modifier = Modifier.fillMaxSize(),
-            cameraPositionState = cameraState,
-            properties = MapProperties(),
-            uiSettings = MapUiSettings()
-        ) {
-            selectedAddress?.toLatLng()?.let { latLng ->
-                Marker(
-                    state = rememberMarkerState(position = latLng),
-                    captionText = selectedAddress.displayTitle()
-                )
-            }
-        }
+            factory = { mapView }
+        )
 
         Surface(
             modifier = Modifier
@@ -225,8 +273,9 @@ fun MapScreen(
                     try {
                         val latLng = fetchCurrentLatLng(context, fusedClient)
                         if (latLng != null) {
-                            cameraState.move(CameraUpdate.scrollTo(latLng))
-                            cameraState.move(CameraUpdate.zoomTo(16.0))
+                            kakaoMap?.moveCamera(
+                                CameraUpdateFactory.newCenterPosition(latLng, 16)
+                            ) ?: toastManager.showInfo("지도를 준비하는 중이에요.")
                         } else {
                             toastManager.showInfo("현재 위치를 불러올 수 없어요.")
                         }
@@ -245,11 +294,28 @@ fun MapScreen(
     }
 }
 
+private fun placeMarker(
+    map: KakaoMap,
+    currentLabel: Label?,
+    position: LatLng,
+    title: String,
+    context: Context
+): Label? {
+    currentLabel?.remove()
+    val layer: LabelLayer = map.labelManager?.layer ?: return null
+    val style = LabelStyle.from(context, R.drawable.ic_location)
+        .setAnchorPoint(0.5f, 1f)
+    val options = LabelOptions.from("selected_marker", position)
+        .setStyles(style)
+        .setTexts(LabelTextBuilder().setTexts(title.take(30)))
+    return layer.addLabel(options)
+}
+
 private fun GeocodeAddress.toLatLng(): LatLng? {
     val lat = y?.toDoubleOrNull()
     val lng = x?.toDoubleOrNull()
     return if (lat != null && lng != null) {
-        LatLng(lat, lng)
+        LatLng.from(lat, lng)
     } else {
         null
     }
@@ -286,5 +352,5 @@ private suspend fun fetchCurrentLatLng(
         cancellationTokenSource.token
     ).await()
     val location = current ?: fusedClient.lastLocation.await()
-    return location?.let { LatLng(it.latitude, it.longitude) }
+    return location?.let { LatLng.from(it.latitude, it.longitude) }
 }
