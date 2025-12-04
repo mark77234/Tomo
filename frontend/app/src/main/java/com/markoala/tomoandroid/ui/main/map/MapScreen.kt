@@ -2,6 +2,8 @@ package com.markoala.tomoandroid.ui.main.map
 
 import android.Manifest
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -78,6 +80,7 @@ fun MapScreen(
     val selectedAddressState = rememberUpdatedState(selectedAddress)
 
     var hasLocationPermission by remember { mutableStateOf(checkLocationPermission(context)) }
+    var currentLocation by remember { mutableStateOf<LatLng?>(null) }
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions()
     ) { result ->
@@ -102,12 +105,15 @@ fun MapScreen(
     val mapView = remember { MapView(appContext) }
     var kakaoMap by remember { mutableStateOf<KakaoMap?>(null) }
     var marker by remember { mutableStateOf<Label?>(null) }
+    var currentLocationMarker by remember { mutableStateOf<Label?>(null) }
 
     DisposableEffect(lifecycleOwner, mapView) {
         val mapLifeCycle = object : MapLifeCycleCallback() {
             override fun onMapDestroy() {
                 marker?.remove()
                 marker = null
+                currentLocationMarker?.remove()
+                currentLocationMarker = null
             }
 
             override fun onMapError(error: Exception) {
@@ -127,7 +133,26 @@ fun MapScreen(
                 val target = selectedAddressState.value?.toLatLng() ?: defaultPos
                 map.moveCamera(CameraUpdateFactory.newCenterPosition(target, 14))
                 selectedAddressState.value?.let { address ->
-                    marker = placeMarker(map, marker, target, address.displayTitle(), context)
+                    marker = placeMarker(
+                        map = map,
+                        currentLabel = marker,
+                        position = target,
+                        title = address.displayTitle(),
+                        labelId = "selected_marker",
+                        iconRes = R.drawable.ic_marker_primary,
+                        context = context
+                    )
+                }
+                currentLocation?.let { location ->
+                    currentLocationMarker = placeMarker(
+                        map = map,
+                        currentLabel = currentLocationMarker,
+                        position = location,
+                        title = "현재 위치",
+                        labelId = "current_marker",
+                        iconRes = R.drawable.ic_marker_current,
+                        context = context
+                    )
                 }
             }
         }
@@ -160,11 +185,37 @@ fun MapScreen(
         val target = selectedAddress?.toLatLng()
         if (target != null) {
             map.moveCamera(CameraUpdateFactory.newCenterPosition(target, 16))
-            marker = placeMarker(map, marker, target, selectedAddress.displayTitle(), context)
+            marker = placeMarker(
+                map = map,
+                currentLabel = marker,
+                position = target,
+                title = selectedAddress.displayTitle(),
+                labelId = "selected_marker",
+                iconRes = R.drawable.ic_marker_primary,
+                context = context
+            )
         } else {
             marker?.remove()
             marker = null
         }
+    }
+
+    LaunchedEffect(kakaoMap, currentLocation) {
+        val map = kakaoMap ?: return@LaunchedEffect
+        val location = currentLocation ?: run {
+            currentLocationMarker?.remove()
+            currentLocationMarker = null
+            return@LaunchedEffect
+        }
+        currentLocationMarker = placeMarker(
+            map = map,
+            currentLabel = currentLocationMarker,
+            position = location,
+            title = "현재 위치",
+            labelId = "current_marker",
+            iconRes = R.drawable.ic_marker_current,
+            context = context
+        )
     }
 
     Box(
@@ -274,8 +325,9 @@ fun MapScreen(
                         val latLng = fetchCurrentLatLng(context, fusedClient)
                         if (latLng != null) {
                             kakaoMap?.moveCamera(
-                                CameraUpdateFactory.newCenterPosition(latLng, 16)
+                            CameraUpdateFactory.newCenterPosition(latLng, 16)
                             ) ?: toastManager.showInfo("지도를 준비하는 중이에요.")
+                            currentLocation = latLng
                         } else {
                             toastManager.showInfo("현재 위치를 불러올 수 없어요.")
                         }
@@ -299,16 +351,32 @@ private fun placeMarker(
     currentLabel: Label?,
     position: LatLng,
     title: String,
+    labelId: String,
+    iconRes: Int,
     context: Context
 ): Label? {
     currentLabel?.remove()
     val layer: LabelLayer = map.labelManager?.layer ?: return null
-    val style = LabelStyle.from(context, R.drawable.ic_location)
+    val iconBitmap = bitmapFromVector(context, iconRes) ?: return null
+    val style = LabelStyle.from(iconBitmap)
         .setAnchorPoint(0.5f, 1f)
-    val options = LabelOptions.from("selected_marker", position)
+    val options = LabelOptions.from(labelId, position)
         .setStyles(style)
         .setTexts(LabelTextBuilder().setTexts(title.take(30)))
     return layer.addLabel(options)
+}
+
+private fun bitmapFromVector(context: Context, drawableResId: Int): Bitmap? {
+    val drawable = ContextCompat.getDrawable(context, drawableResId) ?: return null
+    val bitmap = Bitmap.createBitmap(
+        drawable.intrinsicWidth.coerceAtLeast(1),
+        drawable.intrinsicHeight.coerceAtLeast(1),
+        Bitmap.Config.ARGB_8888
+    )
+    val canvas = Canvas(bitmap)
+    drawable.setBounds(0, 0, canvas.width, canvas.height)
+    drawable.draw(canvas)
+    return bitmap
 }
 
 private fun GeocodeAddress.toLatLng(): LatLng? {
