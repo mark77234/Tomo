@@ -16,7 +16,7 @@ import com.markoala.tomoandroid.ui.main.meeting.create_meeting.CreateMeetingScre
 import com.markoala.tomoandroid.ui.main.meeting.MeetingScreen
 import com.markoala.tomoandroid.ui.main.meeting.meeting_detail.MeetingDetailScreen
 import com.markoala.tomoandroid.ui.main.profile.ProfileScreen
-import com.markoala.tomoandroid.ui.main.settings.SettingsScreen
+import com.markoala.tomoandroid.ui.main.map.MapScreen
 
 @Composable
 fun MainScreenRenderer(
@@ -63,10 +63,8 @@ fun MainScreenRenderer(
                 onAddFriendsClick = { navigator.push(MainStackEntry.AddFriends()) }
             )
 
-            BottomTab.Settings -> SettingsScreen(
-                paddingValues = padding,
-                onSignOut = onSignOut,
-                onDeleteAccount = onSignOut
+            BottomTab.Map -> MapScreen(
+                paddingValues = padding
             )
         }
 
@@ -98,6 +96,7 @@ fun MainScreenRenderer(
             name = userInfo.name,
             email = userInfo.email,
             userId = userInfo.userId,
+            onSignOut = onSignOut,
             onClose = { navigator.pop() }
         )
 

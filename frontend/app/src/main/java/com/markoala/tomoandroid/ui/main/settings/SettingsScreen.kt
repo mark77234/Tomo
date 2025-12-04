@@ -58,6 +58,23 @@ fun SettingsScreen(
     onSignOut: () -> Unit,
     onDeleteAccount: () -> Unit = {},
 ) {
+    SettingsContent(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(CustomColor.white),
+        contentPadding = paddingValues,
+        onSignOut = onSignOut,
+        onDeleteAccount = onDeleteAccount
+    )
+}
+
+@Composable
+fun SettingsContent(
+    modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(0.dp),
+    onSignOut: () -> Unit,
+    onDeleteAccount: () -> Unit = {},
+) {
     var showDeleteDialog by remember { mutableStateOf(false) }
     var isDeleting by remember { mutableStateOf(false) }
     val toastManager = LocalToastManager.current
@@ -135,10 +152,10 @@ fun SettingsScreen(
     }
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .background(CustomColor.white)
-            .padding(paddingValues)
+            .padding(contentPadding)
             .padding(horizontal = 24.dp, vertical = 16.dp)
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(16.dp)

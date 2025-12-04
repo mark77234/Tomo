@@ -27,6 +27,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -45,9 +47,15 @@ import com.markoala.tomoandroid.ui.components.CustomTextField
 import com.markoala.tomoandroid.ui.components.CustomTextType
 import com.markoala.tomoandroid.ui.components.ProfileImage
 import com.markoala.tomoandroid.ui.components.LocalToastManager
+import com.markoala.tomoandroid.ui.main.settings.SettingsContent
 import com.markoala.tomoandroid.ui.theme.CustomColor
 import com.markoala.tomoandroid.util.generateInviteCode
 import com.markoala.tomoandroid.util.shareInviteCode
+
+enum class ProfileTab(val label: String) {
+    Info("프로필"),
+    Settings("설정")
+}
 
 @Composable
 fun ProfileScreen(
@@ -55,6 +63,8 @@ fun ProfileScreen(
     email: String,
     userId: String,
     modifier: Modifier = Modifier,
+    onSignOut: () -> Unit,
+    onDeleteAccount: () -> Unit = onSignOut,
     onClose: () -> Unit = {}
 ) {
     var profileName by remember { mutableStateOf(name) }
@@ -79,6 +89,7 @@ fun ProfileScreen(
     }
 
     val scrollState = rememberScrollState()
+    var selectedTab by remember { mutableStateOf(ProfileTab.Info) }
 
     Scaffold(
         modifier = modifier
@@ -90,7 +101,7 @@ fun ProfileScreen(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(CustomColor.background)
+                    .background(CustomColor.white)
                     .padding(top = 16.dp, bottom = 16.dp,
                         start = 24.dp,
                         end = 24.dp,
@@ -110,151 +121,212 @@ fun ProfileScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(horizontal = 24.dp, vertical = 16.dp)
-                .verticalScroll(scrollState),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            CustomText(
-                text = "내 프로필",
-                type = CustomTextType.headline,
-                color = CustomColor.textPrimary
-            )
+            Column(
+                modifier = Modifier
+                    .padding(horizontal = 24.dp, vertical = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                CustomText(
+                    text = "내 프로필",
+                    type = CustomTextType.headline,
+                    color = CustomColor.textPrimary
+                )
 
-            CustomText(
-                text = "프로필 정보를 확인하세요",
-                type = CustomTextType.bodySmall,
-                color = CustomColor.textSecondary
-            )
+                CustomText(
+                    text = when (selectedTab) {
+                        ProfileTab.Info -> "프로필 정보를 확인하세요"
+                        ProfileTab.Settings -> "알림과 계정 설정을 관리하세요"
+                    },
+                    type = CustomTextType.bodySmall,
+                    color = CustomColor.textSecondary
+                )
 
-            Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
-            // 프로필 카드 - 그라데이션 배경 추가
-            Surface(
-                modifier = Modifier.fillMaxWidth()
-                    .border(1.dp, CustomColor.gray200, shape = RoundedCornerShape(28.dp))
-                    .background(CustomColor.white, shape = RoundedCornerShape(28.dp)),
-                shape = RoundedCornerShape(28.dp),
-                color = CustomColor.white,    // 🔥 Surface 자체에 배경색 적용
-
+                TabRow(
+                    selectedTabIndex = selectedTab.ordinal,
+                    containerColor = CustomColor.white,
+                    contentColor = CustomColor.primary
                 ) {
-                Column(
+                    ProfileTab.entries.forEach { tab ->
+                        Tab(
+                            selected = selectedTab == tab,
+                            onClick = { selectedTab = tab },
+                            text = {
+                                CustomText(
+                                    text = tab.label,
+                                    type = CustomTextType.body,
+                                    color = if (selectedTab == tab) CustomColor.primary else CustomColor.gray500
+                                )
+                            }
+                        )
+                    }
+                }
+            }
+
+            when (selectedTab) {
+                ProfileTab.Info -> ProfileInfoContent(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(32.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(20.dp)
-                ) {
-                    ProfileImage(size = 96.dp)
+                        .weight(1f, fill = true)
+                        .padding(horizontal = 24.dp)
+                        .verticalScroll(scrollState),
+                    profileName = profileName,
+                    profileEmail = profileEmail,
+                    inviteCode = inviteCode,
+                    onCopyInviteCode = onCopyInviteCode,
+                    onShareInviteCode = onShareInviteCode
+                )
 
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                ProfileTab.Settings -> SettingsContent(
+                    modifier = Modifier
+                        .weight(1f, fill = true),
+                    contentPadding = PaddingValues(horizontal = 24.dp, vertical = 16.dp),
+                    onSignOut = onSignOut,
+                    onDeleteAccount = onDeleteAccount
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun ProfileInfoContent(
+    modifier: Modifier = Modifier,
+    profileName: String,
+    profileEmail: String,
+    inviteCode: String,
+    onCopyInviteCode: () -> Unit,
+    onShareInviteCode: () -> Unit
+) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        Spacer(modifier = Modifier.height(4.dp))
+
+        Surface(
+            modifier = Modifier
+                .fillMaxWidth()
+                .border(1.dp, CustomColor.gray200, shape = RoundedCornerShape(28.dp))
+                .background(CustomColor.white, shape = RoundedCornerShape(28.dp)),
+            shape = RoundedCornerShape(28.dp),
+            color = CustomColor.white
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(32.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(20.dp)
+            ) {
+                ProfileImage(size = 96.dp)
+
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    CustomText(
+                        text = profileName.ifBlank { "이름 없음" },
+                        type = CustomTextType.headline,
+                        color = CustomColor.primary
+                    )
+
+                    Surface(
+                        shape = RoundedCornerShape(16.dp),
+                        color = CustomColor.primary50,
+                        modifier = Modifier.clickable { onCopyInviteCode() }
                     ) {
                         CustomText(
-                            text = profileName.ifBlank { "이름 없음" },
-                            type = CustomTextType.headline,
+                            text = "초대코드: $inviteCode",
+                            type = CustomTextType.bodySmall,
+                            color = CustomColor.primary,
+                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
+                        )
+                    }
+                }
+            }
+        }
+
+        Surface(
+            modifier = Modifier
+                .fillMaxWidth()
+                .border(1.dp, CustomColor.gray200, shape = RoundedCornerShape(28.dp)),
+            shape = RoundedCornerShape(28.dp),
+            color = CustomColor.white
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(32.dp),
+                verticalArrangement = Arrangement.spacedBy(20.dp)
+            ) {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(6.dp)
+                                .clip(RoundedCornerShape(3.dp))
+                                .background(CustomColor.primary)
+                        )
+                        CustomText(
+                            text = "이름",
+                            type = CustomTextType.bodySmall,
                             color = CustomColor.primary
                         )
-
-                        // 초대코드를 강조하는 배지 스타일
-                        Surface(
-                            shape = RoundedCornerShape(16.dp),
-                            color = CustomColor.primary50,
-                            modifier = Modifier.clickable { onCopyInviteCode() }
-                        ) {
-                            CustomText(
-                                text = "초대코드: $inviteCode",
-                                type = CustomTextType.bodySmall,
-                                color = CustomColor.primary,
-                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
-                            )
-                        }
                     }
+                    CustomTextField(
+                        value = profileName,
+                        onValueChange = {},
+                        enabled = false
+                    )
                 }
-            }
 
-            // 정보 필드 - 색상 강조
-            Surface(
-                modifier = Modifier.fillMaxWidth()
-                    .border(1.dp, CustomColor.gray200, shape = RoundedCornerShape(28.dp)),
-                shape = RoundedCornerShape(28.dp),
-                color = CustomColor.white
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(32.dp),
-                    verticalArrangement = Arrangement.spacedBy(20.dp)
-                ) {
-                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .size(6.dp)
-                                    .clip(RoundedCornerShape(3.dp))
-                                    .background(CustomColor.primary)
-                            )
-                            CustomText(
-                                text = "이름",
-                                type = CustomTextType.bodySmall,
-                                color = CustomColor.primary
-                            )
-                        }
-                        CustomTextField(
-                            value = profileName,
-                            onValueChange = {},
-                            enabled = false
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(6.dp)
+                                .clip(RoundedCornerShape(3.dp))
+                                .background(CustomColor.primary)
+                        )
+                        CustomText(
+                            text = "이메일",
+                            type = CustomTextType.bodySmall,
+                            color = CustomColor.primary
                         )
                     }
-
-                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .size(6.dp)
-                                    .clip(RoundedCornerShape(3.dp))
-                                    .background(CustomColor.primary)
-                            )
-                            CustomText(
-                                text = "이메일",
-                                type = CustomTextType.bodySmall,
-                                color = CustomColor.primary
-                            )
-                        }
-                        CustomTextField(
-                            value = profileEmail,
-                            onValueChange = {},
-                            enabled = false
-                        )
-                    }
+                    CustomTextField(
+                        value = profileEmail,
+                        onValueChange = {},
+                        enabled = false
+                    )
                 }
             }
+        }
 
-            // 버튼 - 초대코드 복사 및 공유 버튼 추가
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                CustomButton(
-                    text = "초대 코드 복사",
-                    onClick = onCopyInviteCode,
-                    style = ButtonStyle.Secondary,
-                    modifier = Modifier.weight(1f)
-                )
-                CustomButton(
-                    text = "공유하기",
-                    onClick = onShareInviteCode,
-                    style = ButtonStyle.Primary,
-                    modifier = Modifier.weight(1f)
-                )
-            }
-
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            CustomButton(
+                text = "초대 코드 복사",
+                onClick = onCopyInviteCode,
+                style = ButtonStyle.Secondary,
+                modifier = Modifier.weight(1f)
+            )
+            CustomButton(
+                text = "공유하기",
+                onClick = onShareInviteCode,
+                style = ButtonStyle.Primary,
+                modifier = Modifier.weight(1f)
+            )
         }
     }
 }

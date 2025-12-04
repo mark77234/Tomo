@@ -19,7 +19,7 @@ enum class BottomTab(val label: String, @param:DrawableRes val iconRes: Int) {
     Meetings("모임", R.drawable.ic_friends),
     Calendar("달력", R.drawable.ic_calendar),
     Affinity("친구", R.drawable.ic_profile),
-    Settings("설정", R.drawable.ic_setting)
+    Map("지도", R.drawable.ic_location)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -84,4 +84,3 @@ sealed interface MainStackEntry {
     object CreateMeeting : MainStackEntry
     object Profile : MainStackEntry
 }
-
