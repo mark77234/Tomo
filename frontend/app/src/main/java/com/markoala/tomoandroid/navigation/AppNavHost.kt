@@ -1,6 +1,7 @@
 package com.markoala.tomoandroid.navigation
 
 import android.content.Context
+import android.net.Uri
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -19,12 +20,14 @@ import com.markoala.tomoandroid.ui.login.LoginScreen
 import com.markoala.tomoandroid.ui.main.MainScreen
 
 import com.markoala.tomoandroid.ui.main.meeting.meeting_detail.MeetingDetailScreen
+import com.markoala.tomoandroid.ui.main.meeting.meeting_detail.MeetingPromiseListScreen
 import kotlinx.coroutines.launch
 
 sealed class Screen(val route: String) {
     object Login : Screen("login")
     object Profile : Screen("main")
     object MeetingDetail : Screen("meeting_detail/{moim_id}")
+    object PromiseList : Screen("promise_list/{moim_id}/{moim_name}")
 }
 
 @Composable
@@ -80,6 +83,22 @@ fun AppNavHost(
             val moimId = backStackEntry.arguments?.getInt("moim_id") ?: 0
             MeetingDetailScreen(
                 moimId = moimId,
+                onBackClick = { navController.popBackStack() },
+                onPromiseListClick = { id, moimName ->
+                    navController.navigate("promise_list/$id/${Uri.encode(moimName)}")
+                }
+            )
+        }
+        composable(
+            route = Screen.PromiseList.route,
+            arguments = listOf(
+                navArgument("moim_id") { type = NavType.IntType },
+                navArgument("moim_name") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val moimName = backStackEntry.arguments?.getString("moim_name").orEmpty()
+            MeetingPromiseListScreen(
+                moimName = moimName,
                 onBackClick = { navController.popBackStack() }
             )
         }

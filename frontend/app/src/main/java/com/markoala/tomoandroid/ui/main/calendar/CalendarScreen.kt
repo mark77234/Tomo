@@ -344,7 +344,7 @@ private suspend fun fetchPromiseEvents(meetings: List<MoimListDTO>): List<Calend
                             type = CalendarEventType.PROMISE,
                             moimId = moim.moimId,
                             promiseTime = promise.promiseTime,
-                            place = promise.place,
+                            place = promise.resolvedLocation,
                             moimTitle = moim.title
                         )
                     }

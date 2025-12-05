@@ -24,6 +24,7 @@ import com.markoala.tomoandroid.ui.main.profile.ProfileScreen
 import com.markoala.tomoandroid.ui.main.map.MapScreen
 import com.markoala.tomoandroid.ui.main.map.map_search.MapSearchScreen
 import com.markoala.tomoandroid.ui.main.calendar.promise.CreatePromiseScreen
+import com.markoala.tomoandroid.ui.main.meeting.meeting_detail.MeetingPromiseListScreen
 
 @Composable
 fun MainScreenRenderer(
@@ -105,7 +106,10 @@ fun MainScreenRenderer(
 
         is MainStackEntry.MeetingDetail -> MeetingDetailScreen(
             moimId = entry.moimId,
-            onBackClick = { navigator.pop() }
+            onBackClick = { navigator.pop() },
+            onPromiseListClick = { moimId, moimName ->
+                navigator.push(MainStackEntry.PromiseList(moimId, moimName))
+            }
         )
 
         is MainStackEntry.Profile -> ProfileScreen(
@@ -140,6 +144,11 @@ fun MainScreenRenderer(
                 selectedAddress = address
                 navigator.pop()
             }
+        )
+
+        is MainStackEntry.PromiseList -> MeetingPromiseListScreen(
+            moimName = entry.moimName,
+            onBackClick = { navigator.pop() }
         )
 
 

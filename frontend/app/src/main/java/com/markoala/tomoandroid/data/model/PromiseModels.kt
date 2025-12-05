@@ -1,23 +1,24 @@
 package com.markoala.tomoandroid.data.model
 
-interface PromiseBase {
-    val promiseName: String
-    val promiseDate: String
-    val promiseTime: String
-    val place: String
-}
+import com.google.gson.annotations.SerializedName
 
 data class PromiseResponseDTO(
-    override val promiseName: String,
-    override val promiseDate: String,
-    override val promiseTime: String,
-    override val place: String
-) : PromiseBase
+    val promiseName: String,
+    val promiseDate: String,
+    val promiseTime: String,
+    @SerializedName("location")
+    val location: String? = null,
+    @SerializedName("place") // 레거시 호환
+    private val legacyPlace: String? = null
+) {
+    val resolvedLocation: String
+        get() = location?.takeIf { it.isNotBlank() } ?: legacyPlace.orEmpty()
+}
 
 data class PromiseDTO(
     val title: String,
-    override val promiseName: String,
-    override val promiseDate: String,
-    override val promiseTime: String,
-    override val place: String
-) : PromiseBase
+    val promiseName: String,
+    val promiseDate: String,
+    val promiseTime: String,
+    val place: String
+)
