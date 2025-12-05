@@ -23,6 +23,7 @@ import com.markoala.tomoandroid.ui.main.meeting.meeting_detail.MeetingDetailScre
 import com.markoala.tomoandroid.ui.main.profile.ProfileScreen
 import com.markoala.tomoandroid.ui.main.map.MapScreen
 import com.markoala.tomoandroid.ui.main.map.map_search.MapSearchScreen
+import com.markoala.tomoandroid.ui.main.calendar.promise.CreatePromiseScreen
 
 @Composable
 fun MainScreenRenderer(
@@ -62,6 +63,9 @@ fun MainScreenRenderer(
                 paddingValues = padding,
                 onEventClick = { moimId ->
                     navigator.push(MainStackEntry.MeetingDetail(moimId))
+                },
+                onAddPromiseClick = { date ->
+                    navigator.push(MainStackEntry.CreatePromise(date))
                 }
             )
 
@@ -115,6 +119,16 @@ fun MainScreenRenderer(
         is MainStackEntry.CalendarDetail -> CalendarDetailScreen(
             eventId = entry.eventId,
             onBackClick = { navigator.pop() }
+        )
+
+        is MainStackEntry.CreatePromise -> CreatePromiseScreen(
+            paddingValues = padding,
+            selectedDate = entry.selectedDate,
+            onBackClick = { navigator.pop() },
+            onSuccess = {
+                navigator.pop()
+                navigator.openTab(BottomTab.Calendar)
+            }
         )
 
         is MainStackEntry.MapSearch -> MapSearchScreen(

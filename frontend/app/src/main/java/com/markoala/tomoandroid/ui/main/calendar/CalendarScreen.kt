@@ -20,6 +20,8 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.markoala.tomoandroid.data.model.MoimListDTO
+import com.markoala.tomoandroid.ui.components.ButtonStyle
+import com.markoala.tomoandroid.ui.components.CustomButton
 import com.markoala.tomoandroid.ui.components.CustomText
 import com.markoala.tomoandroid.ui.components.CustomTextType
 import com.markoala.tomoandroid.ui.components.MorphingDots
@@ -33,7 +35,8 @@ import java.time.YearMonth
 fun CalendarScreen(
     paddingValues: PaddingValues,
     meetingViewModel: MeetingViewModel = viewModel(),
-    onEventClick: (Int) -> Unit = {}
+    onEventClick: (Int) -> Unit = {},
+    onAddPromiseClick: (LocalDate) -> Unit = {}
 ) {
     val cardIvory = Color(0xFFFAF7F4)
 
@@ -105,11 +108,26 @@ fun CalendarScreen(
                     // -------------------------
                     // Header — 일정 제목
                     // -------------------------
-                    CustomText(
-                        text = "${selectedDate.monthValue}월 ${selectedDate.dayOfMonth}일 일정",
-                        type = CustomTextType.headline,
-                        color = CustomColor.primary400
-                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        CustomText(
+                            text = "${selectedDate.monthValue}월 ${selectedDate.dayOfMonth}일 일정",
+                            type = CustomTextType.headline,
+                            color = CustomColor.primary400
+                        )
+                        CustomButton(
+                            text = "약속 추가",
+                            style = ButtonStyle.Primary,
+                            onClick = {
+                                dailySchedules = null
+                                onAddPromiseClick(selectedDate)
+                            },
+                            modifier = Modifier.height(50.dp)
+                        )
+                    }
 
                     Spacer(Modifier.height(16.dp))
 

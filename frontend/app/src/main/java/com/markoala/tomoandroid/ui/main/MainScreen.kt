@@ -9,10 +9,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.activity.compose.BackHandler
-import androidx.navigation.NavHostController
 import com.markoala.tomoandroid.R
 import com.markoala.tomoandroid.ui.main.components.ChromeScaffold
 import com.markoala.tomoandroid.ui.main.components.MainScreenRenderer
+import java.time.LocalDate
 
 enum class BottomTab(val label: String, @param:DrawableRes val iconRes: Int) {
     Home("홈", R.drawable.ic_home),
@@ -80,6 +80,7 @@ sealed interface MainStackEntry {
     data class Tab(val tab: BottomTab) : MainStackEntry
     data class MeetingDetail(val moimId: Int) : MainStackEntry
     data class CalendarDetail(val eventId: Int) : MainStackEntry
+    data class CreatePromise(val selectedDate: LocalDate) : MainStackEntry
     data class AddFriends(val inviteCode: String? = null) : MainStackEntry
     object CreateMeeting : MainStackEntry
     object Profile : MainStackEntry
