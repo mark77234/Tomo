@@ -31,6 +31,7 @@ import com.markoala.tomoandroid.ui.main.calendar.model.CalendarEvent
 import com.markoala.tomoandroid.ui.main.calendar.model.CalendarEventType
 import com.markoala.tomoandroid.ui.main.meeting.MeetingViewModel
 import com.markoala.tomoandroid.ui.theme.CustomColor
+import com.markoala.tomoandroid.utils.formatTimeWithoutSeconds
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import retrofit2.awaitResponse
@@ -163,7 +164,7 @@ fun CalendarScreen(
                         dailySchedules!!.forEach { schedule ->
 
                             val isPromise = schedule.type == CalendarEventType.PROMISE
-                            val badgeLabel = if (isPromise) "약속" else "모임"
+                            val badgeLabel = if (isPromise) "약속" else "최초생성"
                             val secondaryText = if (isPromise) {
                                 listOfNotNull(schedule.moimTitle, schedule.promiseTime).joinToString(" · ")
                             } else {
@@ -176,28 +177,17 @@ fun CalendarScreen(
                             Surface(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(vertical = 6.dp)
-                                    .let { base ->
-                                        if (!isPromise && schedule.moimId != null) {
-                                            base.clickable {
-                                                dailySchedules = null
-                                                onEventClick(schedule.moimId)
-                                            }
-                                        } else base
-                                    },
+                                    .padding(vertical = 6.dp),
                                 shape = RoundedCornerShape(12.dp),
                                 color = if (isPromise) CustomColor.primary100 else CustomColor.primary50,
                                 tonalElevation = 1.dp
                             ) {
-
                                 Column(
-                                    modifier = Modifier
-                                        .padding(14.dp)
+                                    modifier = Modifier.padding(16.dp),
+                                    verticalArrangement = Arrangement.spacedBy(10.dp)
                                 ) {
 
-                                    // ------------------------
-                                    // 타입 배지
-                                    // ------------------------
+                                    // 🔥 약속 / 모임 타입 라벨
                                     Box(
                                         modifier = Modifier
                                             .background(CustomColor.primary200, RoundedCornerShape(6.dp))
@@ -209,39 +199,24 @@ fun CalendarScreen(
                                         )
                                     }
 
-                                    Spacer(Modifier.height(6.dp))
+                                    // 🔥 모임 제목
+                                    InfoRow(label = "모임명", value = schedule.moimTitle ?: "-")
 
-                                    // ------------------------
-                                    // 제목
-                                    // ------------------------
-                                    CustomText(
-                                        text = schedule.title,
-                                        type = CustomTextType.body,
-                                        color = CustomColor.textPrimary
-                                    )
+                                    // 🔥 약속 제목 또는 생성 이벤트 제목
+                                    InfoRow(label = "약속", value = schedule.title)
 
-                                    Spacer(Modifier.height(4.dp))
-
-                                    // ------------------------
-                                    // 보조 정보
-                                    // ------------------------
-                                    secondaryText?.let {
-                                        CustomText(
-                                            text = it,
-                                            type= CustomTextType.bodySmall,
-                                            color = CustomColor.gray500
-                                        )
+                                    // 🔥 약속 시간 (약속일 때만 표시)
+                                    if (isPromise) {
+                                        InfoRow(label = "약속 시간", value = formatTimeWithoutSeconds(schedule.promiseTime))
                                     }
-                                    placeText?.let {
-                                        Spacer(Modifier.height(2.dp))
-                                        CustomText(
-                                            text = "장소: $it",
-                                            type = CustomTextType.bodySmall,
-                                            color = CustomColor.gray500
-                                        )
+
+                                    // 🔥 장소가 있는 경우만 표시
+                                    if (isPromise && !placeText.isNullOrBlank()) {
+                                        InfoRow(label = "장소", value = placeText)
                                     }
                                 }
                             }
+
                         }
 
                     }
@@ -354,3 +329,24 @@ private suspend fun fetchPromiseEvents(meetings: List<MoimListDTO>): List<Calend
     }
     collected
 }
+
+@Composable
+private fun InfoRow(label: String, value: String) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        CustomText(
+            text = "$label:",
+            type = CustomTextType.bodySmall,
+            color = CustomColor.black
+        )
+        CustomText(
+            text = value,
+            type = CustomTextType.body,
+            color = CustomColor.primary
+        )
+    }
+}
+
