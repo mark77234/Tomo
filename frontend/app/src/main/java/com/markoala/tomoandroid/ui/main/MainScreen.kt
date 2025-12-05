@@ -10,6 +10,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.activity.compose.BackHandler
 import com.markoala.tomoandroid.R
+import com.markoala.tomoandroid.data.api.GeocodeAddress
 import com.markoala.tomoandroid.ui.main.components.ChromeScaffold
 import com.markoala.tomoandroid.ui.main.components.MainScreenRenderer
 import java.time.LocalDate
@@ -81,7 +82,11 @@ sealed interface MainStackEntry {
     data class MeetingDetail(val moimId: Int) : MainStackEntry
     data class PromiseList(val moimId: Int, val moimName: String) : MainStackEntry
     data class CalendarDetail(val eventId: Int) : MainStackEntry
-    data class CreatePromise(val selectedDate: LocalDate) : MainStackEntry
+    data class CreatePromise(
+        val selectedDate: LocalDate,
+        val initialAddress: GeocodeAddress? = null,
+        val initialQuery: String? = null
+    ) : MainStackEntry
     data class AddFriends(val inviteCode: String? = null) : MainStackEntry
     object CreateMeeting : MainStackEntry
     object Profile : MainStackEntry

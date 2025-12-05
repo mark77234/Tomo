@@ -34,6 +34,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.markoala.tomoandroid.data.api.GeocodeAddress
 import com.markoala.tomoandroid.data.model.MoimListDTO
 import com.markoala.tomoandroid.ui.components.ButtonStyle
 import com.markoala.tomoandroid.ui.components.CustomBack
@@ -54,7 +55,9 @@ fun CreatePromiseScreen(
     paddingValues: PaddingValues,
     selectedDate: LocalDate,
     onBackClick: () -> Unit,
-    onSuccess: () -> Unit = {}
+    onSuccess: () -> Unit = {},
+    initialAddress: GeocodeAddress? = null,
+    initialQuery: String? = null
 ) {
     val viewModel: CreatePromiseViewModel = viewModel()
     val moims by viewModel.moims.collectAsState()
@@ -75,6 +78,11 @@ fun CreatePromiseScreen(
     val scrollState = rememberScrollState()
     val context = LocalContext.current
     var showMapSearch by remember { mutableStateOf(false) }
+    fun GeocodeAddress.displayLabel(): String {
+        return listOfNotNull(name, roadAddress, jibunAddress, englishAddress)
+            .firstOrNull { it.isNotBlank() }
+            ?: "선택한 장소"
+    }
 
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
@@ -88,6 +96,13 @@ fun CreatePromiseScreen(
 
     LaunchedEffect(selectedDate) {
         viewModel.setSelectedDate(selectedDate)
+    }
+
+    LaunchedEffect(initialAddress, initialQuery) {
+        if (initialAddress != null) {
+            val label = initialQuery?.takeIf { it.isNotBlank() } ?: initialAddress.displayLabel()
+            viewModel.updateLocation(label, initialAddress)
+        }
     }
 
     LaunchedEffect(isSuccess) {
@@ -306,7 +321,7 @@ fun CreatePromiseScreen(
                         selectedQuery = selectedQuery,
                         onSearchClick = { showMapSearch = true },
                         interactive = false,
-                        showCurrentLocationButton = false,
+                        isPromise = false,
                         showSearchOverlay = false
                     )
                 }

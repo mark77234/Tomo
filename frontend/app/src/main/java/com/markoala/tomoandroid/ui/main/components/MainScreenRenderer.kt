@@ -25,6 +25,7 @@ import com.markoala.tomoandroid.ui.main.map.MapScreen
 import com.markoala.tomoandroid.ui.main.map.map_search.MapSearchScreen
 import com.markoala.tomoandroid.ui.main.calendar.promise.CreatePromiseScreen
 import com.markoala.tomoandroid.ui.main.meeting.meeting_detail.MeetingPromiseListScreen
+import java.time.LocalDate
 
 @Composable
 fun MainScreenRenderer(
@@ -81,7 +82,16 @@ fun MainScreenRenderer(
                 paddingValues = padding,
                 selectedAddress = selectedAddress,
                 selectedQuery = selectedQuery,
-                onSearchClick = { navigator.push(MainStackEntry.MapSearch(selectedQuery)) }
+                onSearchClick = { navigator.push(MainStackEntry.MapSearch(selectedQuery)) },
+                onCreatePromiseWithLocation = { address, query ->
+                    navigator.push(
+                        MainStackEntry.CreatePromise(
+                            selectedDate = LocalDate.now(),
+                            initialAddress = address,
+                            initialQuery = query
+                        )
+                    )
+                }
             )
         }
 
@@ -129,6 +139,8 @@ fun MainScreenRenderer(
             paddingValues = padding,
             selectedDate = entry.selectedDate,
             onBackClick = { navigator.pop() },
+            initialAddress = entry.initialAddress,
+            initialQuery = entry.initialQuery,
             onSuccess = {
                 navigator.pop()
                 navigator.openTab(BottomTab.Calendar)

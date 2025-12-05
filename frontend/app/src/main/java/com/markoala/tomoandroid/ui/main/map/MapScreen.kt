@@ -8,7 +8,6 @@ import android.util.Log
 import android.view.MotionEvent
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -75,8 +74,9 @@ fun MapScreen(
     selectedAddress: GeocodeAddress?,
     selectedQuery: String?,
     onSearchClick: () -> Unit,
+    onCreatePromiseWithLocation: (GeocodeAddress, String?) -> Unit = { _, _ -> },
     interactive: Boolean = true,
-    showCurrentLocationButton: Boolean = true,
+    isPromise: Boolean = true,
     showSearchOverlay: Boolean = true
 ) {
     val context = LocalContext.current
@@ -101,8 +101,8 @@ fun MapScreen(
         }
     }
 
-    LaunchedEffect(showCurrentLocationButton) {
-        if (showCurrentLocationButton && !hasLocationPermission) {
+    LaunchedEffect(isPromise) {
+        if (isPromise && !hasLocationPermission) {
             permissionLauncher.launch(
                 arrayOf(
                     Manifest.permission.ACCESS_FINE_LOCATION,
@@ -290,12 +290,8 @@ fun MapScreen(
             }
         }
 
-
-
-
-
         selectedAddress?.let { address ->
-            val bottomPadding = if (showCurrentLocationButton) 82.dp else 16.dp
+            val bottomPadding = if (isPromise) 82.dp else 16.dp
             Surface(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -342,10 +338,20 @@ fun MapScreen(
                                 color = CustomColor.textSecondary
                             )
                         }
+                    if (isPromise) {
+                        CustomButton(
+                            text = "이 장소로 약속 잡기",
+                            onClick = { onCreatePromiseWithLocation(address, selectedQuery) },
+                            style = ButtonStyle.Primary,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 8.dp)
+                        )
+                    }
                 }
             }
         }
-        if (showCurrentLocationButton) {
+        if (isPromise) {
 
             // hasLocationPermission == true → 아이콘 버튼 표시
             if (hasLocationPermission) {
