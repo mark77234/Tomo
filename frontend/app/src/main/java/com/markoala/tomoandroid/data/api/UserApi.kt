@@ -1,8 +1,6 @@
 package com.markoala.tomoandroid.data.api
 
-import com.markoala.tomoandroid.data.model.AuthTokenBundle
-import com.markoala.tomoandroid.data.model.BaseResponse
-import com.markoala.tomoandroid.data.model.UserProfile
+import com.markoala.tomoandroid.data.model.*
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.Body
