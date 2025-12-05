@@ -286,10 +286,16 @@ fun CreatePromiseScreen(
                     type = CustomTextType.bodySmall,
                     color = CustomColor.textSecondary
                 )
+                CustomButton(
+                    text = "장소 검색하기",
+                    onClick = { showMapSearch = true },
+                    style = ButtonStyle.Secondary,
+                    modifier = Modifier.fillMaxWidth()
+                )
                 Surface(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(500.dp),
+                        .height(380.dp),
                     shape = RoundedCornerShape(16.dp),
                     color = CustomColor.white,
                     shadowElevation = 2.dp
@@ -298,7 +304,10 @@ fun CreatePromiseScreen(
                         paddingValues = PaddingValues(0.dp),
                         selectedAddress = selectedAddress,
                         selectedQuery = selectedQuery,
-                        onSearchClick = { showMapSearch = true }
+                        onSearchClick = { showMapSearch = true },
+                        interactive = false,
+                        showCurrentLocationButton = false,
+                        showSearchOverlay = false
                     )
                 }
                 Surface(

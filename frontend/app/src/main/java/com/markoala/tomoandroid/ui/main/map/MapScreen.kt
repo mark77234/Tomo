@@ -5,6 +5,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.util.Log
+import android.view.MotionEvent
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -29,6 +30,7 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -68,7 +70,10 @@ fun MapScreen(
     paddingValues: PaddingValues,
     selectedAddress: GeocodeAddress?,
     selectedQuery: String?,
-    onSearchClick: () -> Unit
+    onSearchClick: () -> Unit,
+    interactive: Boolean = true,
+    showCurrentLocationButton: Boolean = true,
+    showSearchOverlay: Boolean = true
 ) {
     val context = LocalContext.current
     val appContext = context.applicationContext
@@ -92,8 +97,8 @@ fun MapScreen(
         }
     }
 
-    LaunchedEffect(Unit) {
-        if (!hasLocationPermission) {
+    LaunchedEffect(showCurrentLocationButton) {
+        if (showCurrentLocationButton && !hasLocationPermission) {
             permissionLauncher.launch(
                 arrayOf(
                     Manifest.permission.ACCESS_FINE_LOCATION,
@@ -229,44 +234,65 @@ fun MapScreen(
             .padding(paddingValues)
     ) {
         AndroidView(
-            modifier = Modifier.fillMaxSize(),
-            factory = { mapView }
+            modifier = Modifier
+                .fillMaxSize()
+                .pointerInteropFilter { !interactive },
+            factory = {
+                mapView.apply {
+                    isEnabled = interactive
+                    isClickable = interactive
+                    isLongClickable = interactive
+                    setOnTouchListener(
+                        if (interactive) { v, event ->
+                            if (event.action == MotionEvent.ACTION_DOWN || event.action == MotionEvent.ACTION_MOVE) {
+                                v.parent?.requestDisallowInterceptTouchEvent(true)
+                            }
+                            false
+                        } else { _, _ ->
+                            true
+                        }
+                    )
+                }
+            }
         )
 
-        Surface(
-            modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.TopCenter)
-                .padding(horizontal = 16.dp, vertical = 12.dp)
-                .clickable { onSearchClick() },
-            shape = RoundedCornerShape(14.dp),
-            color = CustomColor.white,
-            shadowElevation = 4.dp
-        ) {
-            Column(
-                modifier = Modifier.padding(horizontal = 14.dp, vertical = 12.dp),
-                verticalArrangement = Arrangement.spacedBy(6.dp)
+        if (showSearchOverlay) {
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.TopCenter)
+                    .padding(horizontal = 16.dp, vertical = 12.dp)
+                    .clickable { onSearchClick() },
+                shape = RoundedCornerShape(14.dp),
+                color = CustomColor.white,
+                shadowElevation = 4.dp
             ) {
-                CustomText(
-                    text = "모임을 가질 장소를 검색해보세요.",
-                    type = CustomTextType.bodySmall,
-                    color = CustomColor.textSecondary
-                )
-                CustomText(
-                    text = selectedQuery?.takeIf { it.isNotBlank() }
-                        ?: "장소를 검색하려면 눌러주세요",
-                    type = CustomTextType.body,
-                    color = CustomColor.textPrimary
-                )
+                Column(
+                    modifier = Modifier.padding(horizontal = 14.dp, vertical = 12.dp),
+                    verticalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    CustomText(
+                        text = "모임을 가질 장소를 검색해보세요.",
+                        type = CustomTextType.bodySmall,
+                        color = CustomColor.textSecondary
+                    )
+                    CustomText(
+                        text = selectedQuery?.takeIf { it.isNotBlank() }
+                            ?: "장소를 검색하려면 눌러주세요",
+                        type = CustomTextType.body,
+                        color = CustomColor.textPrimary
+                    )
+                }
             }
         }
 
         selectedAddress?.let { address ->
+            val bottomPadding = if (showCurrentLocationButton) 72.dp else 16.dp
             Surface(
                 modifier = Modifier
                     .fillMaxWidth()
                     .align(Alignment.BottomCenter)
-                    .padding(horizontal = 16.dp, vertical = 72.dp),
+                    .padding(horizontal = 16.dp, vertical = bottomPadding),
                 shape = RoundedCornerShape(16.dp),
                 color = CustomColor.white,
                 shadowElevation = 4.dp
@@ -312,41 +338,43 @@ fun MapScreen(
             }
         }
 
-        CustomButton(
-            text = if (hasLocationPermission) "현재 위치로 이동" else "위치 권한 요청",
-            onClick = {
-                if (!hasLocationPermission) {
-                    permissionLauncher.launch(
-                        arrayOf(
-                            Manifest.permission.ACCESS_FINE_LOCATION,
-                            Manifest.permission.ACCESS_COARSE_LOCATION
+        if (showCurrentLocationButton) {
+            CustomButton(
+                text = if (hasLocationPermission) "현재 위치로 이동" else "위치 권한 요청",
+                onClick = {
+                    if (!hasLocationPermission) {
+                        permissionLauncher.launch(
+                            arrayOf(
+                                Manifest.permission.ACCESS_FINE_LOCATION,
+                                Manifest.permission.ACCESS_COARSE_LOCATION
+                            )
                         )
-                    )
-                    return@CustomButton
-                }
-                scope.launch {
-                    try {
-                        val latLng = fetchCurrentLatLng(context, fusedClient)
-                        if (latLng != null) {
-                            kakaoMap?.moveCamera(
-                            CameraUpdateFactory.newCenterPosition(latLng, 16)
-                            ) ?: toastManager.showInfo("지도를 준비하는 중이에요.")
-                            currentLocation = latLng
-                        } else {
-                            toastManager.showInfo("현재 위치를 불러올 수 없어요.")
-                        }
-                    } catch (se: SecurityException) {
-                        hasLocationPermission = false
-                        toastManager.showInfo("위치 권한을 다시 확인해주세요.")
+                        return@CustomButton
                     }
-                }
-            },
-            style = ButtonStyle.Primary,
-            modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.BottomCenter)
-                .padding(horizontal = 16.dp, vertical = 12.dp)
-        )
+                    scope.launch {
+                        try {
+                            val latLng = fetchCurrentLatLng(context, fusedClient)
+                            if (latLng != null) {
+                                kakaoMap?.moveCamera(
+                                    CameraUpdateFactory.newCenterPosition(latLng, 16)
+                                ) ?: toastManager.showInfo("지도를 준비하는 중이에요.")
+                                currentLocation = latLng
+                            } else {
+                                toastManager.showInfo("현재 위치를 불러올 수 없어요.")
+                            }
+                        } catch (se: SecurityException) {
+                            hasLocationPermission = false
+                            toastManager.showInfo("위치 권한을 다시 확인해주세요.")
+                        }
+                    }
+                },
+                style = ButtonStyle.Primary,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.BottomCenter)
+                    .padding(horizontal = 16.dp, vertical = 12.dp)
+            )
+        }
     }
 }
 
@@ -406,11 +434,15 @@ private suspend fun fetchCurrentLatLng(
     fusedClient: com.google.android.gms.location.FusedLocationProviderClient
 ): LatLng? {
     if (!LocationPermissionHelper.isLocationPermissionGranted(context)) return null
-    val cancellationTokenSource = CancellationTokenSource()
-    val current = fusedClient.getCurrentLocation(
-        Priority.PRIORITY_BALANCED_POWER_ACCURACY,
-        cancellationTokenSource.token
-    ).await()
-    val location = current ?: fusedClient.lastLocation.await()
-    return location?.let { LatLng.from(it.latitude, it.longitude) }
+    return try {
+        val cancellationTokenSource = CancellationTokenSource()
+        val current = fusedClient.getCurrentLocation(
+            Priority.PRIORITY_BALANCED_POWER_ACCURACY,
+            cancellationTokenSource.token
+        ).await()
+        val location = current ?: fusedClient.lastLocation.await()
+        location?.let { LatLng.from(it.latitude, it.longitude) }
+    } catch (se: SecurityException) {
+        null
+    }
 }
