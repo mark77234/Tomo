@@ -49,6 +49,7 @@ import com.markoala.tomoandroid.ui.components.LocalToastManager
 import com.markoala.tomoandroid.ui.components.DangerDialog
 import com.markoala.tomoandroid.ui.main.settings.components.SettingsToggle
 import com.markoala.tomoandroid.ui.theme.CustomColor
+import com.markoala.tomoandroid.utils.LocationPermissionHelper
 import com.markoala.tomoandroid.utils.NotificationPermissionHelper
 import kotlinx.coroutines.launch
 
@@ -81,9 +82,11 @@ fun SettingsContent(
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     var notificationsEnabled by remember { mutableStateOf(false) } // 알림 활성화 상태
+    var locationPermissionGranted by remember { mutableStateOf(false) }
     val lifecycleOwner = LocalLifecycleOwner.current
     var pendingEnableViaSettings by remember { mutableStateOf(false) }
     var requestPermissionAfterSettings by remember { mutableStateOf(false) }
+    var pendingLocationSettings by remember { mutableStateOf(false) }
     val notificationPermissionLauncher = rememberLauncherForActivityResult( // 알림 권한 요청 런처
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted ->
@@ -100,9 +103,25 @@ fun SettingsContent(
             requestPermissionAfterSettings = false
         }
     }
+    val locationPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        val granted = permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true ||
+            permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true
+        locationPermissionGranted = granted
+        if (granted) {
+            toastManager.showInfo("위치 권한이 켜졌어요.")
+            pendingLocationSettings = false
+        } else {
+            toastManager.showInfo("설정에서 위치 권한을 허용할 수 있어요.")
+            pendingLocationSettings = true
+            LocationPermissionHelper.openAppLocationSettings(context)
+        }
+    }
 
     LaunchedEffect(Unit) { // areNotificationsEnabled() 함수로 현재 알림이 가능한 상태인지 확인
         notificationsEnabled = NotificationPermissionHelper.areNotificationsEnabled(context)
+        locationPermissionGranted = LocationPermissionHelper.isLocationPermissionGranted(context)
     }
 
     DisposableEffect(lifecycleOwner) { // 라이프사이클 옵저버로 포그라운드 복귀 시 알림 권한 상태 재확인
@@ -120,6 +139,17 @@ fun SettingsContent(
                     toastManager.showInfo("푸시 알림이 켜졌어요.")
                     pendingEnableViaSettings = false
                 }
+                val updatedLocationPermission = LocationPermissionHelper.isLocationPermissionGranted(context)
+                if (pendingLocationSettings) {
+                    val message = if (updatedLocationPermission) {
+                        "위치 권한이 켜졌어요."
+                    } else {
+                        "위치 권한이 꺼져 있어요."
+                    }
+                    toastManager.showInfo(message)
+                    pendingLocationSettings = false
+                }
+                locationPermissionGranted = updatedLocationPermission
             }
         }
         lifecycleOwner.lifecycle.addObserver(observer)
@@ -223,8 +253,40 @@ fun SettingsContent(
                     },
                     icon = R.drawable.ic_notification
                 )
+                SettingsToggle(
+                    title = "위치 접근",
+                    description = "현재 위치 버튼을 사용하려면 허용이 필요해요",
+                    checked = locationPermissionGranted,
+                    onCheckedChange = { enable ->
+                        locationPermissionGranted = enable
+                        if (enable) {
+                            if (LocationPermissionHelper.isLocationPermissionGranted(context)) {
+                                locationPermissionGranted = true
+                                toastManager.showInfo("위치 권한이 이미 켜져 있어요.")
+                                pendingLocationSettings = false
+                            } else {
+                                locationPermissionLauncher.launch(
+                                    arrayOf(
+                                        Manifest.permission.ACCESS_FINE_LOCATION,
+                                        Manifest.permission.ACCESS_COARSE_LOCATION
+                                    )
+                                )
+                            }
+                        } else {
+                            pendingLocationSettings = true
+                            LocationPermissionHelper.openAppLocationSettings(context)
+                            toastManager.showInfo("설정에서 위치 권한을 끌 수 있어요.")
+                        }
+                    },
+                    icon = R.drawable.ic_location
+                )
                 CustomText(
                     text = "알림 권한은 기기 설정에서 관리돼요.",
+                    type = CustomTextType.bodySmall,
+                    color = CustomColor.textSecondary
+                )
+                CustomText(
+                    text = "위치 권한은 앱 설정에서 켜고 끌 수 있어요.",
                     type = CustomTextType.bodySmall,
                     color = CustomColor.textSecondary
                 )

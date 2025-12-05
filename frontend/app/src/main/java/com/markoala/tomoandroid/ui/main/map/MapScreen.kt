@@ -59,6 +59,7 @@ import com.markoala.tomoandroid.ui.components.CustomText
 import com.markoala.tomoandroid.ui.components.CustomTextType
 import com.markoala.tomoandroid.ui.components.LocalToastManager
 import com.markoala.tomoandroid.ui.theme.CustomColor
+import com.markoala.tomoandroid.utils.LocationPermissionHelper
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
@@ -79,7 +80,7 @@ fun MapScreen(
     val defaultPos = LatLng.from(37.5666102, 126.9783881)
     val selectedAddressState = rememberUpdatedState(selectedAddress)
 
-    var hasLocationPermission by remember { mutableStateOf(checkLocationPermission(context)) }
+    var hasLocationPermission by remember { mutableStateOf(LocationPermissionHelper.isLocationPermissionGranted(context)) }
     var currentLocation by remember { mutableStateOf<LatLng?>(null) }
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions()
@@ -162,7 +163,10 @@ fun MapScreen(
         val lifecycle = lifecycleOwner.lifecycle
         val observer = LifecycleEventObserver { _, event ->
             when (event) {
-                Lifecycle.Event.ON_RESUME -> mapView.resume()
+                Lifecycle.Event.ON_RESUME -> {
+                    mapView.resume()
+                    hasLocationPermission = LocationPermissionHelper.isLocationPermissionGranted(context)
+                }
                 Lifecycle.Event.ON_PAUSE -> mapView.pause()
                 Lifecycle.Event.ON_DESTROY -> mapView.finish()
                 else -> {}
@@ -397,23 +401,11 @@ private fun GeocodeAddress.displayTitle(): String {
         ?: "선택한 장소 정보를 불러올 수 없어요."
 }
 
-private fun checkLocationPermission(context: Context): Boolean {
-    val fine = ContextCompat.checkSelfPermission(
-        context,
-        Manifest.permission.ACCESS_FINE_LOCATION
-    ) == android.content.pm.PackageManager.PERMISSION_GRANTED
-    val coarse = ContextCompat.checkSelfPermission(
-        context,
-        Manifest.permission.ACCESS_COARSE_LOCATION
-    ) == android.content.pm.PackageManager.PERMISSION_GRANTED
-    return fine || coarse
-}
-
 private suspend fun fetchCurrentLatLng(
     context: Context,
     fusedClient: com.google.android.gms.location.FusedLocationProviderClient
 ): LatLng? {
-    if (!checkLocationPermission(context)) return null
+    if (!LocationPermissionHelper.isLocationPermissionGranted(context)) return null
     val cancellationTokenSource = CancellationTokenSource()
     val current = fusedClient.getCurrentLocation(
         Priority.PRIORITY_BALANCED_POWER_ACCURACY,
