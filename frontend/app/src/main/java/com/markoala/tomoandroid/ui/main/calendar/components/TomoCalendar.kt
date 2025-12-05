@@ -29,7 +29,7 @@ import com.markoala.tomoandroid.ui.main.calendar.model.CalendarEventType
 import com.markoala.tomoandroid.ui.theme.CustomColor
 import com.markoala.tomoandroid.ui.components.CustomText
 import com.markoala.tomoandroid.ui.components.CustomTextType
-import com.markoala.tomoandroid.util.generateCalendarMatrix
+import com.markoala.tomoandroid.utils.generateCalendarMatrix
 import java.time.LocalDate
 import java.time.YearMonth
 

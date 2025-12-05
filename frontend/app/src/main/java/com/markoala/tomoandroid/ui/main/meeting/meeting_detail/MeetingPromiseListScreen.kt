@@ -43,8 +43,8 @@ import com.markoala.tomoandroid.ui.components.CustomText
 import com.markoala.tomoandroid.ui.components.CustomTextType
 import com.markoala.tomoandroid.ui.components.LoadingDialog
 import com.markoala.tomoandroid.ui.theme.CustomColor
-import com.markoala.tomoandroid.util.formatTimeWithoutSeconds
-import com.markoala.tomoandroid.util.parseIsoToKoreanDate
+import com.markoala.tomoandroid.utils.formatTimeWithoutSeconds
+import com.markoala.tomoandroid.utils.parseIsoToKoreanDate
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch

@@ -37,7 +37,7 @@ import com.markoala.tomoandroid.ui.main.friends.add_friends.components.AddFriend
 import com.markoala.tomoandroid.ui.main.friends.add_friends.components.SearchFriendsSection
 import com.markoala.tomoandroid.ui.main.friends.add_friends.components.ShareInviteSection
 import com.markoala.tomoandroid.ui.theme.CustomColor
-import com.markoala.tomoandroid.util.generateInviteCode
+import com.markoala.tomoandroid.utils.generateInviteCode
 
 private enum class AddFriendsTab { Search, Share }
 

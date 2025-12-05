@@ -37,7 +37,7 @@ import com.markoala.tomoandroid.ui.components.CustomText
 import com.markoala.tomoandroid.ui.components.CustomTextType
 import com.markoala.tomoandroid.ui.components.LocalToastManager
 import com.markoala.tomoandroid.ui.theme.CustomColor
-import com.markoala.tomoandroid.util.getFriendshipDurationText
+import com.markoala.tomoandroid.utils.getFriendshipDurationText
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response

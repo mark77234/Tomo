@@ -49,8 +49,8 @@ import com.markoala.tomoandroid.ui.components.ProfileImage
 import com.markoala.tomoandroid.ui.components.LocalToastManager
 import com.markoala.tomoandroid.ui.main.settings.SettingsContent
 import com.markoala.tomoandroid.ui.theme.CustomColor
-import com.markoala.tomoandroid.util.generateInviteCode
 import com.markoala.tomoandroid.util.shareInviteCode
+import com.markoala.tomoandroid.utils.generateInviteCode
 
 enum class ProfileTab(val label: String) {
     Info("프로필"),

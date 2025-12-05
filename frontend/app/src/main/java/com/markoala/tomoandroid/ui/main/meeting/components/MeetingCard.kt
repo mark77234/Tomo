@@ -29,8 +29,8 @@ import com.markoala.tomoandroid.ui.components.CustomTextType
 import com.markoala.tomoandroid.ui.components.DangerDialog
 import com.markoala.tomoandroid.ui.main.meeting.MeetingViewModel
 import com.markoala.tomoandroid.ui.theme.CustomColor
-import com.markoala.tomoandroid.util.getFriendshipDurationText
-import com.markoala.tomoandroid.util.parseIsoToKoreanDate
+import com.markoala.tomoandroid.utils.getFriendshipDurationText
+import com.markoala.tomoandroid.utils.parseIsoToKoreanDate
 
 @Composable
 fun MeetingCard(

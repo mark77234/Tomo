@@ -39,12 +39,12 @@ import com.markoala.tomoandroid.ui.components.CustomText
 import com.markoala.tomoandroid.ui.components.CustomTextType
 import com.markoala.tomoandroid.ui.main.friends.components.FriendCard
 import com.markoala.tomoandroid.ui.theme.CustomColor
-import com.markoala.tomoandroid.util.parseIsoToKoreanDate
+import com.markoala.tomoandroid.utils.parseIsoToKoreanDate
 import com.google.firebase.auth.FirebaseAuth
 import com.markoala.tomoandroid.data.model.MoimDetails
 import com.markoala.tomoandroid.ui.components.CustomBack
 import com.markoala.tomoandroid.ui.components.LoadingDialog
-import com.markoala.tomoandroid.util.getFriendshipDurationText
+import com.markoala.tomoandroid.utils.getFriendshipDurationText
 
 @Composable
 fun MeetingDetailScreen(

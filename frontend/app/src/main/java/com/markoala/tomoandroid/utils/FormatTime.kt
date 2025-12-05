@@ -1,4 +1,4 @@
-package com.markoala.tomoandroid.util
+package com.markoala.tomoandroid.utils
 
 fun formatTimeWithoutSeconds(time: String): String {
     // Expect: "HH:mm:ss"
