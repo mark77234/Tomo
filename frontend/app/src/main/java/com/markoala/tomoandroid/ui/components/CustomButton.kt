@@ -42,6 +42,10 @@ fun CustomButton(
     style: ButtonStyle = ButtonStyle.Primary,
     leadingIcon: Painter? = null,
     trailingIcon: Painter? = null,
+
+    // 🔥 추가된 옵션 (nullable → 기본값 유지)
+    contentPadding: PaddingValues? = null,
+    textStyle: CustomTextType? = null,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
@@ -52,7 +56,13 @@ fun CustomButton(
     )
 
     val shape = RoundedCornerShape(999.dp)
-    val contentPadding = PaddingValues(horizontal = 24.dp, vertical = 14.dp)
+
+    // 🔥 패딩: 전달된 경우 → override / 아니면 기존 기본값
+    val actualPadding = contentPadding ?: PaddingValues(horizontal = 24.dp, vertical = 14.dp)
+
+    // 🔥 텍스트 크기: 전달된 경우 override / 아니면 기존 button 스타일
+    val actualTextStyle = textStyle ?: CustomTextType.button
+
     val contentColor = when (style) {
         ButtonStyle.Primary -> CustomColor.white
         ButtonStyle.Secondary -> CustomColor.textBody
@@ -63,6 +73,11 @@ fun CustomButton(
         ButtonStyle.Primary -> CustomColor.white.copy(alpha = 0.6f)
         ButtonStyle.Secondary -> CustomColor.textSecondary
         ButtonStyle.Danger -> CustomColor.white.copy(alpha = 0.6f)
+    }
+
+    val scaledModifier = modifier.graphicsLayer {
+        scaleX = scale
+        scaleY = scale
     }
 
     val content: @Composable () -> Unit = {
@@ -80,7 +95,7 @@ fun CustomButton(
                 }
                 CustomText(
                     text = text,
-                    type = CustomTextType.button,
+                    type = actualTextStyle,
                     color = LocalContentColor.current
                 )
                 trailingIcon?.let { painter ->
@@ -94,20 +109,15 @@ fun CustomButton(
         }
     }
 
-    val scaledModifier = modifier.graphicsLayer {
-        scaleX = scale
-        scaleY = scale
-    }
-
     when (style) {
         ButtonStyle.Primary -> Button(
             onClick = onClick,
             enabled = enabled,
             modifier = scaledModifier,
             shape = shape,
-            contentPadding = contentPadding,
+            contentPadding = actualPadding,
             colors = ButtonDefaults.buttonColors(
-                containerColor = CustomColor.primary,
+                containerColor = CustomColor.primary450,
                 contentColor = contentColor,
                 disabledContentColor = disabledContentColor,
                 disabledContainerColor = CustomColor.primary.copy(alpha = 0.4f)
@@ -121,7 +131,7 @@ fun CustomButton(
             enabled = enabled,
             modifier = scaledModifier,
             shape = shape,
-            contentPadding = contentPadding,
+            contentPadding = actualPadding,
             colors = ButtonDefaults.buttonColors(
                 containerColor = CustomColor.danger,
                 contentColor = contentColor,
@@ -137,7 +147,7 @@ fun CustomButton(
             enabled = enabled,
             modifier = scaledModifier,
             shape = shape,
-            contentPadding = contentPadding,
+            contentPadding = actualPadding,
             border = BorderStroke(1.dp, CustomColor.outline),
             colors = ButtonDefaults.outlinedButtonColors(
                 contentColor = contentColor,

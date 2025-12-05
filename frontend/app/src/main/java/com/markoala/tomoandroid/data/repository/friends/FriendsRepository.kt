@@ -5,8 +5,8 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.markoala.tomoandroid.data.fcm.FcmPushSender
 import com.markoala.tomoandroid.data.api.friendsApi
 
-import com.markoala.tomoandroid.data.model.friends.FriendSummary
-import com.markoala.tomoandroid.data.model.user.BaseResponse
+import com.markoala.tomoandroid.data.model.FriendSummary
+import com.markoala.tomoandroid.data.model.BaseResponse
 import com.markoala.tomoandroid.data.repository.AuthRepository
 import com.markoala.tomoandroid.utils.ErrorHandler
 import retrofit2.Call

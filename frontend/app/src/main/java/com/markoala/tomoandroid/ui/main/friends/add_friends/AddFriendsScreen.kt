@@ -28,7 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.LaunchedEffect
-import com.markoala.tomoandroid.data.model.friends.FriendSummary
+import com.markoala.tomoandroid.data.model.FriendSummary
 import com.markoala.tomoandroid.data.repository.friends.FriendsRepository
 import com.markoala.tomoandroid.ui.components.CustomText
 import com.markoala.tomoandroid.ui.components.CustomTextType
@@ -37,7 +37,7 @@ import com.markoala.tomoandroid.ui.main.friends.add_friends.components.AddFriend
 import com.markoala.tomoandroid.ui.main.friends.add_friends.components.SearchFriendsSection
 import com.markoala.tomoandroid.ui.main.friends.add_friends.components.ShareInviteSection
 import com.markoala.tomoandroid.ui.theme.CustomColor
-import com.markoala.tomoandroid.util.generateInviteCode
+import com.markoala.tomoandroid.utils.generateInviteCode
 
 private enum class AddFriendsTab { Search, Share }
 

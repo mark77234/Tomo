@@ -1,4 +1,4 @@
-package com.markoala.tomoandroid.data.model.friends
+package com.markoala.tomoandroid.data.model
 
 data class FriendProfile(
     val username: String,

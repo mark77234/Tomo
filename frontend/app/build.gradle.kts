@@ -22,8 +22,8 @@ android {
         applicationId = "com.markoala.tomoandroid"
         minSdk = 33
         targetSdk = 36
-        versionCode = 16
-        versionName = "1.1.6"
+        versionCode = 17
+        versionName = "1.2.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -67,6 +67,16 @@ android {
             "FCM_CLIENT_ID",
             "\"${localProperties.getProperty("fcm_client_id", "")}\""
         )
+        buildConfigField(
+            "String",
+            "KAKAO_MAP_NATIVE_APP_KEY",
+            "\"${localProperties.getProperty("kakao_map_native_app_key", "")}\""
+        )
+        buildConfigField(
+            "String",
+            "KAKAO_REST_API_KEY",
+            "\"${localProperties.getProperty("kakao_rest_api_key", "")}\""
+        )
     }
 
     buildTypes {
@@ -102,6 +112,7 @@ kotlin {
 dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.activity.compose)
 
     // Compose BoM
@@ -152,4 +163,9 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     implementation(libs.firebase.firestore)
+
+// 위치 권한 + GPS 기반 현재위치 얻기 위해
+    implementation("com.google.android.gms:play-services-location:21.0.1")
+    // Kakao Map SDK
+    implementation("com.kakao.maps.open:android:2.13.0")
 }

@@ -1,5 +1,6 @@
 package com.markoala.tomoandroid.ui.main.calendar
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -7,12 +8,13 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -20,13 +22,23 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.markoala.tomoandroid.data.model.moim.MoimListDTO
+import com.markoala.tomoandroid.R
+import com.markoala.tomoandroid.data.api.PromiseApiService
+import com.markoala.tomoandroid.data.model.MoimListDTO
+import com.markoala.tomoandroid.ui.components.ButtonStyle
+import com.markoala.tomoandroid.ui.components.CustomButton
 import com.markoala.tomoandroid.ui.components.CustomText
 import com.markoala.tomoandroid.ui.components.CustomTextType
 import com.markoala.tomoandroid.ui.components.MorphingDots
 import com.markoala.tomoandroid.ui.main.calendar.components.TomoCalendar
+import com.markoala.tomoandroid.ui.main.calendar.model.CalendarEvent
+import com.markoala.tomoandroid.ui.main.calendar.model.CalendarEventType
 import com.markoala.tomoandroid.ui.main.meeting.MeetingViewModel
 import com.markoala.tomoandroid.ui.theme.CustomColor
+import com.markoala.tomoandroid.utils.formatTimeWithoutSeconds
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import retrofit2.awaitResponse
 import java.time.LocalDate
 import java.time.YearMonth
 
@@ -34,7 +46,8 @@ import java.time.YearMonth
 fun CalendarScreen(
     paddingValues: PaddingValues,
     meetingViewModel: MeetingViewModel = viewModel(),
-    onEventClick: (Int) -> Unit = {}
+    onEventClick: (Int) -> Unit = {},
+    onAddPromiseClick: (LocalDate) -> Unit = {}
 ) {
     val cardIvory = Color(0xFFFAF7F4)
 
@@ -45,35 +58,49 @@ fun CalendarScreen(
     val meetings by meetingViewModel.meetings.collectAsState()
     val isLoading by meetingViewModel.isLoading.collectAsState()
     val lifecycleOwner = LocalLifecycleOwner.current
-    var dailySchedules by remember { mutableStateOf<List<MoimListDTO>?>(null) }
+    val meetingsState = rememberUpdatedState(meetings)
+    var dailySchedules by remember { mutableStateOf<List<CalendarEvent>?>(null) }
+    var promiseEvents by remember { mutableStateOf<List<CalendarEvent>>(emptyList()) }
+    var isPromiseLoading by remember { mutableStateOf(false) }
+    var hasFetchedPromises by remember { mutableStateOf(false) }
 
-
-    val eventMap = remember(meetings) {
-        meetings
-            .mapNotNull { moim ->
-                runCatching {
-                    val date = LocalDate.parse(moim.createdAt.substring(0, 10))
-                    date to moim
-                }.getOrNull()
-            }
-            .groupBy({ it.first }, { it.second })
-    }
-
-
-    LaunchedEffect(eventMap) {
-        println("🔥 eventMap =")
-        eventMap.forEach { (date, list) ->
-            println("$date -> ${list.map { it.title }}")
+    val meetingEvents = remember(meetings) {
+        meetings.mapNotNull { moim ->
+            runCatching {
+                val date = LocalDate.parse(moim.createdAt.substring(0, 10))
+                CalendarEvent(
+                    id = "moim-${moim.moimId}-${moim.title}-${moim.createdAt}",
+                    date = date,
+                    title = moim.title,
+                    description = moim.description,
+                    type = CalendarEventType.MOIM,
+                    moimId = moim.moimId,
+                    moimTitle = moim.title
+                )
+            }.getOrNull()
         }
     }
 
+    LaunchedEffect(meetings, hasFetchedPromises) {
+        if (hasFetchedPromises || meetings.isEmpty()) return@LaunchedEffect
+        isPromiseLoading = true
+        promiseEvents = runCatching { fetchPromiseEvents(meetings) }.getOrDefault(emptyList())
+        hasFetchedPromises = true
+        isPromiseLoading = false
+    }
+
+    val eventMap by remember(meetingEvents, promiseEvents) {
+        derivedStateOf { (meetingEvents + promiseEvents).groupBy { it.date } }
+    }
 
 
     // Lifecycle: 화면 복귀 시 데이터 다시 불러오기
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_RESUME) {
-                meetingViewModel.fetchMeetings()
+                if (meetingsState.value.isEmpty()) {
+                    meetingViewModel.fetchMeetings()
+                }
             }
         }
         lifecycleOwner.lifecycle.addObserver(observer)
@@ -81,7 +108,7 @@ fun CalendarScreen(
     }
 
     // 🔥 로딩 다이얼로그 표시
-    if (isLoading) {
+    if (isLoading || isPromiseLoading) {
         MorphingDots()
     }
 
@@ -92,7 +119,6 @@ fun CalendarScreen(
             Surface(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 8.dp)
                     .heightIn(max = 500.dp),
                 shape = RoundedCornerShape(20.dp),
                 color = Color.White,
@@ -106,11 +132,31 @@ fun CalendarScreen(
                     // -------------------------
                     // Header — 일정 제목
                     // -------------------------
-                    CustomText(
-                        text = "${selectedDate.monthValue}월 ${selectedDate.dayOfMonth}일 일정",
-                        type = CustomTextType.headline,
-                        color = CustomColor.primary400
-                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        CustomText(
+                            text = "${selectedDate.monthValue}월 ${selectedDate.dayOfMonth}일 일정",
+                            type = CustomTextType.headline,
+                            color = CustomColor.primary400
+                        )
+                        CustomButton(
+                            text = "약속 추가",
+                            style = ButtonStyle.Primary,
+                            onClick = {
+                                dailySchedules = null
+                                onAddPromiseClick(selectedDate)
+                            },
+                            modifier = Modifier.height(40.dp),
+
+                            // 🔥 글자·패딩 줄이기
+                            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 0.dp),
+                            textStyle = CustomTextType.bodySmall
+                        )
+
+                    }
 
                     Spacer(Modifier.height(16.dp))
 
@@ -125,8 +171,16 @@ fun CalendarScreen(
                     ) {
                         dailySchedules!!.forEach { schedule ->
 
-                            // 일정 타입 (현재는 모두 모임 생성으로 표시)
-                            val scheduleType = "최초 생성"
+                            val isPromise = schedule.type == CalendarEventType.PROMISE
+                            val badgeLabel = if (isPromise) "약속" else "최초생성"
+                            val secondaryText = if (isPromise) {
+                                listOfNotNull(schedule.moimTitle, schedule.promiseTime).joinToString(" · ")
+                            } else {
+                                schedule.description
+                            }
+                            val placeText = if (isPromise && !schedule.place.isNullOrBlank()) {
+                                schedule.place
+                            } else null
 
                             Surface(
                                 modifier = Modifier
@@ -134,55 +188,78 @@ fun CalendarScreen(
                                     .padding(vertical = 6.dp)
                                     .clickable {
                                         dailySchedules = null
-                                        onEventClick(schedule.moimId)
+                                        schedule.moimId?.let(onEventClick)
                                     },
                                 shape = RoundedCornerShape(12.dp),
-                                color = CustomColor.primary50,   // 너무 튀지 않는 배경색
+                                color = if (isPromise) CustomColor.primary100 else CustomColor.primary50,
                                 tonalElevation = 1.dp
-                            ) {
-
+                            ){
                                 Column(
-                                    modifier = Modifier
-                                        .padding(14.dp)
+                                    modifier = Modifier.padding(16.dp),
+                                    verticalArrangement = Arrangement.spacedBy(10.dp)
                                 ) {
 
-                                    // ------------------------
-                                    // 타입 배지
-                                    // ------------------------
+                                    // 🔥 약속 / 모임 타입 라벨
                                     Box(
                                         modifier = Modifier
-                                            .background(CustomColor.primary100, RoundedCornerShape(6.dp))
+                                            .background(CustomColor.primary200, RoundedCornerShape(6.dp))
                                             .padding(horizontal = 8.dp, vertical = 4.dp)
                                     ) {
                                         CustomText(
-                                            text = scheduleType,
+                                            text = badgeLabel,
                                             color = CustomColor.primary
                                         )
                                     }
 
-                                    Spacer(Modifier.height(6.dp))
+                                    if (isPromise) {
+                                        val moimName = schedule.moimTitle ?: "-"
+                                        Row(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            horizontalArrangement = Arrangement.SpaceBetween,
+                                            verticalAlignment = Alignment.Top
+                                        ) {
+                                            Column(
+                                                modifier = Modifier.weight(1f),
+                                                verticalArrangement = Arrangement.spacedBy(8.dp)
+                                            ) {
+                                                CustomText(
+                                                    text = schedule.title,
+                                                    type = CustomTextType.title,
+                                                    color = CustomColor.textPrimary
+                                                )
+                                                PromiseMetaRow(
+                                                    icon = R.drawable.ic_time,
+                                                    text = formatTimeWithoutSeconds(schedule.promiseTime)
+                                                )
+                                                if (!placeText.isNullOrBlank()) {
+                                                    PromiseMetaRow(
+                                                        icon = R.drawable.ic_location,
+                                                        text = placeText
+                                                    )
+                                                }
+                                            }
+                                            Surface(
+                                                color = CustomColor.primary400,
+                                                border = BorderStroke(1.dp, CustomColor.outline),
+                                                shape = RoundedCornerShape(10.dp)
+                                            ) {
+                                                CustomText(
+                                                    text = moimName,
+                                                    type = CustomTextType.bodySmall,
+                                                    color = CustomColor.white,
+                                                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
+                                                )
+                                            }
+                                        }
+                                    } else {
+                                        // 🔥 모임 제목
+                                        InfoRow(label = "모임명", value = schedule.moimTitle ?: "-")
+                                        InfoRow(label = "설명", value = schedule.description ?: "-")
 
-                                    // ------------------------
-                                    // 제목
-                                    // ------------------------
-                                    CustomText(
-                                        text = schedule.title,
-                                        type = CustomTextType.body,
-                                        color = CustomColor.textPrimary
-                                    )
-
-                                    Spacer(Modifier.height(4.dp))
-
-                                    // ------------------------
-                                    // 보조 정보 (예: 생성일, 추후 장소, 메모 등)
-                                    // ------------------------
-                                    CustomText(
-                                        text = "설명:  ${schedule.description}",
-                                        type= CustomTextType.bodySmall,
-                                        color = CustomColor.gray500
-                                    )
+                                    }
                                 }
                             }
+
                         }
 
                     }
@@ -256,12 +333,83 @@ fun CalendarScreen(
                 contentAlignment = Alignment.Center
             ) {
                 CustomText(
-                    text = "조금만 기다려 주세요, \n약속 기능이 곧 열릴 거예요!",
+                    text = "날짜를 눌러 모임과 약속을 확인하고 관리하세요.",
                     type = CustomTextType.body,
                     color = CustomColor.primary400,
                     textAlign = TextAlign.Center
                 )
             }
         }
+    }
+}
+
+private suspend fun fetchPromiseEvents(meetings: List<MoimListDTO>): List<CalendarEvent> = withContext(Dispatchers.IO) {
+    val formatter = java.time.format.DateTimeFormatter.ISO_LOCAL_DATE
+    val collected = mutableListOf<CalendarEvent>()
+    meetings.forEach { moim ->
+        runCatching {
+            PromiseApiService.getPromisesList(moim.title).awaitResponse()
+        }.onSuccess { response ->
+            if (response.isSuccessful) {
+                response.body()?.data.orEmpty().forEach { promise ->
+                    val date = runCatching { LocalDate.parse(promise.promiseDate.take(10), formatter) }.getOrNull()
+                    if (date != null) {
+                        collected += CalendarEvent(
+                            id = "promise-${moim.moimId}-${promise.promiseName}-${promise.promiseDate}-${promise.promiseTime}",
+                            date = date,
+                            title = promise.promiseName,
+                            description = moim.title,
+                            type = CalendarEventType.PROMISE,
+                            moimId = moim.moimId,
+                            promiseTime = promise.promiseTime,
+                            place = promise.resolvedLocation,
+                            moimTitle = moim.title
+                        )
+                    }
+                }
+            }
+        }
+    }
+    collected
+}
+
+@Composable
+private fun InfoRow(label: String, value: String) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        CustomText(
+            text = "$label:",
+            type = CustomTextType.bodySmall,
+            color = CustomColor.black
+        )
+        CustomText(
+            text = value,
+            type = CustomTextType.body,
+            color = CustomColor.primary
+        )
+    }
+}
+
+@Composable
+private fun PromiseMetaRow(icon: Int, text: String) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            painter = painterResource(id = icon),
+            contentDescription = null,
+            tint = CustomColor.primary,
+            modifier = Modifier.size(18.dp)
+        )
+        CustomText(
+            text = text,
+            type = CustomTextType.body,
+            color = CustomColor.textSecondary
+        )
     }
 }

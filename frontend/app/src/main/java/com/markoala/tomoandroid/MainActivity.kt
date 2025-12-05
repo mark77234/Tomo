@@ -4,10 +4,13 @@ import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.ContentValues.TAG
+import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.util.Base64
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -21,6 +24,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.rememberNavController
 import com.google.firebase.FirebaseApp
@@ -34,6 +38,7 @@ import com.markoala.tomoandroid.ui.components.ToastProvider
 import com.markoala.tomoandroid.ui.theme.TomoAndroidTheme
 import com.markoala.tomoandroid.utils.NotificationPermissionHelper
 import kotlinx.coroutines.launch
+import java.security.MessageDigest
 
 class MainActivity : ComponentActivity() {
     private val deepLinkInviteCode = mutableStateOf<String?>(null)
@@ -43,6 +48,19 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
 
         FirebaseApp.initializeApp(this)
+
+        try {
+            val info = packageManager.getPackageInfo(packageName, PackageManager.GET_SIGNATURES)
+            for (signature in info.signatures!!) {
+                val md = MessageDigest.getInstance("SHA")
+                md.update(signature.toByteArray())
+                val keyHash = Base64.encodeToString(md.digest(), Base64.NO_WRAP)
+                Log.i("KAKAO_KEY_HASH", keyHash)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
 
         // Notification Channel 생성
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -129,6 +147,13 @@ fun RouteScreen(inviteCode: String? = null) {
     ) {
         NotificationPermissionHelper.markPermissionRequested(context)
     }
+    var hasLocationPermission by remember { mutableStateOf(isLocationPermissionGranted(context)) }
+    val locationPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestMultiplePermissions()
+    ) { result ->
+        hasLocationPermission = result[Manifest.permission.ACCESS_FINE_LOCATION] == true ||
+            result[Manifest.permission.ACCESS_COARSE_LOCATION] == true
+    }
 
     // 앱 시작 시 저장된 토큰 확인
     LaunchedEffect(Unit) {
@@ -147,6 +172,14 @@ fun RouteScreen(inviteCode: String? = null) {
             NotificationPermissionHelper.markPermissionRequested(context)
             notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
         }
+        if (signedIn && !hasLocationPermission) {
+            locationPermissionLauncher.launch(
+                arrayOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                )
+            )
+        }
     }
 
     ToastProvider {
@@ -160,4 +193,16 @@ fun RouteScreen(inviteCode: String? = null) {
             onLogout = { signedIn = false }
         )
     }
+}
+
+private fun isLocationPermissionGranted(context: Context): Boolean {
+    val fine = ContextCompat.checkSelfPermission(
+        context,
+        Manifest.permission.ACCESS_FINE_LOCATION
+    ) == PackageManager.PERMISSION_GRANTED
+    val coarse = ContextCompat.checkSelfPermission(
+        context,
+        Manifest.permission.ACCESS_COARSE_LOCATION
+    ) == PackageManager.PERMISSION_GRANTED
+    return fine || coarse
 }

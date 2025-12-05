@@ -3,8 +3,8 @@ package com.markoala.tomoandroid.ui.main.meeting
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.markoala.tomoandroid.data.api.MoimsApiService
-import com.markoala.tomoandroid.data.model.moim.MoimListDTO
-import com.markoala.tomoandroid.data.model.user.BaseResponse
+import com.markoala.tomoandroid.data.model.MoimListDTO
+import com.markoala.tomoandroid.data.model.BaseResponse
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch

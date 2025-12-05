@@ -1,4 +1,4 @@
-package com.markoala.tomoandroid.util
+package com.markoala.tomoandroid.utils
 
 import android.util.Log
 import java.time.Instant

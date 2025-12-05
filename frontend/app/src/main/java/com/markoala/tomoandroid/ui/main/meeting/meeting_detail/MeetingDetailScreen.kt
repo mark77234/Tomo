@@ -2,6 +2,7 @@ package com.markoala.tomoandroid.ui.main.meeting.meeting_detail
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,7 +21,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -34,22 +34,23 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.markoala.tomoandroid.R
-import com.markoala.tomoandroid.data.model.friends.FriendProfile
+import com.markoala.tomoandroid.data.model.FriendProfile
 import com.markoala.tomoandroid.ui.components.CustomText
 import com.markoala.tomoandroid.ui.components.CustomTextType
 import com.markoala.tomoandroid.ui.main.friends.components.FriendCard
 import com.markoala.tomoandroid.ui.theme.CustomColor
-import com.markoala.tomoandroid.util.parseIsoToKoreanDate
-import java.util.Locale
+import com.markoala.tomoandroid.utils.parseIsoToKoreanDate
 import com.google.firebase.auth.FirebaseAuth
+import com.markoala.tomoandroid.data.model.MoimDetails
 import com.markoala.tomoandroid.ui.components.CustomBack
 import com.markoala.tomoandroid.ui.components.LoadingDialog
-import com.markoala.tomoandroid.util.getFriendshipDurationText
+import com.markoala.tomoandroid.utils.getFriendshipDurationText
 
 @Composable
 fun MeetingDetailScreen(
     moimId: Int,
     onBackClick: () -> Unit,
+    onPromiseListClick: (moimId: Int, moimName: String, isLeader: Boolean) -> Unit,
     viewModel: MeetingDetailViewModel = viewModel()
 ) {
     val moimDetails by viewModel.moimDetails.collectAsState()
@@ -102,7 +103,8 @@ fun MeetingDetailScreen(
                     moimDetails = moimDetails!!,
                     membersWithProfiles = membersWithProfiles,
                     onBackClick = onBackClick,
-                    onRefetchMembers = ::refetchMembers // 추가
+                    onRefetchMembers = ::refetchMembers, // 추가
+                    onPromiseListClick = onPromiseListClick
                 )
             }
 
@@ -112,15 +114,16 @@ fun MeetingDetailScreen(
 
 @Composable
 private fun MeetingDetailContent(
-    moimDetails: com.markoala.tomoandroid.data.model.moim.MoimDetails,
+    moimDetails: MoimDetails,
     membersWithProfiles: List<MemberWithProfile>,
     onBackClick: () -> Unit,
-    onRefetchMembers: () -> Unit // 추가
+    onRefetchMembers: () -> Unit, // 추가
+    onPromiseListClick: (moimId: Int, moimName: String, isLeader: Boolean) -> Unit
 ) {
     val createdDate = parseIsoToKoreanDate(moimDetails.createdAt)
     val daysActive = getFriendshipDurationText(moimDetails.createdAt)
-    val averageFriendship = calculateAverageFriendship(membersWithProfiles)
     val currentUserEmail = FirebaseAuth.getInstance().currentUser?.email
+    val isLeader = moimDetails.members.any { it.email == currentUserEmail && it.leader }
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -199,26 +202,21 @@ private fun MeetingDetailContent(
             ) {
                 // 멤버 수
                 StatCard(
-                    modifier = Modifier.weight(1f).border(
-                        width = 1.dp,
-                        color = CustomColor.gray200,
-                        shape = RoundedCornerShape(24.dp)
-                    ),
+                    modifier = Modifier
+                        .weight(1f)
+                        .border(
+                            width = 1.dp,
+                            color = CustomColor.gray200,
+                            shape = RoundedCornerShape(24.dp)
+                        ),
                     label = "멤버",
                     value = "${moimDetails.members.size}명",
                     icon = R.drawable.ic_people
                 )
 
-                // 평균 친밀도
-                StatCard(
-                    modifier = Modifier.weight(1f).border(
-                        width = 1.dp,
-                        color = CustomColor.gray200,
-                        shape = RoundedCornerShape(24.dp)
-                    ),
-                    label = "평균 친밀도",
-                    value = String.format(Locale.getDefault(), "%d점", averageFriendship.toInt()),
-                    icon = R.drawable.ic_favorite
+                PromiseActionCard(
+                    modifier = Modifier.weight(1f),
+                    onClick = { onPromiseListClick(moimDetails.moimId, moimDetails.title, isLeader) }
                 )
             }
         }
@@ -369,15 +367,56 @@ private fun StatCard(
     }
 }
 
-private fun calculateAverageFriendship(members: List<MemberWithProfile>): Double {
-    val currentUserEmail = FirebaseAuth.getInstance().currentUser?.email
-    val friendships = members
-        .filter { it.email != currentUserEmail } // 본인 제외
-        .mapNotNull { it.profile?.friendship }
-        .map { it.toDouble() }
-    return if (friendships.isNotEmpty()) {
-        friendships.average()
-    } else {
-        0.0
+@Composable
+private fun PromiseActionCard(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
+) {
+    Surface(
+        modifier = modifier.shadow(
+            elevation = 1.dp,
+            shape = RoundedCornerShape(20.dp),
+            spotColor = CustomColor.primary.copy(alpha = 0.1f)
+        ).clickable(onClick = onClick),
+        shape = RoundedCornerShape(20.dp),
+        color = CustomColor.primary400
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(20.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Surface(
+                shape = CircleShape,
+                color = CustomColor.white.copy(alpha = 0.16f),
+                modifier = Modifier.size(48.dp)
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_calendar),
+                        contentDescription = null,
+                        tint = CustomColor.white,
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+            }
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                CustomText(
+                    text = "약속 조회",
+                    type = CustomTextType.title,
+                    color = CustomColor.white
+                )
+                CustomText(
+                    text = "모임 약속 리스트",
+                    type = CustomTextType.bodySmall,
+                    color = CustomColor.white.copy(alpha = 0.85f)
+                )
+            }
+        }
     }
 }

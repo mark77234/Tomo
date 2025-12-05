@@ -7,7 +7,7 @@ import com.google.firebase.messaging.FirebaseMessaging
 import com.markoala.tomoandroid.auth.AuthManager
 import com.markoala.tomoandroid.auth.AuthManager.FirebaseSignInResult
 import com.markoala.tomoandroid.auth.AuthManager.ServerLoginResult
-import com.markoala.tomoandroid.data.model.user.UserProfile
+import com.markoala.tomoandroid.data.model.UserProfile
 import com.markoala.tomoandroid.data.repository.AuthRepository
 import com.markoala.tomoandroid.data.repository.UserRepository
 import com.markoala.tomoandroid.ui.components.ToastManager

@@ -6,8 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.markoala.tomoandroid.auth.AuthManager
 import com.markoala.tomoandroid.data.api.MoimsApiService
 import com.markoala.tomoandroid.data.api.friendsApi
-import com.markoala.tomoandroid.data.model.friends.FriendProfile
-import com.markoala.tomoandroid.data.model.moim.CreateMoimDTO
+import com.markoala.tomoandroid.data.model.FriendProfile
+import com.markoala.tomoandroid.data.model.CreateMoimDTO
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch

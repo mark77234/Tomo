@@ -3,8 +3,8 @@ package com.markoala.tomoandroid.data.repository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.markoala.tomoandroid.data.api.userApi
-import com.markoala.tomoandroid.data.model.user.BaseResponse
-import com.markoala.tomoandroid.data.model.user.UserProfile
+import com.markoala.tomoandroid.data.model.BaseResponse
+import com.markoala.tomoandroid.data.model.UserProfile
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import retrofit2.Response

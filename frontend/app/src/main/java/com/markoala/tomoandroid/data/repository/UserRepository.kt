@@ -2,7 +2,7 @@ package com.markoala.tomoandroid.data.repository
 
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
-import com.markoala.tomoandroid.data.model.user.UserProfile
+import com.markoala.tomoandroid.data.model.UserProfile
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException

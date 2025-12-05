@@ -1,4 +1,4 @@
-package com.markoala.tomoandroid.data.model.auth
+package com.markoala.tomoandroid.data.model
 
 data class AuthTokenBundle(
     val accessToken: String,

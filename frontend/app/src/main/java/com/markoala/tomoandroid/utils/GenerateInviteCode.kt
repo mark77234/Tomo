@@ -1,4 +1,4 @@
-package com.markoala.tomoandroid.util
+package com.markoala.tomoandroid.utils
 
 fun generateInviteCode(userId: String): String {
     return if (userId.isNotBlank() && userId.length >= 4) {

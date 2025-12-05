@@ -1,4 +1,4 @@
-package com.markoala.tomoandroid.data.model.user
+package com.markoala.tomoandroid.data.model
 
 data class UserProfile(
     val uuid: String,

@@ -1,9 +1,6 @@
 package com.markoala.tomoandroid.data.api
 
-import com.markoala.tomoandroid.data.model.moim.CreateMoimDTO
-import com.markoala.tomoandroid.data.model.moim.MoimDetails
-import com.markoala.tomoandroid.data.model.moim.MoimListDTO
-import com.markoala.tomoandroid.data.model.user.BaseResponse
+import com.markoala.tomoandroid.data.model.*
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.DELETE

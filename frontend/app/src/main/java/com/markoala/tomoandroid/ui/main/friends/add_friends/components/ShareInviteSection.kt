@@ -25,8 +25,8 @@ import com.markoala.tomoandroid.ui.components.CustomButton
 import com.markoala.tomoandroid.ui.components.CustomText
 import com.markoala.tomoandroid.ui.components.CustomTextType
 import com.markoala.tomoandroid.ui.theme.CustomColor
-import com.markoala.tomoandroid.util.generateInviteCode
 import com.markoala.tomoandroid.util.shareInviteCode
+import com.markoala.tomoandroid.utils.generateInviteCode
 
 @Composable
 fun ShareInviteSection( userId: String, onCopy: () -> Unit) {

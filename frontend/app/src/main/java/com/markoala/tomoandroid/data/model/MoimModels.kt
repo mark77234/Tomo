@@ -1,4 +1,4 @@
-package com.markoala.tomoandroid.data.model.moim
+package com.markoala.tomoandroid.data.model
 
 data class MoimListDTO(
     val moimId: Int,

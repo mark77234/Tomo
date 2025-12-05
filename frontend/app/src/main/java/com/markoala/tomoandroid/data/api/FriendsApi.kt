@@ -1,10 +1,7 @@
 package com.markoala.tomoandroid.data.api
 
-import com.markoala.tomoandroid.data.model.friends.FriendProfile
-import com.markoala.tomoandroid.data.model.friends.FriendSummary
-import com.markoala.tomoandroid.data.model.user.BaseResponse
+import com.markoala.tomoandroid.data.model.*
 import retrofit2.Call
-import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
