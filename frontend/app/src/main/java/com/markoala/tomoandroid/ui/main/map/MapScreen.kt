@@ -33,7 +33,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInteropFilter
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -84,6 +86,7 @@ fun MapScreen(
     val lifecycleOwner = LocalLifecycleOwner.current
     val fusedClient = remember { LocationServices.getFusedLocationProviderClient(context) }
     val scope = rememberCoroutineScope()
+    val density = LocalDensity.current
     val toastManager = LocalToastManager.current
 
     val defaultPos = LatLng.from(37.5666102, 126.9783881)
@@ -116,6 +119,7 @@ fun MapScreen(
     var kakaoMap by remember { mutableStateOf<KakaoMap?>(null) }
     var marker by remember { mutableStateOf<Label?>(null) }
     var currentLocationMarker by remember { mutableStateOf<Label?>(null) }
+    var infoCardHeight by remember { mutableStateOf(0.dp) }
 
     DisposableEffect(lifecycleOwner, mapView) {
         val mapLifeCycle = object : MapLifeCycleCallback() {
@@ -231,6 +235,15 @@ fun MapScreen(
         )
     }
 
+    LaunchedEffect(selectedAddress) {
+        if (selectedAddress == null) {
+            infoCardHeight = 0.dp
+        }
+    }
+
+    val locationButtonBottomPadding =
+        if (infoCardHeight > 0.dp) infoCardHeight + 30.dp else 24.dp
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -291,12 +304,15 @@ fun MapScreen(
         }
 
         selectedAddress?.let { address ->
-            val bottomPadding = if (isPromise) 82.dp else 16.dp
+
             Surface(
                 modifier = Modifier
                     .fillMaxWidth()
                     .align(Alignment.BottomCenter)
-                    .padding(horizontal = 16.dp, vertical = bottomPadding),
+                    .padding(horizontal = 16.dp, vertical = 24.dp)
+                    .onGloballyPositioned { coordinates ->
+                        infoCardHeight = with(density) { coordinates.size.height.toDp() }
+                    },
                 shape = RoundedCornerShape(16.dp),
                 color = CustomColor.white,
                 shadowElevation = 4.dp
@@ -358,7 +374,7 @@ fun MapScreen(
                 Box(
                     modifier = Modifier
                         .align(Alignment.BottomEnd)
-                        .padding(bottom = 24.dp, end = 16.dp)
+                        .padding(bottom = locationButtonBottomPadding, end = 16.dp)
                         .size(45.dp)
                         .background(
                             color = CustomColor.primary,
