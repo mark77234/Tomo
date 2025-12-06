@@ -13,12 +13,11 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.zIndex
 import com.markoala.tomoandroid.ui.components.CustomText
 import com.markoala.tomoandroid.ui.components.CustomTextType
 import com.markoala.tomoandroid.ui.theme.CustomColor
@@ -37,52 +36,68 @@ fun StepIndicator(currentStep: Int) {
             .fillMaxWidth()
             .padding(horizontal = 0.dp)
     ) {
-        val strokeWidth = 2.dp
-
-        Box(
+        Canvas(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(circleSize)
                 .align(Alignment.TopCenter)
-                .zIndex(-1f)
         ) {
-            // 가로 라인을 원 뒤로 배치
-            Canvas(modifier = Modifier.matchParentSize()) {
-                val radius = circleSize.toPx() / 2f
-                val startX = radius
-                val endX = size.width - radius
-                val centerY = size.height / 2f
-                val stroke = strokeWidth.toPx()
+            val strokeWidth = 2.dp.toPx()
+            val circleRadius = circleSize.toPx() / 2f
+            val startCenter = circleRadius
+            val endCenter = size.width - circleRadius
+            val spacing =
+                if (steps.size > 1) (endCenter - startCenter) / (steps.size - 1) else 0f
+            val centerY = circleRadius
 
-                if (endX > startX) {
+            repeat(steps.size - 1) { index ->
+                val fromCenter = startCenter + spacing * index
+                val toCenter = fromCenter + spacing
+                val lineStart = fromCenter + circleRadius
+                val lineEnd = toCenter - circleRadius
+
+                if (lineEnd > lineStart) {
                     drawLine(
                         color = CustomColor.outline,
-                        start = Offset(startX, centerY),
-                        end = Offset(endX, centerY),
-                        strokeWidth = stroke,
+                        start = Offset(lineStart, centerY),
+                        end = Offset(lineEnd, centerY),
+                        strokeWidth = strokeWidth,
+                        cap = StrokeCap.Round
+                    )
+                }
+            }
+
+            if (progressFraction > 0f) {
+                val segmentDrawableLength = (spacing - circleRadius * 2f).coerceAtLeast(0f)
+                val totalSegments = (steps.size - 1).coerceAtLeast(1)
+                val totalDrawableLength = segmentDrawableLength * totalSegments
+                var remainingProgress = totalDrawableLength * progressFraction
+
+                repeat(steps.size - 1) { index ->
+                    val fromCenter = startCenter + spacing * index
+                    val lineStart = fromCenter + circleRadius
+                    val segmentLength = segmentDrawableLength
+
+                    if (remainingProgress <= 0f || segmentLength <= 0f) return@repeat
+
+                    val drawLength = remainingProgress.coerceAtMost(segmentLength)
+                    drawLine(
+                        color = CustomColor.primary,
+                        start = Offset(lineStart, centerY),
+                        end = Offset(lineStart + drawLength, centerY),
+                        strokeWidth = strokeWidth,
                         cap = StrokeCap.Round
                     )
 
-                    if (progressFraction > 0f) {
-                        val progressX = startX + (endX - startX) * progressFraction
-                        drawLine(
-                            color = CustomColor.primary,
-                            start = Offset(startX, centerY),
-                            end = Offset(progressX, centerY),
-                            strokeWidth = stroke,
-                            cap = StrokeCap.Round
-                        )
-                    }
+                    remainingProgress -= drawLength
                 }
             }
         }
-
         // 실제 UI (동그라미 + 라벨)
         Layout(
             modifier = Modifier
                 .fillMaxWidth()
-                .align(Alignment.TopCenter)
-                .zIndex(1f),
+                .align(Alignment.TopCenter),
             content = {
                 steps.forEachIndexed { index, label ->
                     val stepNumber = index + 1
