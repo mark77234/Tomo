@@ -1,9 +1,11 @@
 package com.markoala.tomoandroid.ui.main.meeting.create_meeting.components
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -44,6 +46,7 @@ fun StepIndicator(currentStep: Int) {
         ) {
             val strokeWidth = 2.dp.toPx()
             val circleRadius = circleSize.toPx() / 2f
+            val lineInset = circleRadius + strokeWidth
             val startCenter = circleRadius
             val endCenter = size.width - circleRadius
             val spacing =
@@ -53,8 +56,8 @@ fun StepIndicator(currentStep: Int) {
             repeat(steps.size - 1) { index ->
                 val fromCenter = startCenter + spacing * index
                 val toCenter = fromCenter + spacing
-                val lineStart = fromCenter + circleRadius
-                val lineEnd = toCenter - circleRadius
+                val lineStart = fromCenter + lineInset
+                val lineEnd = toCenter - lineInset
 
                 if (lineEnd > lineStart) {
                     drawLine(
@@ -68,14 +71,15 @@ fun StepIndicator(currentStep: Int) {
             }
 
             if (progressFraction > 0f) {
-                val segmentDrawableLength = (spacing - circleRadius * 2f).coerceAtLeast(0f)
+                val segmentDrawableLength =
+                    (spacing - lineInset * 2f).coerceAtLeast(0f)
                 val totalSegments = (steps.size - 1).coerceAtLeast(1)
                 val totalDrawableLength = segmentDrawableLength * totalSegments
                 var remainingProgress = totalDrawableLength * progressFraction
 
                 repeat(steps.size - 1) { index ->
                     val fromCenter = startCenter + spacing * index
-                    val lineStart = fromCenter + circleRadius
+                    val lineStart = fromCenter + lineInset
                     val segmentLength = segmentDrawableLength
 
                     if (remainingProgress <= 0f || segmentLength <= 0f) return@repeat
@@ -103,6 +107,16 @@ fun StepIndicator(currentStep: Int) {
                     val stepNumber = index + 1
                     val isCompleted = currentStep > stepNumber
                     val isActive = currentStep == stepNumber
+                    val circleFill = when {
+                        isActive -> CustomColor.primary
+                        isCompleted -> CustomColor.primary.copy(alpha = 0.15f)
+                        else -> CustomColor.surface
+                    }
+                    val textColor = when {
+                        isActive -> CustomColor.white
+                        isCompleted -> CustomColor.primary
+                        else -> CustomColor.textSecondary
+                    }
 
                     Column(
                         modifier = Modifier,
@@ -113,22 +127,19 @@ fun StepIndicator(currentStep: Int) {
                         Surface(
                             modifier = Modifier.size(circleSize),
                             shape = CircleShape,
-                            color = when {
-                                isActive -> CustomColor.primary
-                                isCompleted -> CustomColor.primary.copy(alpha = 0.15f)
-                                else -> CustomColor.surface
-                            },
-                            contentColor = when {
-                                isActive -> CustomColor.white
-                                isCompleted -> CustomColor.primary
-                                else -> CustomColor.textSecondary
-                            }
+                            color = CustomColor.surface,
+                            contentColor = Color.Unspecified
                         ) {
-                            Box(contentAlignment = Alignment.Center) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .background(circleFill, CircleShape),
+                                contentAlignment = Alignment.Center
+                            ) {
                                 CustomText(
                                     text = stepNumber.toString(),
                                     type = CustomTextType.bodySmall,
-                                    color = Color.Unspecified
+                                    color = textColor
                                 )
                             }
                         }
