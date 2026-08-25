@@ -1,34 +1,80 @@
+<div align="center">
+
 # Tomo
 
-> 토모(Tomo)는 친구와의 순간을 기록하고, 모임을 관리하며, 친밀도를 확인할 수 있는 **Android 앱**입니다.  
+### 친구와의 순간을 기록하고 모임을 관리하는 Android 앱
 
----
-[PlayStore 링크](https://play.google.com/store/apps/details?id=com.markoala.tomoandroid&pcampaignid=web_share)
+친구를 추가하고 함께하는 모임을 만들며  
+친구와의 관계와 추억을 한곳에서 관리할 수 있습니다.
 
-주요 기능
-- 모임 생성 & 관리 — 제목·설명만 입력하면 쉽게 모임 생성! 친구를 초대하고, 생성일·참여 인원·진행 기간까지 한눈에 관리하세요.
-- 친구 목록 & 친밀도 시스템 — 이메일 또는 친구코드로 친구 추가! 각 친구와의 친밀도를 확인하고, “새로운 친구” 배지로 새 연결도 알려줍니다.
-- 모임 타임라인 홈 화면 — 진행 중인 모임과 완료된 모임을 한 화면에! 모임장은 별도로 표시되어 체계적인 모임 운영이 가능합니다.
-- 간편한 3단계 모임 생성 플로우 — 기본 정보 입력 → 친구 초대 → 확인 후 생성. 빠르고 쉬운 사용자 경험을 제공합니다.
-- 심플하고 따뜻한 UI — 감성적인 디자인과 부드러운 색감의 직관적 인터페이스로 누구나 편안하게 사용 가능해요.
+[Google Play](https://play.google.com/store/apps/details?id=com.markoala.tomoandroid&pcampaignid=web_share) ·
+[Portfolio](https://mark77234.github.io/portfolio/)
 
----
-
-
-## 팀 소개
-
-| 역할 | 역할 |
-|:---:|:---:|
-| **Android 개발** | **Backend 개발** |
-| <img src="https://avatars.githubusercontent.com/mark77234" width="70" height="70" style="border-radius:50%"/> | <img src="https://avatars.githubusercontent.com/tomchaccom" width="70" height="70" style="border-radius:50%"/> |
-| **이병찬** | **김명성** |
-| [github.com/mark77234](https://github.com/mark77234) | [github.com/tomchaccom](https://github.com/tomchaccom) |
-
-> 다가올 업데이트도 기대해 주세요. 지금, Tomo와 함께 소중한 우정을 기록해보세요!
-
+</div>
 
 ---
 
-<p align="center">
-  <sub>© 2025 Markoala Team. All rights reserved.</sub>
-</p>
+## 프로젝트
+
+- **역할**: Android 개발
+- **팀**: Android 1명 · Backend 1명
+- **Platform**: Android
+
+친구 관계와 모임을 중심으로
+
+**친구 추가 → 모임 생성 → 친구 초대 → 모임 관리**
+
+Flow를 구현했습니다.
+
+---
+
+## 주요 기능
+
+- 친구 추가 및 친구 목록 관리
+- 친구별 친밀도 확인
+- 모임 생성 및 친구 초대
+- 진행 중 / 완료된 모임 관리
+- 3단계 모임 생성 Flow
+- Push Notification
+- 위치 및 지도 기능
+
+---
+
+## Tech Stack
+
+`Kotlin` `Jetpack Compose`
+
+`Firebase Auth` `Firestore` `FCM`
+
+`Retrofit` `OkHttp`
+
+`Kakao Maps`
+
+---
+
+## Engineering
+
+### Compose 기반 Android UI
+
+Jetpack Compose를 기반으로  
+친구 · 모임 · 프로필 등 주요 화면과 사용자 Flow를 구현했습니다.
+
+### 서버 API와 앱 상태 연결
+
+Retrofit과 OkHttp를 사용해 Backend API와 통신하고  
+Firebase Authentication을 함께 활용해 사용자 인증 흐름을 구성했습니다.
+
+### 친구와 모임 중심의 상태 관리
+
+친구 목록과 모임 상태가 여러 화면에서 연결되기 때문에  
+사용자가 모임을 만들고 친구를 초대하는 과정이 자연스럽게 이어지도록 구성했습니다.
+
+---
+
+<div align="center">
+
+[Google Play](https://play.google.com/store/apps/details?id=com.markoala.tomoandroid&pcampaignid=web_share) ·
+[GitHub](https://github.com/mark77234/Tomo) ·
+[Portfolio](https://mark77234.github.io/portfolio/)
+
+</div>
